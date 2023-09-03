@@ -6,7 +6,6 @@ import Paper from '@mui/material/Paper';
 import CssBaseline from '@mui/material/CssBaseline';
 
 import { Footer } from './components/Footer.jsx';
-import { Home } from './pages/Home/index.jsx';
 import { Schedule } from './pages/Schedule/index.jsx';
 import { Plan } from './pages/Plan/index.jsx';
 import { Placeholder } from './pages/Placeholder/index.jsx';
@@ -22,7 +21,6 @@ export function App() {
           <Route path="/schedule" component={Schedule} />
           <Route path="/plan" component={Plan} />
           <Route path="/shop" component={Placeholder} />
-          <Route path="/" component={Home} />
           <Route default component={NotFound} />
         </Router>
         <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
