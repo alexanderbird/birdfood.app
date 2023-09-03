@@ -2,11 +2,11 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import { Header } from '../../components/Header.jsx';
 
-export function QuickAdd() {
+export function Schedule() {
   return (
     <>
       <Header>
-        We're running low on...
+        Schedule Recurring Items
       </Header>
       <Container maxWidth="sm">
         Coming soon
