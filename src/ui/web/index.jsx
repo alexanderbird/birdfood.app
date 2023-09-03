@@ -7,7 +7,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 
 import { Footer } from './components/Footer.jsx';
 import { Home } from './pages/Home/index.jsx';
-import { Search } from './pages/Search/index.jsx';
+import { QuickAdd } from './pages/QuickAdd/index.jsx';
 import { Plan } from './pages/Plan/index.jsx';
 import { Placeholder } from './pages/Placeholder/index.jsx';
 import { NotFound } from './pages/_404.jsx';
@@ -19,7 +19,7 @@ export function App() {
       <CssBaseline />
       <Box>
         <Router>
-          <Route path="/search" component={Search} />
+          <Route path="/add" component={QuickAdd} />
           <Route path="/plan" component={Plan} />
           <Route path="/shop" component={Placeholder} />
           <Route path="/" component={Home} />

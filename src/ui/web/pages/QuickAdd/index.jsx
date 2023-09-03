@@ -2,11 +2,11 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import { Header } from '../../components/Header.jsx';
 
-export function Search() {
+export function QuickAdd() {
   return (
     <>
       <Header>
-        search here
+        We're running low on...
       </Header>
       <Container maxWidth="sm">
         Coming soon
