@@ -8,7 +8,8 @@ import Box from '@mui/material/Box';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import IconButton from '@mui/material/IconButton';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import ClearIcon from '@mui/icons-material/Clear';
+import EventRepeatIcon from '@mui/icons-material/EventRepeat';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import Container from '@mui/material/Container';
@@ -82,6 +83,11 @@ export function Plan() {
   const openConfirmEmptyDialog = () => setConfirmEmptyDialogOpen(true);
   const core = new Core(new StaticData());
 
+  const addRecurringItems = () => {
+    core.addRecurringItems();
+    triggerUpdate();
+  }
+
   const updateQuantity = (id, difference) => {
     core.addToItemShoppingListQuantity(id, difference);
     triggerUpdate();
@@ -115,7 +121,9 @@ export function Plan() {
       <Container>
         <ComboBox items={items} onSelect={addItem}/>
         <SortModeToggle value={sortMode} onChange={setSortMode} />
-        <TheList items={selectedItems} removeAll={openConfirmEmptyDialog} updateQuantity={updateQuantity} setQuantity={setQuantity} />
+        <TheList items={selectedItems} removeAll={openConfirmEmptyDialog} updateQuantity={updateQuantity} setQuantity={setQuantity}
+          addRecurringItems={addRecurringItems}
+          />
         <Dialog open={confirmEmptyDialogOpen} onClose={closeConfirmEmptyDialog}>
           <DialogTitle>Clear List</DialogTitle>
           <DialogContent dividers>
@@ -145,35 +153,38 @@ function asItems(groceryItems) {
   }));
 }
 
-const TheList = ({ items, removeAll, updateQuantity, setQuantity }) => {
+const TheList = ({ items, removeAll, updateQuantity, setQuantity, addRecurringItems }) => {
 
   const MinusIcon = ({ item }) =>
     item.value.PlannedQuantity > 1
     ? <RemoveIcon sx={{ fontSize: 14 }} />
-    : <DeleteForeverIcon sx={{ fontSize: 14 }} />;
+    : <ClearIcon sx={{ fontSize: 14 }} />;
 
   return (
-    <List>{ items.map(item => 
-      <>
+    <List>
+      { items.map(item => <>
+        <ListItem>
+          <ListItemAvatar><Avatar><ItemTypeIcon type={item.value.Type} /></Avatar></ListItemAvatar>
+          <Box sx={{ flexDirection: 'column', display: 'flex', flexGrow: 1 }}>
+            <ListItemText primary={item.label} sx={{ alignSelf: 'flex-start' }}/>
+            <ButtonGroup sx={{ width: '100%', justifyContent: 'flex-end' }}>
+              <Button onClick={() => updateQuantity(item.value.Id, -1)}><MinusIcon item={item} /></Button>
+              <QuantitySelector value={item.value.PlannedQuantity} onChange={quantity => setQuantity(item.value.Id, quantity)} />
+              <Button onClick={() => updateQuantity(item.value.Id, 1)}><AddIcon sx={{ fontSize: 14 }}/></Button>
+            </ButtonGroup>
+          </Box>
+        </ListItem>
+        <Divider component="li" />
+      </>) }
+      { !items.length ? null : <>
+        <ListItem>
+          <Button startIcon={<ClearIcon />} onClick={removeAll}>Clear List</Button>
+        </ListItem>
+        <Divider component="li" />
+      </>}
       <ListItem>
-        <ListItemAvatar><Avatar><ItemTypeIcon type={item.value.Type} /></Avatar></ListItemAvatar>
-        <Box sx={{ flexDirection: 'column', display: 'flex', flexGrow: 1 }}>
-          <ListItemText primary={item.label} sx={{ alignSelf: 'flex-start' }}/>
-          <ButtonGroup sx={{ width: '100%', justifyContent: 'flex-end' }}>
-            <Button onClick={() => updateQuantity(item.value.Id, -1)}><MinusIcon item={item} /></Button>
-            <QuantitySelector value={item.value.PlannedQuantity} onChange={quantity => setQuantity(item.value.Id, quantity)} />
-            <Button onClick={() => updateQuantity(item.value.Id, 1)}><AddIcon sx={{ fontSize: 14 }}/></Button>
-          </ButtonGroup>
-        </Box>
+        <Button startIcon={<EventRepeatIcon />} onClick={addRecurringItems}>Add Recurring Items</Button>
       </ListItem>
-      <Divider component="li" />
-      </>
-    ) }
-    { !items.length ? null : 
-      <ListItem>
-        <Button onClick={removeAll}>Clear List</Button>
-      </ListItem>
-    }
     </List>
   );
 }

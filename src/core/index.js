@@ -3,6 +3,16 @@ export class Core {
     this.data = data;
   }
 
+  addRecurringItems() {
+    this.data.batchUpdateItems(this.data.listItems().map(item => ({
+      id: item.Id,
+      updates: [{
+        value: Math.max(item.PlannedQuantity, item.RecurringQuantity),
+        attributeName: "PlannedQuantity"
+      }]
+    })));
+  }
+
   addToItemShoppingListQuantity(id, addend) {
     this.data.addItemValue(id, "PlannedQuantity", addend);
   }
