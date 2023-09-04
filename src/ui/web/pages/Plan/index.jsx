@@ -3,6 +3,8 @@ import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import List from '@mui/material/List';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
@@ -26,9 +28,8 @@ export function Plan() {
     <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
       <Container maxWidth="sm">
         <ComboBox items={asItems(items)} onSelect={addItem}/>
-        Coming soon
+        <TheList items={selectedItems} removeAll={() => setSelectedItems([])} />
       </Container>
-      <TheList items={selectedItems} />
     </Box>
   </>);
 }
@@ -40,14 +41,23 @@ function asItems(groceryItems) {
   }));
 }
 
-const TheList = ({ items }) => {
+const TheList = ({ items, removeAll }) => {
 
   return (
     <List>{ items.map(item => 
-      <ListItem disablePadding>
+      <>
+      <ListItem>
         <ListItemText primary={item.label} />
       </ListItem>
-    ) }</List>
+      <Divider component="li" />
+      </>
+    ) }
+    { !items.length ? null : 
+      <ListItem>
+        <Button onClick={removeAll}>Clear List</Button>
+      </ListItem>
+    }
+    </List>
   );
 }
 
