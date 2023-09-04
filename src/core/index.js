@@ -34,6 +34,14 @@ export class Core {
     })));
   }
 
+  createItem(attributes) {
+    this.data.createItem({
+      ...attributes,
+      LastUpdated: this._getCurrentTimestamp(),
+      Id: 'i-' + ((Math.random().toString(36) + "00").slice(2))
+    })
+  }
+
   setItemPlannedQuantity(id, plannedQuantity) {
     const lastUpdated = new Date(Date.now()).toISOString();
     this.data.batchUpdateItems([{
@@ -77,7 +85,16 @@ export class Core {
   _supplyMissingFields(item) {
     return {
       LastUpdated: '0000-00-00T00:00:00.000Z',
+      PlannedQuantity: 0,
+      RecurringQuantity: 0,
+      Type: "OTHER",
       ...item
     }
   }
+
+  _getCurrentTimestamp() {
+    return new Date(Date.now()).toISOString();
+  }
+
+
 }

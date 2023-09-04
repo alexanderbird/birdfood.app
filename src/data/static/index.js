@@ -5,6 +5,10 @@ export class StaticData {
     this.items = staticItems;
   }
 
+  createItem(attributes) {
+    this.items.push(attributes);
+  }
+
   addItemValue(id, attribute, addend) {
     const item = this.items.find(x => x.Id === id);
     item[attribute] += addend;

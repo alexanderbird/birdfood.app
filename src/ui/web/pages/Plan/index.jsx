@@ -44,6 +44,15 @@ function reverseLexicalComparison(lhs, rhs) {
   return -1 * lexicalComparison(lhs, rhs);
 }
 
+const ItemType = {
+  BABY: { key: "BABY", label: "Baby Food" },
+  DRY_GOOD: { key: "DRY_GOOD", label: "Dry Goods" },
+  DAIRY: { key: "DAIRY", label: "Dairy" },
+  DELI: { key: "DELI", label: "Meats" },
+  BAKERY: { key: "BAKERY", label: "Bakery" },
+  FROZEN: { key: "FROZEN", label: "Frozen" },
+}
+
 const SortMode = {
   NEWEST_FIRST: {
     key: "NEWEST_FIRST",
@@ -84,6 +93,11 @@ export function Plan() {
   const closeConfirmEmptyDialog = () => setConfirmEmptyDialogOpen(false);
   const openConfirmEmptyDialog = () => setConfirmEmptyDialogOpen(true);
 
+  const createItem = Name => {
+    core.createItem({ Name, PlannedQuantity: 1 })
+    triggerUpdate();
+  }
+
   const addRecurringItems = () => {
     core.addRecurringItems();
     triggerUpdate();
@@ -120,7 +134,7 @@ export function Plan() {
     </Header>
     <Box sx={{ width: '100%', maxWidth: 520, marginX: 'auto', bgcolor: 'background.paper' }}>
       <Container>
-        <AddItemInput items={items} onSelect={addItem}/>
+        <AddItemInput items={items} onSelect={addItem} onCreate={createItem}/>
         <SortModeToggle value={sortMode} onChange={setSortMode} />
         <TheList items={selectedItems} removeAll={openConfirmEmptyDialog} updateQuantity={updateQuantity} setQuantity={setQuantity}
           addRecurringItems={addRecurringItems}
@@ -202,17 +216,27 @@ function QuantitySelector({ value, onChange }) {
 }
 
 
-function AddItemInput({ items, onSelect }) {
+function AddItemInput({ items, onSelect, onCreate }) {
   const ref = useRef();
+  const [inputValue, setInputValue] = useState("");
   return (
     <Autocomplete
       ref={ref}
+      isOptionEqualToValue={(one, two) => one.value.Id === two.value.Id}
+      noOptionsText={<Button onClick={() => onCreate(inputValue)} startIcon={<AddIcon />}>Create "{inputValue}"</Button>}
+      groupBy={x => ItemType[x.value.Type]?.label || x.value.Type}
       disablePortal
+      autoComplete
       clearOnBlur
-      inputValue={""}
+      inputValue={inputValue}
       options={items}
+      onInputChange={(event, input) => {
+        setInputValue(input);
+      }}
       onChange={(event, item) => {
-        ref.current.querySelector('input').blur();
+        setInputValue("");
+        const input = ref.current.querySelector('input');
+        input.blur();
         if (item) {
           onSelect(item);
         }
