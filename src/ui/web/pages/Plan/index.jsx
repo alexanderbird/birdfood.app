@@ -75,14 +75,14 @@ function SortModeToggle({ value, onChange }) {
 }
 
 export function Plan() {
+  const core = new Core(new StaticData());
   const [serial, setSerial] = useState(Date.now());
   const [sortMode, setSortMode] = useState(SortMode.NEWEST_FIRST.key);
   const triggerUpdate = () => setSerial(Date.now());
-  const [cart, setCart] = useState({ shoppingList: [], unselectedItems: [], total: 0 });
+  const [cart, setCart] = useState(core.getEmptyShoppingList());
   const [confirmEmptyDialogOpen, setConfirmEmptyDialogOpen] = useState(false);
   const closeConfirmEmptyDialog = () => setConfirmEmptyDialogOpen(false);
   const openConfirmEmptyDialog = () => setConfirmEmptyDialogOpen(true);
-  const core = new Core(new StaticData());
 
   const addRecurringItems = () => {
     core.addRecurringItems();
@@ -124,6 +124,7 @@ export function Plan() {
         <SortModeToggle value={sortMode} onChange={setSortMode} />
         <TheList items={selectedItems} removeAll={openConfirmEmptyDialog} updateQuantity={updateQuantity} setQuantity={setQuantity}
           addRecurringItems={addRecurringItems}
+          thereAreMoreRecurringItemsToAdd={cart.recurringItemsToAdd.length > 0}
           />
         <Dialog open={confirmEmptyDialogOpen} onClose={closeConfirmEmptyDialog}>
           <DialogTitle>Clear List</DialogTitle>
@@ -154,7 +155,7 @@ function asItems(groceryItems) {
   }));
 }
 
-const TheList = ({ items, removeAll, updateQuantity, setQuantity, addRecurringItems }) => {
+const TheList = ({ items, removeAll, updateQuantity, setQuantity, addRecurringItems, thereAreMoreRecurringItemsToAdd }) => {
 
   const MinusIcon = ({ item }) =>
     item.value.PlannedQuantity > 1
@@ -183,9 +184,11 @@ const TheList = ({ items, removeAll, updateQuantity, setQuantity, addRecurringIt
         </ListItem>
         <Divider component="li" />
       </>}
-      <ListItem>
-        <Button startIcon={<EventRepeatIcon />} onClick={addRecurringItems}>Add Recurring Items</Button>
-      </ListItem>
+      { !thereAreMoreRecurringItemsToAdd ? null : 
+        <ListItem>
+          <Button startIcon={<EventRepeatIcon />} onClick={addRecurringItems}>Add Recurring Items</Button>
+        </ListItem>
+      }
     </List>
   );
 }

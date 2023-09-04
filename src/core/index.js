@@ -4,12 +4,19 @@ export class Core {
   }
 
   addRecurringItems() {
-    this.data.batchUpdateItems(this.data.listItems().map(item => ({
+    const lastUpdated = new Date(Date.now()).toISOString();
+    this.data.batchUpdateItems(this.getShoppingList().recurringItemsToAdd.map(item => ({
       id: item.Id,
-      updates: [{
-        value: Math.max(item.PlannedQuantity, item.RecurringQuantity),
-        attributeName: "PlannedQuantity"
-      }]
+      updates: [
+        {
+          value: lastUpdated,
+          attributeName: 'LastUpdated',
+        },
+        {
+          value: Math.max(item.PlannedQuantity, item.RecurringQuantity),
+          attributeName: "PlannedQuantity"
+        }
+      ]
     })));
   }
 
@@ -28,11 +35,12 @@ export class Core {
   }
 
   setItemPlannedQuantity(id, plannedQuantity) {
+    const lastUpdated = new Date(Date.now()).toISOString();
     this.data.batchUpdateItems([{
       id,
       updates: [
         {
-          value: new Date(Date.now()).toISOString(),
+          value: lastUpdated,
           attributeName: 'LastUpdated',
         },
         {
@@ -43,11 +51,19 @@ export class Core {
     }]);
   }
 
+  getEmptyShoppingList() {
+    return { shoppingList: [], unselectedItems: [], recurringItemsToAdd: [], total: 0 }
+  }
+
   getShoppingList() {
     const shoppingList = [];
     const unselectedItems = [];
     let total = 0;
+    const recurringItemsToAdd = [];
     this.data.listItems().map(item => this._supplyMissingFields(item)).forEach(item => {
+      if (item.PlannedQuantity < item.RecurringQuantity) {
+        recurringItemsToAdd.push(item);
+      }
       if (item.PlannedQuantity) {
         shoppingList.push(item);
         total += item.PlannedQuantity * item.UnitPriceEstimate;
@@ -55,7 +71,7 @@ export class Core {
         unselectedItems.push(item);
       }
     });
-    return { shoppingList, unselectedItems, total };
+    return { shoppingList, unselectedItems, recurringItemsToAdd, total };
   }
 
   _supplyMissingFields(item) {
