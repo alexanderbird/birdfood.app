@@ -19,6 +19,8 @@ import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import Avatar from '@mui/material/Avatar';
 import TextField from '@mui/material/TextField';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -26,6 +28,7 @@ import DialogActions from '@mui/material/DialogActions';
 import Dialog from '@mui/material/Dialog';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import { ItemTypeIcon } from '../../Components/ItemTypeIcon';
 
 function lexicalComparison(lhs, rhs) {
   if (lhs === rhs) return 0;
@@ -45,7 +48,7 @@ const SortMode = {
   BY_TYPE: {
     key: "BY_TYPE",
     label: "By Type",
-    sortFunction: (lhs, rhs) => 0
+    sortFunction: (lhs, rhs) => lexicalComparison(lhs.value.Type, rhs.value.Type)
   },
   ALPHABETICAL: {
     key: "ALPHABETICAL",
@@ -152,13 +155,16 @@ const TheList = ({ items, removeAll, updateQuantity, setQuantity }) => {
   return (
     <List>{ items.map(item => 
       <>
-      <ListItem sx={{ flexDirection: 'column' }}>
-        <ListItemText primary={item.label} sx={{ alignSelf: 'flex-start' }}/>
-        <ButtonGroup sx={{ width: '100%', justifyContent: 'flex-end' }}>
-          <Button onClick={() => updateQuantity(item.value.Id, -1)}><MinusIcon item={item} /></Button>
-          <QuantitySelector value={item.value.PlannedQuantity} onChange={quantity => setQuantity(item.value.Id, quantity)} />
-          <Button onClick={() => updateQuantity(item.value.Id, 1)}><AddIcon sx={{ fontSize: 14 }}/></Button>
-        </ButtonGroup>
+      <ListItem>
+        <ListItemAvatar><Avatar><ItemTypeIcon type={item.value.Type} /></Avatar></ListItemAvatar>
+        <Box sx={{ flexDirection: 'column', display: 'flex', flexGrow: 1 }}>
+          <ListItemText primary={item.label} sx={{ alignSelf: 'flex-start' }}/>
+          <ButtonGroup sx={{ width: '100%', justifyContent: 'flex-end' }}>
+            <Button onClick={() => updateQuantity(item.value.Id, -1)}><MinusIcon item={item} /></Button>
+            <QuantitySelector value={item.value.PlannedQuantity} onChange={quantity => setQuantity(item.value.Id, quantity)} />
+            <Button onClick={() => updateQuantity(item.value.Id, 1)}><AddIcon sx={{ fontSize: 14 }}/></Button>
+          </ButtonGroup>
+        </Box>
       </ListItem>
       <Divider component="li" />
       </>
