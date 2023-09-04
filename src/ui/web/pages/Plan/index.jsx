@@ -24,12 +24,32 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Dialog from '@mui/material/Dialog';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+
+const SortMode = {
+  MOST_RECENT_FIRST: { key: "MOST_RECENT_FIRST", label: "Most Recent First" },
+  BY_TYPE: { key: "BY_TYPE", label: "Sort By Type" }
+}
+
+function SortModeToggle({ value, onChange }) {
+  return (
+    <Box flexDirection="row" justifyContent="space-around" sx={{ marginY: 2, display: 'flex' }}>
+      <ToggleButtonGroup value={value} exclusive onChange={(e, v) => onChange(v)}>
+      { Object.values(SortMode).map(x =>
+          <ToggleButton value={x.key} sx={{ paddingY: 0 }}>{x.label}</ToggleButton>
+        )}
+      </ToggleButtonGroup>
+    </Box>
+  );
+}
 import { Header } from '../../components/Header.jsx';
 import { StaticData } from '../../../../data/static';
 import { Core } from '../../../../core';
 
 export function Plan() {
   const [serial, setSerial] = useState(Date.now());
+  const [sortMode, setSortMode] = useState(SortMode.MOST_RECENT_FIRST.key);
   const triggerUpdate = () => setSerial(Date.now());
   const [cart, setCart] = useState({ shoppingList: [], unselectedItems: [], total: 0 });
   const [confirmEmptyDialogOpen, setConfirmEmptyDialogOpen] = useState(false);
@@ -69,26 +89,27 @@ export function Plan() {
     <Box sx={{ width: '100%', maxWidth: 520, marginX: 'auto', bgcolor: 'background.paper' }}>
       <Container>
         <ComboBox items={items} onSelect={addItem}/>
+        <SortModeToggle value={sortMode} onChange={setSortMode} />
         <TheList items={selectedItems} removeAll={openConfirmEmptyDialog} updateQuantity={updateQuantity} setQuantity={setQuantity} />
+        <Dialog open={confirmEmptyDialogOpen} onClose={closeConfirmEmptyDialog}>
+          <DialogTitle>Clear List</DialogTitle>
+          <DialogContent dividers>
+            <Typography>
+              Do you want to remove
+              { selectedItems.length === 1
+                ? ` "${selectedItems[0].label.trim()}" `
+                : ` all ${selectedItems.length} items `
+              }
+              from the list?
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={closeConfirmEmptyDialog}>Cancel</Button>
+            <Button variant="primary" onClick={() => { clearAll(); closeConfirmEmptyDialog(); }}>Clear List</Button>
+          </DialogActions>
+        </Dialog>
       </Container>
     </Box>
-    <Dialog open={confirmEmptyDialogOpen} onClose={closeConfirmEmptyDialog}>
-      <DialogTitle>Clear List</DialogTitle>
-      <DialogContent dividers>
-        <Typography>
-          Do you want to remove
-          { selectedItems.length === 1
-            ? ` "${selectedItems[0].label.trim()}" `
-            : ` all ${selectedItems.length} items `
-          }
-          from the list?
-        </Typography>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={closeConfirmEmptyDialog}>Cancel</Button>
-        <Button variant="primary" onClick={() => { clearAll(); closeConfirmEmptyDialog(); }}>Clear List</Button>
-      </DialogActions>
-    </Dialog>
   </>);
 }
 
