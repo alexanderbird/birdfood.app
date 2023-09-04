@@ -33,8 +33,8 @@ export function Plan() {
   const openConfirmEmptyDialog = () => setConfirmEmptyDialogOpen(true);
   const core = new Core(new StaticData());
 
-  const updateQuantity = (Id, PlannedQuantity) => {
-    core.updateItem(Id, { PlannedQuantity: PlannedQuantity });
+  const updateQuantity = (id, difference) => {
+    core.addToItemShoppingListQuantity(id, difference);
     triggerUpdate();
   }
 
@@ -99,9 +99,9 @@ const TheList = ({ items, removeAll, updateQuantity }) => {
       <ListItem sx={{ flexDirection: 'column' }}>
         <ListItemText primary={item.label} sx={{ alignSelf: 'flex-start' }}/>
         <ButtonGroup sx={{ width: '100%', justifyContent: 'flex-end' }}>
-          <Button onClick={() => updateQuantity(item.value.Id, item.value.PlannedQuantity - 1)}><RemoveIcon sx={{ fontSize: 10 }}/></Button>
+          <Button onClick={() => updateQuantity(item.value.Id, -1)}><RemoveIcon sx={{ fontSize: 10 }}/></Button>
           <Button><Typography sx={{ fontSize: 10 }}>{item.value.PlannedQuantity}</Typography></Button>
-          <Button onClick={() => updateQuantity(item.value.Id, item.value.PlannedQuantity + 1)}><AddIcon sx={{ fontSize: 10 }}/></Button>
+          <Button onClick={() => updateQuantity(item.value.Id, 1)}><AddIcon sx={{ fontSize: 10 }}/></Button>
         </ButtonGroup>
       </ListItem>
       <Divider component="li" />

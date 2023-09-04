@@ -3,14 +3,9 @@ export class Core {
     this.data = data;
   }
 
-  updateItem(id, attributes) {
-    this.data.batchUpdateItems([{
-      id,
-      updates: Object.entries(attributes).map(x => ({
-        value: x[1],
-        attributeName: x[0]
-      }))
-    }]);
+  addToItemShoppingListQuantity(id, addend) {
+    console.log(id, "PlannedQuantity", addend);
+    this.data.addItemValue(id, "PlannedQuantity", addend);
   }
 
   removeItemsFromShoppingList(itemIds) {

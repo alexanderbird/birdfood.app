@@ -5,6 +5,11 @@ export class StaticData {
     this.items = staticItems;
   }
 
+  addItemValue(id, attribute, addend) {
+    const item = this.items.find(x => x.Id === id);
+    item[attribute] += addend;
+  }
+
   batchUpdateItems(itemChanges) {
     itemChanges.forEach(itemChange => {
       const item = this.items.find(x => x.Id === itemChange.id);
