@@ -4,7 +4,6 @@ export class Core {
   }
 
   addToItemShoppingListQuantity(id, addend) {
-    console.log(id, "PlannedQuantity", addend);
     this.data.addItemValue(id, "PlannedQuantity", addend);
   }
 

@@ -65,8 +65,8 @@ export function Plan() {
       <ShoppingCartIcon sx={{ mr: 1 }} />
       <Typography variant="h6" component="div">Plan the next shop</Typography>
     </Header>
-    <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-      <Container maxWidth="sm">
+    <Box sx={{ width: '100%', maxWidth: 520, marginX: 'auto', bgcolor: 'background.paper' }}>
+      <Container>
         <ComboBox items={items} onSelect={addItem}/>
         <TheList items={selectedItems} removeAll={openConfirmEmptyDialog} updateQuantity={updateQuantity} setQuantity={setQuantity} />
       </Container>
@@ -156,7 +156,6 @@ function ComboBox({ items, onSelect }) {
           onSelect(item);
         }
       }}
-      sx={{ width: 300 }}
       renderInput={(params) => <TextField {...params} label="Add Item" />}
     />
   );
