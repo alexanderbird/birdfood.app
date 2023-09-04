@@ -3,7 +3,16 @@ export class Core {
     this.data = data;
   }
 
-  listItems() {
-    return this.data.listItems();
+  getShoppingList() {
+    const shoppingList = [];
+    const unselectedItems = [];
+    this.data.listItems().forEach(item => {
+      if (item.Quantity) {
+        shoppingList.push(item);
+      } else {
+        unselectedItems.push(item);
+      }
+    });
+    return { shoppingList, unselectedItems };
   }
 }

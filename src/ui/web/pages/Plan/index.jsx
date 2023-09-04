@@ -27,7 +27,9 @@ export function Plan() {
   const openConfirmEmptyDialog = () => setConfirmEmptyDialogOpen(true);
   const core = new Core(new StaticData());
   useEffect(() => {
-    setItems(core.listItems()); 
+    const { shoppingList, unselectedItems } = core.getShoppingList();
+    setItems(asItems(unselectedItems)); 
+    setSelectedItems(asItems(shoppingList));
   }, []);
   return (<>
     <Header>
@@ -35,7 +37,7 @@ export function Plan() {
     </Header>
     <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
       <Container maxWidth="sm">
-        <ComboBox items={asItems(items)} onSelect={addItem}/>
+        <ComboBox items={items} onSelect={addItem}/>
         <TheList items={selectedItems} removeAll={openConfirmEmptyDialog} />
       </Container>
     </Box>
