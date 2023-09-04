@@ -19,18 +19,30 @@ import { StaticData } from '../../../../data/static';
 import { Core } from '../../../../core';
 
 export function Plan() {
+  const [serial, setSerial] = useState(Date.now());
+  const triggerUpdate = () => setSerial(Date.now());
   const [items, setItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
-  const addItem = item => setSelectedItems(items => [item, ...items]);
   const [confirmEmptyDialogOpen, setConfirmEmptyDialogOpen] = useState(false);
   const closeConfirmEmptyDialog = () => setConfirmEmptyDialogOpen(false);
   const openConfirmEmptyDialog = () => setConfirmEmptyDialogOpen(true);
   const core = new Core(new StaticData());
+
+  const clearAll = () => {
+    core.removeItemsFromShoppingList(selectedItems.map(x => x.value.Id));
+    triggerUpdate();
+  }
+
+  const addItem = item => {
+    core.setItemPlannedQuantity(item.value.Id, 1);
+    triggerUpdate();
+  }
+
   useEffect(() => {
     const { shoppingList, unselectedItems } = core.getShoppingList();
     setItems(asItems(unselectedItems)); 
     setSelectedItems(asItems(shoppingList));
-  }, []);
+  }, [serial]);
   return (<>
     <Header>
       Plan the next shop
@@ -55,7 +67,7 @@ export function Plan() {
       </DialogContent>
       <DialogActions>
         <Button onClick={closeConfirmEmptyDialog}>Cancel</Button>
-        <Button variant="primary" onClick={() => { setSelectedItems([]); closeConfirmEmptyDialog(); }}>Clear List</Button>
+        <Button variant="primary" onClick={() => { clearAll(); closeConfirmEmptyDialog(); }}>Clear List</Button>
       </DialogActions>
     </Dialog>
   </>);

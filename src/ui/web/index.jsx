@@ -17,12 +17,14 @@ export function App() {
     <LocationProvider>
       <CssBaseline />
       <Box>
-        <Router>
-          <Route path="/schedule" component={Schedule} />
-          <Route path="/plan" component={Plan} />
-          <Route path="/shop" component={Placeholder} />
-          <Route default component={NotFound} />
-        </Router>
+        <Box sx={{ pb: 8 }}>
+          <Router>
+            <Route path="/schedule" component={Schedule} />
+            <Route path="/plan" component={Plan} />
+            <Route path="/shop" component={Placeholder} />
+            <Route default component={NotFound} />
+          </Router>
+        </Box>
         <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
           <Footer />
         </Paper>
