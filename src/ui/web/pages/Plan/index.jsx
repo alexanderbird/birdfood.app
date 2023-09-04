@@ -219,11 +219,20 @@ function QuantitySelector({ value, onChange }) {
 function AddItemInput({ items, onSelect, onCreate }) {
   const ref = useRef();
   const [inputValue, setInputValue] = useState("");
+  const resetInput = () => {
+    setInputValue("");
+    const input = ref.current.querySelector('input');
+    input.blur();
+  }
+  const createNewItemFromInput = () => {
+    resetInput();
+    onCreate(inputValue);
+  }
   return (
     <Autocomplete
       ref={ref}
       isOptionEqualToValue={(one, two) => one.value.Id === two.value.Id}
-      noOptionsText={<Button onClick={() => onCreate(inputValue)} startIcon={<AddIcon />}>Create "{inputValue}"</Button>}
+      noOptionsText={<Button onClick={createNewItemFromInput} startIcon={<AddIcon />}>Create "{inputValue}"</Button>}
       groupBy={x => ItemType[x.value.Type]?.label || x.value.Type}
       disablePortal
       autoComplete
@@ -234,9 +243,7 @@ function AddItemInput({ items, onSelect, onCreate }) {
         setInputValue(input);
       }}
       onChange={(event, item) => {
-        setInputValue("");
-        const input = ref.current.querySelector('input');
-        input.blur();
+        resetInput();
         if (item) {
           onSelect(item);
         }
