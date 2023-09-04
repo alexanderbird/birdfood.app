@@ -118,14 +118,14 @@ export function Plan() {
     triggerUpdate();
   }
 
-  const addItem = item => setQuantity(item.value.Id, 1);
+  const addItem = item => updateQuantity(item.value.Id, 1);
 
   useEffect(() => {
     setCart(core.getShoppingList());
   }, [serial]);
 
   const selectedItems = asItems(cart.shoppingList).sort(SortMode[sortMode].sortFunction); 
-  const items = asItems(cart.unselectedItems); 
+  const items = asItems(cart.all.sort((lhs, rhs) => lexicalComparison(lhs.Type, rhs.Type))); 
   const formatter = new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' });
   return (<>
     <Header>
@@ -248,6 +248,7 @@ function AddItemInput({ items, onSelect, onCreate }) {
           onSelect(item);
         }
       }}
+      renderOption={(props, option) => <ListItem {...props} disabled={option.value.PlannedQuantity > 0}>{option.label}</ListItem>}
       renderInput={(params) => <TextField {...params} label="Add Item" />}
     />
   );

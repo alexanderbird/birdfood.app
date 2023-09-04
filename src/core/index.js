@@ -60,15 +60,17 @@ export class Core {
   }
 
   getEmptyShoppingList() {
-    return { shoppingList: [], unselectedItems: [], recurringItemsToAdd: [], total: 0 }
+    return { all: [], shoppingList: [], unselectedItems: [], recurringItemsToAdd: [], total: 0 }
   }
 
   getShoppingList() {
+    const all = [];
     const shoppingList = [];
     const unselectedItems = [];
     let total = 0;
     const recurringItemsToAdd = [];
     this.data.listItems().map(item => this._supplyMissingFields(item)).forEach(item => {
+      all.push(item);
       if (item.PlannedQuantity < item.RecurringQuantity) {
         recurringItemsToAdd.push(item);
       }
@@ -79,7 +81,7 @@ export class Core {
         unselectedItems.push(item);
       }
     });
-    return { shoppingList, unselectedItems, recurringItemsToAdd, total };
+    return { all, shoppingList, unselectedItems, recurringItemsToAdd, total };
   }
 
   _supplyMissingFields(item) {
