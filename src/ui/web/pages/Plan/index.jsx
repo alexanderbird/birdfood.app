@@ -27,9 +27,31 @@ import Dialog from '@mui/material/Dialog';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
+function lexicalComparison(lhs, rhs) {
+  if (lhs === rhs) return 0;
+  return lhs < rhs ? -1 : 1;
+}
+
+function reverseLexicalComparison(lhs, rhs) {
+  return -1 * lexicalComparison(lhs, rhs);
+}
+
 const SortMode = {
-  MOST_RECENT_FIRST: { key: "MOST_RECENT_FIRST", label: "Most Recent First" },
-  BY_TYPE: { key: "BY_TYPE", label: "Sort By Type" }
+  NEWEST_FIRST: {
+    key: "NEWEST_FIRST",
+    label: "Newest First",
+    sortFunction: (lhs, rhs) => reverseLexicalComparison(lhs.value.LastUpdated, rhs.value.LastUpdated)
+  },
+  BY_TYPE: {
+    key: "BY_TYPE",
+    label: "By Type",
+    sortFunction: (lhs, rhs) => 0
+  },
+  ALPHABETICAL: {
+    key: "ALPHABETICAL",
+    label: "A-Z",
+    sortFunction: (lhs, rhs) => lexicalComparison(lhs.label, rhs.label)
+  },
 }
 
 function SortModeToggle({ value, onChange }) {
@@ -49,7 +71,7 @@ import { Core } from '../../../../core';
 
 export function Plan() {
   const [serial, setSerial] = useState(Date.now());
-  const [sortMode, setSortMode] = useState(SortMode.MOST_RECENT_FIRST.key);
+  const [sortMode, setSortMode] = useState(SortMode.NEWEST_FIRST.key);
   const triggerUpdate = () => setSerial(Date.now());
   const [cart, setCart] = useState({ shoppingList: [], unselectedItems: [], total: 0 });
   const [confirmEmptyDialogOpen, setConfirmEmptyDialogOpen] = useState(false);
@@ -78,7 +100,7 @@ export function Plan() {
     setCart(core.getShoppingList());
   }, [serial]);
 
-  const selectedItems = asItems(cart.shoppingList); 
+  const selectedItems = asItems(cart.shoppingList).sort(SortMode[sortMode].sortFunction); 
   const items = asItems(cart.unselectedItems); 
   const formatter = new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' });
   return (<>

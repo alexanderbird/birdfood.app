@@ -20,10 +20,16 @@ export class Core {
   setItemPlannedQuantity(id, plannedQuantity) {
     this.data.batchUpdateItems([{
       id,
-      updates: [{
-        value: plannedQuantity,
-        attributeName: "PlannedQuantity"
-      }]
+      updates: [
+        {
+          value: new Date(Date.now()).toISOString(),
+          attributeName: 'LastUpdated',
+        },
+        {
+          value: plannedQuantity,
+          attributeName: "PlannedQuantity"
+        }
+      ]
     }]);
   }
 
@@ -31,7 +37,7 @@ export class Core {
     const shoppingList = [];
     const unselectedItems = [];
     let total = 0;
-    this.data.listItems().forEach(item => {
+    this.data.listItems().map(item => this._supplyMissingFields(item)).forEach(item => {
       if (item.PlannedQuantity) {
         shoppingList.push(item);
         total += item.PlannedQuantity * item.UnitPriceEstimate;
@@ -40,5 +46,12 @@ export class Core {
       }
     });
     return { shoppingList, unselectedItems, total };
+  }
+
+  _supplyMissingFields(item) {
+    return {
+      LastUpdated: '0000-00-00T00:00:00.000Z',
+      ...item
+    }
   }
 }
