@@ -3,12 +3,17 @@ import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import List from '@mui/material/List';
+import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import TextField from '@mui/material/TextField';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Dialog from '@mui/material/Dialog';
 import { Header } from '../../components/Header.jsx';
 import { StaticData } from '../../../../data/static';
 import { Core } from '../../../../core';
@@ -17,6 +22,9 @@ export function Plan() {
   const [items, setItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
   const addItem = item => setSelectedItems(items => [item, ...items]);
+  const [confirmEmptyDialogOpen, setConfirmEmptyDialogOpen] = useState(false);
+  const closeConfirmEmptyDialog = () => setConfirmEmptyDialogOpen(false);
+  const openConfirmEmptyDialog = () => setConfirmEmptyDialogOpen(true);
   const core = new Core(new StaticData());
   useEffect(() => {
     setItems(core.listItems()); 
@@ -28,9 +36,26 @@ export function Plan() {
     <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
       <Container maxWidth="sm">
         <ComboBox items={asItems(items)} onSelect={addItem}/>
-        <TheList items={selectedItems} removeAll={() => setSelectedItems([])} />
+        <TheList items={selectedItems} removeAll={openConfirmEmptyDialog} />
       </Container>
     </Box>
+    <Dialog open={confirmEmptyDialogOpen} onClose={closeConfirmEmptyDialog}>
+      <DialogTitle>Clear List</DialogTitle>
+      <DialogContent dividers>
+        <Typography>
+          Do you want to remove
+          { selectedItems.length === 1
+            ? ` "${selectedItems[0].label.trim()}" `
+            : ` all ${selectedItems.length} items `
+          }
+          from the list?
+        </Typography>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={closeConfirmEmptyDialog}>Cancel</Button>
+        <Button variant="primary" onClick={() => { setSelectedItems([]); closeConfirmEmptyDialog(); }}>Clear List</Button>
+      </DialogActions>
+    </Dialog>
   </>);
 }
 
