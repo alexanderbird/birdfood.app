@@ -26,7 +26,7 @@ const assembleAction = ({ href, label, IconComponent }) =>
 export function Footer() {
   const { url } = useLocation();
   return (
-    <BottomNavigation showLabels={true} value={url} >{[
+    <BottomNavigation showLabels={true} value={url}>{[
       assembleAction({ href:"/schedule", label: "Schedule", IconComponent: EventRepeatIcon }),
       assembleAction({ href:"/plan", label: "Plan", IconComponent: ShoppingCartIcon }),
       assembleAction({ href:"/shop", label: "Shop", IconComponent: CheckBoxIcon })

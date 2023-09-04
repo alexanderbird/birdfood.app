@@ -25,7 +25,7 @@ export function App() {
             <Route default component={NotFound} />
           </Router>
         </Box>
-        <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
+        <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 10 }} elevation={3}>
           <Footer />
         </Paper>
       </Box>

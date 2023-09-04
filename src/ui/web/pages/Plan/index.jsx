@@ -1,13 +1,18 @@
 import { useState, useEffect } from 'preact/hooks';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import IconButton from '@mui/material/IconButton';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 import Container from '@mui/material/Container';
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import TextField from '@mui/material/TextField';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -28,6 +33,11 @@ export function Plan() {
   const openConfirmEmptyDialog = () => setConfirmEmptyDialogOpen(true);
   const core = new Core(new StaticData());
 
+  const updateQuantity = (Id, PlannedQuantity) => {
+    core.updateItem(Id, { PlannedQuantity: PlannedQuantity });
+    triggerUpdate();
+  }
+
   const clearAll = () => {
     core.removeItemsFromShoppingList(selectedItems.map(x => x.value.Id));
     triggerUpdate();
@@ -45,12 +55,13 @@ export function Plan() {
   }, [serial]);
   return (<>
     <Header>
-      Plan the next shop
+      <ShoppingCartIcon sx={{ mr: 1 }} />
+      <Typography variant="h6" component="div">Plan the next shop</Typography>
     </Header>
     <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
       <Container maxWidth="sm">
         <ComboBox items={items} onSelect={addItem}/>
-        <TheList items={selectedItems} removeAll={openConfirmEmptyDialog} />
+        <TheList items={selectedItems} removeAll={openConfirmEmptyDialog} updateQuantity={updateQuantity} />
       </Container>
     </Box>
     <Dialog open={confirmEmptyDialogOpen} onClose={closeConfirmEmptyDialog}>
@@ -80,13 +91,18 @@ function asItems(groceryItems) {
   }));
 }
 
-const TheList = ({ items, removeAll }) => {
+const TheList = ({ items, removeAll, updateQuantity }) => {
 
   return (
     <List>{ items.map(item => 
       <>
-      <ListItem>
-        <ListItemText primary={item.label} />
+      <ListItem sx={{ flexDirection: 'column' }}>
+        <ListItemText primary={item.label} sx={{ alignSelf: 'flex-start' }}/>
+        <ButtonGroup sx={{ width: '100%', justifyContent: 'flex-end' }}>
+          <Button onClick={() => updateQuantity(item.value.Id, item.value.PlannedQuantity - 1)}><RemoveIcon sx={{ fontSize: 10 }}/></Button>
+          <Button><Typography sx={{ fontSize: 10 }}>{item.value.PlannedQuantity}</Typography></Button>
+          <Button onClick={() => updateQuantity(item.value.Id, item.value.PlannedQuantity + 1)}><AddIcon sx={{ fontSize: 10 }}/></Button>
+        </ButtonGroup>
       </ListItem>
       <Divider component="li" />
       </>
