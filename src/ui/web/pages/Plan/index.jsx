@@ -31,8 +31,7 @@ import { Core } from '../../../../core';
 export function Plan() {
   const [serial, setSerial] = useState(Date.now());
   const triggerUpdate = () => setSerial(Date.now());
-  const [items, setItems] = useState([]);
-  const [selectedItems, setSelectedItems] = useState([]);
+  const [cart, setCart] = useState({ shoppingList: [], unselectedItems: [], total: 0 });
   const [confirmEmptyDialogOpen, setConfirmEmptyDialogOpen] = useState(false);
   const closeConfirmEmptyDialog = () => setConfirmEmptyDialogOpen(false);
   const openConfirmEmptyDialog = () => setConfirmEmptyDialogOpen(true);
@@ -56,14 +55,16 @@ export function Plan() {
   const addItem = item => setQuantity(item.value.Id, 1);
 
   useEffect(() => {
-    const { shoppingList, unselectedItems } = core.getShoppingList();
-    setItems(asItems(unselectedItems)); 
-    setSelectedItems(asItems(shoppingList));
+    setCart(core.getShoppingList());
   }, [serial]);
+
+  const selectedItems = asItems(cart.shoppingList); 
+  const items = asItems(cart.unselectedItems); 
+  const formatter = new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' });
   return (<>
     <Header>
       <ShoppingCartIcon sx={{ mr: 1 }} />
-      <Typography variant="h6" component="div">Plan the next shop</Typography>
+      <Typography variant="h6" component="div">Plan the next shop ({formatter.format(cart.total)})</Typography>
     </Header>
     <Box sx={{ width: '100%', maxWidth: 520, marginX: 'auto', bgcolor: 'background.paper' }}>
       <Container>

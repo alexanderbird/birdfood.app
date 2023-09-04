@@ -30,13 +30,15 @@ export class Core {
   getShoppingList() {
     const shoppingList = [];
     const unselectedItems = [];
+    let total = 0;
     this.data.listItems().forEach(item => {
       if (item.PlannedQuantity) {
         shoppingList.push(item);
+        total += item.PlannedQuantity * item.UnitPriceEstimate;
       } else {
         unselectedItems.push(item);
       }
     });
-    return { shoppingList, unselectedItems };
+    return { shoppingList, unselectedItems, total };
   }
 }
