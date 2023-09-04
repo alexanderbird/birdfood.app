@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'preact/hooks';
+import { useState, useEffect, useRef } from 'preact/hooks';
 import Autocomplete from '@mui/material/Autocomplete';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -29,7 +29,11 @@ import DialogActions from '@mui/material/DialogActions';
 import Dialog from '@mui/material/Dialog';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+
 import { ItemTypeIcon } from '../../components/ItemTypeIcon';
+import { Header } from '../../components/Header.jsx';
+import { StaticData } from '../../../../data/static';
+import { Core } from '../../../../core';
 
 function lexicalComparison(lhs, rhs) {
   if (lhs === rhs) return 0;
@@ -69,9 +73,6 @@ function SortModeToggle({ value, onChange }) {
     </Box>
   );
 }
-import { Header } from '../../components/Header.jsx';
-import { StaticData } from '../../../../data/static';
-import { Core } from '../../../../core';
 
 export function Plan() {
   const [serial, setSerial] = useState(Date.now());
@@ -119,7 +120,7 @@ export function Plan() {
     </Header>
     <Box sx={{ width: '100%', maxWidth: 520, marginX: 'auto', bgcolor: 'background.paper' }}>
       <Container>
-        <ComboBox items={items} onSelect={addItem}/>
+        <AddItemInput items={items} onSelect={addItem}/>
         <SortModeToggle value={sortMode} onChange={setSortMode} />
         <TheList items={selectedItems} removeAll={openConfirmEmptyDialog} updateQuantity={updateQuantity} setQuantity={setQuantity}
           addRecurringItems={addRecurringItems}
@@ -198,21 +199,17 @@ function QuantitySelector({ value, onChange }) {
 }
 
 
-function ComboBox({ items, onSelect }) {
-  const [value, setValue] = useState(" ");
+function AddItemInput({ items, onSelect }) {
+  const ref = useRef();
   return (
-    <Autocomplete disablePortal
-      handleHomeEndKeys
-      autoComplete
-      autoHighlight
-      blurOnSelect
-      freeSolo
+    <Autocomplete
+      ref={ref}
+      disablePortal
       clearOnBlur
-      includeInputInList
-      inputValue={value}
+      inputValue={""}
       options={items}
       onChange={(event, item) => {
-        setValue(" ");
+        ref.current.querySelector('input').blur();
         if (item) {
           onSelect(item);
         }
