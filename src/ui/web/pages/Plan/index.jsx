@@ -28,7 +28,7 @@ import DialogActions from '@mui/material/DialogActions';
 import Dialog from '@mui/material/Dialog';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import { ItemTypeIcon } from '../../Components/ItemTypeIcon';
+import { ItemTypeIcon } from '../../components/ItemTypeIcon';
 
 function lexicalComparison(lhs, rhs) {
   if (lhs === rhs) return 0;
