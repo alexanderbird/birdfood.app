@@ -3,13 +3,9 @@ import Box from '@mui/material/Box';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Dialog from '@mui/material/Dialog';
 
 import { Header } from '../../components/Header.jsx';
+import { ConfirmDialog } from '../../components/ConfirmDialog.jsx';
 import { StaticData } from '../../../../data/static';
 import { Core } from '../../../../core';
 import { GroceryFormEditDialog } from './GroceryFormEditDialog';
@@ -98,23 +94,21 @@ export function Plan() {
           thereAreMoreRecurringItemsToAdd={cart.recurringItemsToAdd.length > 0}
           doEdit={setEditDialogData}
         />
-        <Dialog open={confirmEmptyDialogOpen} onClose={closeConfirmEmptyDialog}>
-          <DialogTitle>Clear List</DialogTitle>
-          <DialogContent dividers>
-            <Typography>
-              Do you want to remove
-              { selectedItems.length === 1
-                ? ` "${selectedItems[0].label.trim()}" `
-                : ` all ${selectedItems.length} items `
-              }
-              from the list?
-            </Typography>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={closeConfirmEmptyDialog}>Cancel</Button>
-            <Button variant="primary" onClick={() => { clearAll(); closeConfirmEmptyDialog(); }}>Clear List</Button>
-          </DialogActions>
-        </Dialog>
+        <ConfirmDialog
+          open={confirmEmptyDialogOpen}
+          onCancel={closeConfirmEmptyDialog}
+          confirmText="Clear List"
+          onConfirm={() => { clearAll(); closeConfirmEmptyDialog(); }}
+        >
+          <Typography>
+            Do you want to remove
+            { selectedItems.length === 1
+              ? ` "${selectedItems[0].label.trim()}" `
+              : ` all ${selectedItems.length} items `
+            }
+            from the list?
+          </Typography>
+        </ConfirmDialog>
         <GroceryFormEditDialog open={editDialogOpen} onCancel={closeEditDialog} onSave={saveEditDialog} initialValue={editDialogData} />
 
       </Container>
