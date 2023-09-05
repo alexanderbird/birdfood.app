@@ -5,6 +5,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Box from '@mui/material/Box';
+import InputAdornment from '@mui/material/InputAdornment';
 import Link from '@mui/material/Link';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import IconButton from '@mui/material/IconButton';
@@ -184,7 +185,7 @@ export function Plan() {
             <Button variant="primary" onClick={() => { clearAll(); closeConfirmEmptyDialog(); }}>Clear List</Button>
           </DialogActions>
         </Dialog>
-        <GroceryFormEditDialog open={editDialogOpen} onClose={closeEditDialog} onSave={saveEditDialog} initialValue={editDialogData} />
+        <GroceryFormEditDialog open={editDialogOpen} onCancel={closeEditDialog} onSave={saveEditDialog} initialValue={editDialogData} />
 
       </Container>
     </Box>
@@ -192,9 +193,15 @@ export function Plan() {
 }
 
 const GroceryFormEditDialog = ({ open, onCancel, onSave, initialValue }) => {
-  const [value, setValue] = useState({ Name: "", Type: "OTHER", UnitPriceEstimate: 0, ...initialValue });
+  const mergeWithDefaults = newValue => ({
+    Name: "",
+    Type: "OTHER",
+    ...newValue,
+    UnitPriceEstimate: Number(newValue.UnitPriceEstimate || 0).toFixed(2)
+  });
+  const [value, setValue] = useState(mergeWithDefaults(initialValue));
   useEffect(() => {
-    setValue({ Name: "", Type: "OTHER", UnitPriceEstimate: 0, ...initialValue });
+    setValue(mergeWithDefaults(initialValue));
   }, [initialValue]);
   return (
     <Dialog fullScreen open={open} onClose={onCancel}>
@@ -203,19 +210,24 @@ const GroceryFormEditDialog = ({ open, onCancel, onSave, initialValue }) => {
         <Box
           component="form"
           sx={{
-            '& .MuiTextField-root': { m: 1, width: '25ch' },
+            display: 'flex',
+            flexDirection: 'column',
+            '& .MuiTextField-root': { m: 1, width: 'auto' },
           }}
           noValidate
           autoComplete="off"
         >
           <TextField
             required
+            fullWidth
             label="Name"
             onChange={e => setValue(current => ({ ...current, Name: e.target.value }))}
             value={value.Name}
           />
           <TextField
             select
+            required
+            fullWidth
             value={value.Type}
             onChange={(e, x) => setValue(current => ({ ...current, Type: x.props.value }))} label="Type">
             { Object.values(ItemType).map(itemType =>
@@ -223,10 +235,26 @@ const GroceryFormEditDialog = ({ open, onCancel, onSave, initialValue }) => {
             ) }
           </TextField>
           <TextField
+            fullWidth
             required
             label="Estimated Unit Price"
-            onChange={e => setValue(current => ({ ...current, UnitPriceEstimate: e.target.value }))}
+            onChange={event => setValue(current => ({ ...current, UnitPriceEstimate: event.target.value }))}
             value={value.UnitPriceEstimate}
+            onBlur={event => {
+              const formattedValue = Number(event.target.value).toFixed(2);
+              setValue(current => ({ ...current, UnitPriceEstimate: formattedValue }))
+            }}
+            onFocus={event => {
+              const formattedValue = Number(event.target.value);
+              setValue(current => ({ ...current, UnitPriceEstimate: formattedValue }))
+              setTimeout(() => event.target.select());
+            }}
+            inputProps={{
+              sx: { textAlign: 'right' },
+            }}
+            InputProps={{
+              startAdornment: <InputAdornment position="start">$</InputAdornment>,
+            }}
           />
         </Box>
       </DialogContent>
