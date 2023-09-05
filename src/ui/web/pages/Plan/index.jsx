@@ -5,6 +5,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import IconButton from '@mui/material/IconButton';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -51,6 +52,7 @@ const ItemType = {
   DELI: { key: "DELI", label: "Meats" },
   BAKERY: { key: "BAKERY", label: "Bakery" },
   FROZEN: { key: "FROZEN", label: "Frozen" },
+  OTHER: { key: "OTHER", label: "Other" }
 }
 
 const SortMode = {
@@ -90,9 +92,19 @@ export function Plan() {
   const [sortMode, setSortMode] = useState(SortMode.NEWEST_FIRST.key);
   const triggerUpdate = () => setSerial(Date.now());
   const [cart, setCart] = useState(core.getEmptyShoppingList());
+  const [editDialogData, setEditDialogData] = useState(false);
+  const editDialogOpen = !!editDialogData;
+  const closeEditDialog = () => setEditDialogData(false);
   const [confirmEmptyDialogOpen, setConfirmEmptyDialogOpen] = useState(false);
   const closeConfirmEmptyDialog = () => setConfirmEmptyDialogOpen(false);
   const openConfirmEmptyDialog = () => setConfirmEmptyDialogOpen(true);
+
+  const saveEditDialog = item => {
+    console.log(item);
+    core.updateItem(item);
+    closeEditDialog();
+    triggerUpdate();
+  }
 
   const createItem = Name => {
     const item = core.createItem({ Name, PlannedQuantity: 1 })
@@ -153,6 +165,7 @@ export function Plan() {
           setQuantity={setQuantity}
           addRecurringItems={addRecurringItems}
           thereAreMoreRecurringItemsToAdd={cart.recurringItemsToAdd.length > 0}
+          doEdit={setEditDialogData}
           />
         <Dialog open={confirmEmptyDialogOpen} onClose={closeConfirmEmptyDialog}>
           <DialogTitle>Clear List</DialogTitle>
@@ -171,9 +184,58 @@ export function Plan() {
             <Button variant="primary" onClick={() => { clearAll(); closeConfirmEmptyDialog(); }}>Clear List</Button>
           </DialogActions>
         </Dialog>
+        <GroceryFormEditDialog open={editDialogOpen} onClose={closeEditDialog} onSave={saveEditDialog} initialValue={editDialogData} />
+
       </Container>
     </Box>
   </>);
+}
+
+const GroceryFormEditDialog = ({ open, onCancel, onSave, initialValue }) => {
+  const [value, setValue] = useState({ Name: "", Type: "OTHER", UnitPriceEstimate: 0, ...initialValue });
+  useEffect(() => {
+    setValue({ Name: "", Type: "OTHER", UnitPriceEstimate: 0, ...initialValue });
+  }, [initialValue]);
+  return (
+    <Dialog fullScreen open={open} onClose={onCancel}>
+      <DialogTitle>Edit Grocery Item</DialogTitle>
+      <DialogContent dividers>
+        <Box
+          component="form"
+          sx={{
+            '& .MuiTextField-root': { m: 1, width: '25ch' },
+          }}
+          noValidate
+          autoComplete="off"
+        >
+          <TextField
+            required
+            label="Name"
+            onChange={e => setValue(current => ({ ...current, Name: e.target.value }))}
+            value={value.Name}
+          />
+          <TextField
+            select
+            value={value.Type}
+            onChange={(e, x) => setValue(current => ({ ...current, Type: x.props.value }))} label="Type">
+            { Object.values(ItemType).map(itemType =>
+              <MenuItem value={itemType.key}><ItemTypeIcon type={itemType.key}/> {itemType.label}</MenuItem>
+            ) }
+          </TextField>
+          <TextField
+            required
+            label="Estimated Unit Price"
+            onChange={e => setValue(current => ({ ...current, UnitPriceEstimate: e.target.value }))}
+            value={value.UnitPriceEstimate}
+          />
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onCancel}>Cancel</Button>
+        <Button variant="primary" onClick={() => onSave(value)}>Save</Button>
+      </DialogActions>
+    </Dialog>
+  );
 }
 
 function asItems(groceryItems) {
@@ -186,7 +248,7 @@ function asItems(groceryItems) {
 const GroceryItemList = ({
   items, removeAll, updateQuantity, setQuantity,
   addRecurringItems, thereAreMoreRecurringItemsToAdd,
-  lastChanged }) => {
+  lastChanged, doEdit }) => {
 
   const MinusIcon = ({ item }) =>
     item.value.PlannedQuantity > 1
@@ -199,7 +261,9 @@ const GroceryItemList = ({
         <ListItem selected={lastChanged.has(item.value.Id)}>
           <ListItemAvatar><Avatar><ItemTypeIcon type={item.value.Type} /></Avatar></ListItemAvatar>
           <Box sx={{ flexDirection: 'column', display: 'flex', flexGrow: 1 }}>
-            <ListItemText primary={item.label} sx={{ alignSelf: 'flex-start' }}/>
+            <Link color="inherit" underline="none" onClick={() => doEdit(item.value)}>
+              <ListItemText primary={item.label} sx={{ alignSelf: 'flex-start' }}/>
+            </Link>
             <ButtonGroup sx={{ width: '100%', justifyContent: 'flex-end' }}>
               <Button onClick={() => updateQuantity(item.value.Id, -1)}><MinusIcon item={item} /></Button>
               <QuantitySelector value={item.value.PlannedQuantity} onChange={quantity => setQuantity(item.value.Id, quantity)} />

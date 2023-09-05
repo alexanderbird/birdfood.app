@@ -5,6 +5,13 @@ export class StaticData {
     this.items = staticItems;
   }
 
+  updateItem({ Id, ...attributes }) {
+    Object.assign(
+      this.items.find(x => x.Id === Id),
+      attributes
+    );
+  }
+
   createItem(attributes) {
     this.items.push(attributes);
   }

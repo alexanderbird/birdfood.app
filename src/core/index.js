@@ -46,6 +46,10 @@ export class Core {
     })));
   }
 
+  updateItem(attributes) {
+    this.data.updateItem(attributes);
+  }
+
   createItem(attributes) {
     const item = {
       ...attributes,
