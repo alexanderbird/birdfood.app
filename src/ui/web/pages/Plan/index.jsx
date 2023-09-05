@@ -131,8 +131,8 @@ export function Plan() {
     <Header>
       <ShoppingCartIcon sx={{ mr: 1 }} />
       <Box display="flex" justifyContent="space-between" width="100%">
-        <Typography variant="h6" component="div">Plan the next shop</Typography>
-        <Typography variant="h6" component="div">{formatter.format(cart.total)}</Typography>
+        <Typography variant="h6" component="div">Shopping List</Typography>
+        <Typography fontWeight="bold" variant="h6" component="div">{formatter.format(cart.total)}</Typography>
       </Box>
     </Header>
     <Box sx={{ width: '100%', maxWidth: 520, marginX: 'auto', bgcolor: 'background.paper' }}>
