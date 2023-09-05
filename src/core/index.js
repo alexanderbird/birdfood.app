@@ -20,8 +20,19 @@ export class Core {
     })));
   }
 
-  addToItemShoppingListQuantity(id, addend) {
+  addToItemShoppingListQuantity(id, addend, alsoUpdateLastUpdatedDate) {
     this.data.addItemValue(id, "PlannedQuantity", addend);
+    if (alsoUpdateLastUpdatedDate) {
+      this.data.batchUpdateItems([{
+        id,
+        updates: [
+          {
+            value: this._getCurrentTimestamp(),
+            attributeName: 'LastUpdated',
+          },
+        ]
+      }]);
+    }
   }
 
   removeItemsFromShoppingList(itemIds) {

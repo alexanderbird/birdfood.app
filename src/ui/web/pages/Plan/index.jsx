@@ -103,8 +103,8 @@ export function Plan() {
     triggerUpdate();
   }
 
-  const updateQuantity = (id, difference) => {
-    core.addToItemShoppingListQuantity(id, difference);
+  const updateQuantity = (id, difference, alsoUpdateLastUpdatedDate) => {
+    core.addToItemShoppingListQuantity(id, difference, alsoUpdateLastUpdatedDate);
     triggerUpdate();
   }
 
@@ -118,7 +118,7 @@ export function Plan() {
     triggerUpdate();
   }
 
-  const addItem = item => updateQuantity(item.value.Id, 1);
+  const addItem = item => updateQuantity(item.value.Id, 1, true);
 
   useEffect(() => {
     setCart(core.getShoppingList());
@@ -137,7 +137,7 @@ export function Plan() {
     </Header>
     <Box sx={{ width: '100%', maxWidth: 520, marginX: 'auto', bgcolor: 'background.paper' }}>
       <Container>
-        <AddItemInput items={items} onSelect={addItem} onCreate={createItem}/>
+        <GroceryItemInput items={items} onSelect={addItem} onCreate={createItem}/>
         <SortModeToggle value={sortMode} onChange={setSortMode} />
         <GroceryItemList items={selectedItems} removeAll={openConfirmEmptyDialog} updateQuantity={updateQuantity} setQuantity={setQuantity}
           addRecurringItems={addRecurringItems}
@@ -213,13 +213,13 @@ const GroceryItemList = ({ items, removeAll, updateQuantity, setQuantity, addRec
 function QuantitySelector({ value, onChange }) {
   return (
     <Select value={value} onChange={(event, object) => onChange(object.props.value)} sx={{ borderRadius: 0, height: 28 }}>
-      { Array.from(Array(10).keys()).map(i => <MenuItem value={i}>{i}</MenuItem>) }
+      { Array.from(Array(Math.max(10, (value + 1))).keys()).map(i => <MenuItem value={i}>{i}</MenuItem>) }
     </Select>
   );
 }
 
 
-function AddItemInput({ items, onSelect, onCreate }) {
+function GroceryItemInput({ items, onSelect, onCreate }) {
   const ref = useRef();
   const [inputValue, setInputValue] = useState("");
   const resetInput = () => {
