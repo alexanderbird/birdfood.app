@@ -1,8 +1,8 @@
 import { useState } from 'preact/hooks';
 
 import { useUpdatingState } from '../../hooks/useUpdatingState';
-import { useGroceryItemEditFormDialog } from './GroceryItemEditFormDialog';
-import { useClearListDialog } from './ClearListDialog';
+import { useGroceryItemEditFormDialog } from '../../components/GroceryItemEditFormDialog';
+import { useClearListDialog } from '../../components/ClearListDialog';
 
 export function usePlanState(core) {
   const [recentlyChangedItems, setLastChanged] = useState(new Set());

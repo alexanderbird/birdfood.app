@@ -1,7 +1,7 @@
 import Typography from '@mui/material/Typography';
 
-import { useDialogState } from '../../hooks/useDialogState';
-import { ConfirmDialog } from '../../components/ConfirmDialog.jsx';
+import { useDialogState } from '../hooks/useDialogState';
+import { ConfirmDialog } from './ConfirmDialog.jsx';
 
 export function useClearListDialog({ clearList }) {
   const dialogState = useDialogState();

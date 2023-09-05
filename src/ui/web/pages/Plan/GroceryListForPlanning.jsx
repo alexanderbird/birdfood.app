@@ -2,7 +2,7 @@ import Button from '@mui/material/Button';
 import EventRepeatIcon from '@mui/icons-material/EventRepeat';
 import ClearIcon from '@mui/icons-material/Clear';
 
-import { GroceryItemList } from './GroceryItemList';
+import { GroceryItemList } from '../../components/GroceryItemList';
 
 export const GroceryListForPlanning = ({ items,
   core,

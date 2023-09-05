@@ -16,7 +16,7 @@ import Avatar from '@mui/material/Avatar';
 import * as colors from '@mui/material/colors';
 
 import { ItemTypeIcon } from '../../components/ItemTypeIcon';
-import { SortMode, SortModeToggle } from './SortMode';
+import { SortMode, SortModeToggle } from '../SortMode';
 import { LabeledValue } from '../../dataStructures/LabeledValue';
 
 export const GroceryItemList = ({

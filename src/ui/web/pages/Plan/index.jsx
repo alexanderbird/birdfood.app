@@ -1,10 +1,10 @@
 import Container from '@mui/material/Container';
 
+import { usePlanState } from './usePlanState';
 import { Page } from '../../components/Page';
-import { GroceryListForPlanning } from './GroceryListForPlanning';
 import { PlanPageHeader } from './PlanPageHeader';
 import { AutocompleteForPlanning } from './AutocompleteForPlanning';
-import { usePlanState } from './usePlanState';
+import { GroceryListForPlanning } from './GroceryListForPlanning';
 
 export function Plan({ core }) {
   const {

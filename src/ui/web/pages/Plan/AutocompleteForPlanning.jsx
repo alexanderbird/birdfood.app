@@ -1,4 +1,4 @@
-import { GroceryItemInput } from './GroceryItemInput';
+import { GroceryItemInput } from '../../components/GroceryItemInput';
 
 export const AutocompleteForPlanning = ({ core, items, onItemsModified }) => {
   const addItem = item => {

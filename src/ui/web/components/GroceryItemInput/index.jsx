@@ -7,7 +7,7 @@ import ListItem from '@mui/material/ListItem';
 import TextField from '@mui/material/TextField';
 
 import { ItemType } from '../../components/ItemTypeIcon';
-import { lexicalComparison } from './SortMode';
+import { lexicalComparison } from '../SortMode';
 import { LabeledValue } from '../../dataStructures/LabeledValue';
 
 export function GroceryItemInput({ items, onSelect, onCreate }) {
