@@ -6,17 +6,22 @@ import { useDialogState } from '../../hooks/useDialogState';
 import { useUpdatingState } from '../../hooks/useUpdatingState';
 import { Page } from '../../components/Page';
 import { ConfirmDialog } from '../../components/ConfirmDialog.jsx';
-import { GroceryFormEditDialog } from './GroceryFormEditDialog';
+import { useGroceryFormEditDialog } from './GroceryFormEditDialog';
 import { GroceryListForPlanning } from './GroceryListForPlanning';
 import { PlanPageHeader } from './PlanPageHeader';
 import { AutocompleteForPlanning } from './AutocompleteForPlanning';
 
 export function Plan({ core }) {
-  const editDialog = useDialogState();
   const clearListDialog = useDialogState();
+  const [recentlyChangedItems, setLastChanged] = useState(new Set());
   const [cart, triggerUpdate] = useUpdatingState(core.getEmptyShoppingList(), () => core.getShoppingList());
 
-  const [recentlyChangedItems, setLastChanged] = useState(new Set());
+  const [openEditDialog, GroceryFormEditDialog] = useGroceryFormEditDialog({
+    onSave: item => {
+      core.updateItem(item);
+      onItemsModified(item.Id);
+    }
+  });
 
   const onItemsModified = idOrIds => {
     const ids = Array.isArray(idOrIds) ? idOrIds : [idOrIds];
@@ -24,16 +29,9 @@ export function Plan({ core }) {
     triggerUpdate();
   };
 
-  const saveEditDialog = item => {
-    core.updateItem(item);
-    editDialog.close();
-    triggerUpdate();
-  };
-
   const clearAll = () => {
     core.removeItemsFromShoppingList(cart.shoppingList.map(x => x.Id));
-    setLastChanged(new Set());
-    triggerUpdate();
+    onItemsModified();
   };
 
   return (
@@ -49,7 +47,7 @@ export function Plan({ core }) {
             allowAddingRecurringItems={cart.recurringItemsToAdd.length > 0}
             allowClearingTheList={cart.shoppingList.length}
             openClearListDialog={clearListDialog.open}
-            openEditDialog={editDialog.open}
+            openEditDialog={openEditDialog}
           />
         </Container>
       }
@@ -65,12 +63,7 @@ export function Plan({ core }) {
             `You are about to remove { cart.shoppingList.length } item{ cart.shoppingList.length === 1 ? '' : 's'}.
           </Typography>
         </ConfirmDialog>
-        <GroceryFormEditDialog
-          open={editDialog.isOpen}
-          onCancel={editDialog.close}
-          initialValue={editDialog.data}
-          onSave={saveEditDialog} 
-        />
+        <GroceryFormEditDialog />
       </>}
     />
   );

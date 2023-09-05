@@ -12,6 +12,21 @@ import DialogActions from '@mui/material/DialogActions';
 import Dialog from '@mui/material/Dialog';
 
 import { ItemType, ItemTypeIcon } from '../../components/ItemTypeIcon';
+import { useDialogState } from '../../hooks/useDialogState';
+
+export function useGroceryFormEditDialog({ onSave }) {
+  const editDialog = useDialogState();
+
+  const StatefulGroceryFormEditDialog = () => 
+    <GroceryFormEditDialog
+      open={editDialog.isOpen}
+      onCancel={editDialog.close}
+      initialValue={editDialog.data}
+      onSave={item => { onSave(item); editDialog.close(); }} 
+    />
+
+  return [editDialog.open, StatefulGroceryFormEditDialog];
+}
 
 export const GroceryFormEditDialog = ({ open, onCancel, onSave, initialValue }) => {
   const mergeWithDefaults = newValue => ({
