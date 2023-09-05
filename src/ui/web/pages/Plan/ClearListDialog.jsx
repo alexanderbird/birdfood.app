@@ -7,7 +7,8 @@ export function useClearListDialog({ clearList }) {
   const dialogState = useDialogState();
   const StatefulClearListDialog = props =>
     <ClearListDialog {...props} clearList={clearList} dialogState={dialogState} />;
-  return [dialogState.open, StatefulClearListDialog];
+  StatefulClearListDialog.open = dialogState.open;
+  return StatefulClearListDialog;
 }
 
 export const ClearListDialog = ({ itemsCount, clearList, dialogState }) => {

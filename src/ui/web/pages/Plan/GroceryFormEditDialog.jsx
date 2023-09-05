@@ -25,7 +25,8 @@ export function useGroceryFormEditDialog({ onSave }) {
       onSave={item => { onSave(item); editDialog.close(); }} 
     />;
 
-  return [editDialog.open, StatefulGroceryFormEditDialog];
+  StatefulGroceryFormEditDialog.open = editDialog.open;
+  return StatefulGroceryFormEditDialog;
 }
 
 export const GroceryFormEditDialog = ({ open, onCancel, onSave, initialValue }) => {
