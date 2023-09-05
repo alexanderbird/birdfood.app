@@ -1,7 +1,7 @@
 import { useState } from 'preact/hooks';
 
 import { useUpdatingState } from '../../hooks/useUpdatingState';
-import { useGroceryFormEditDialog } from './GroceryFormEditDialog';
+import { useGroceryItemEditFormDialog } from './GroceryItemEditFormDialog';
 import { useClearListDialog } from './ClearListDialog';
 
 export function usePlanState(core) {
@@ -14,14 +14,14 @@ export function usePlanState(core) {
     triggerUpdate();
   };
 
-  const GroceryFormEditDialog = useGroceryFormEditDialog({
+  const GroceryItemEditFormDialogForPlan = useGroceryItemEditFormDialog({
     onSave: item => {
       core.updateItem(item);
       onItemsModified(item.Id);
     }
   });
 
-  const ClearListDialog = useClearListDialog({
+  const ClearListDialogForPlan = useClearListDialog({
     clearList: () => {
       core.removeItemsFromShoppingList(cart.shoppingList.map(x => x.Id));
       onItemsModified();
@@ -32,8 +32,8 @@ export function usePlanState(core) {
     cart,
     recentlyChangedItems,
     onItemsModified,
-    GroceryFormEditDialog,
-    ClearListDialog
+    GroceryItemEditFormDialogForPlan,
+    ClearListDialogForPlan
   };
 }
 

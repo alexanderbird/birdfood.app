@@ -11,8 +11,8 @@ export function Plan({ core }) {
     cart,
     recentlyChangedItems,
     onItemsModified,
-    GroceryFormEditDialog,
-    ClearListDialog
+    GroceryItemEditFormDialogForPlan,
+    ClearListDialogForPlan
   } = usePlanState(core);
 
   return (
@@ -31,14 +31,14 @@ export function Plan({ core }) {
             recentlyChangedItems={recentlyChangedItems}
             allowAddingRecurringItems={cart.recurringItemsToAdd.length > 0}
             allowClearingTheList={cart.shoppingList.length}
-            openClearListDialog={ClearListDialog.open}
-            openEditDialog={GroceryFormEditDialog.open}
+            openClearListDialog={ClearListDialogForPlan.open}
+            openEditDialog={GroceryItemEditFormDialogForPlan.open}
           />
         </Container>
       }
       dialogs={<>
-        <ClearListDialog itemsCount={cart.shoppingList.length} />
-        <GroceryFormEditDialog />
+        <ClearListDialogForPlan itemsCount={cart.shoppingList.length} />
+        <GroceryItemEditFormDialogForPlan />
       </>}
     />
   );
