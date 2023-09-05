@@ -10,9 +10,9 @@ import { useUpdatingState } from '../../hooks/useUpdatingState';
 import { Page } from '../../components/Page';
 import { ConfirmDialog } from '../../components/ConfirmDialog.jsx';
 import { GroceryFormEditDialog } from './GroceryFormEditDialog';
-import { GroceryItemInput } from './GroceryItemInput';
 import { GroceryItemList } from './GroceryItemList';
 import { PlanPageHeader } from './PlanPageHeader';
+import { AutocompleteForPlanning } from './AutocompleteForPlanning';
 
 export function Plan({ core }) {
   const editDialog = useDialogState();
@@ -21,23 +21,16 @@ export function Plan({ core }) {
 
   const [lastChanged, setLastChanged] = useState(new Set());
 
+  const onItemsModified = idOrIds => {
+    const ids = Array.isArray(idOrIds) ? idOrIds : [idOrIds];
+    setLastChanged(new Set(ids));
+    triggerUpdate();
+  }
+
   const saveEditDialog = item => {
     core.updateItem(item);
     editDialog.close();
     triggerUpdate();
-  };
-
-  const createItem = Name => {
-    const item = core.createItem({ Name, PlannedQuantity: 1 });
-    setLastChanged(new Set([item.Id]));
-    triggerUpdate();
-  };
-
-  const addRecurringItems = () => {
-    const addedItemIds = core.addRecurringItems();
-    setLastChanged(new Set(addedItemIds));
-    triggerUpdate();
-    document.body.scrollTop = document.documentElement.scrollTop = 0;
   };
 
   const updateQuantityAndTimestamp = (id, difference) => {
@@ -59,20 +52,26 @@ export function Plan({ core }) {
     triggerUpdate();
   };
 
+
+  const addRecurringItems = () => {
+    const addedItemIds = core.addRecurringItems();
+    setLastChanged(new Set(addedItemIds));
+    triggerUpdate();
+    document.body.scrollTop = document.documentElement.scrollTop = 0;
+  };
+
   const clearAll = () => {
     core.removeItemsFromShoppingList(cart.shoppingList.map(x => x.Id));
     setLastChanged(new Set());
     triggerUpdate();
   };
 
-  const addItem = item => updateQuantityAndTimestamp(item.value.Id, 1);
-
   return (
     <Page
       header={<PlanPageHeader cartTotal={cart.total} />}
       body={
         <Container>
-          <GroceryItemInput items={cart.all} onSelect={addItem} onCreate={createItem} />
+          <AutocompleteForPlanning core={core} items={cart.all} onItemsModified={onItemsModified} />
           <GroceryItemList items={cart.shoppingList}
             lastChanged={lastChanged}
             updateQuantity={updateQuantity}
@@ -101,12 +100,8 @@ export function Plan({ core }) {
           onConfirm={() => { clearAll(); clearListDialog.close(); }}
         >
           <Typography>
-            Do you want to remove
-            { cart.shoppingList.length === 1
-              ? ` "${cart.shoppingList[0].label.trim()}" `
-              : ` all ${cart.shoppingList.length} items `
-            }
-            from the list?
+            Do you want to empty the list?
+            `You are about to remove { cart.shoppingList.length } item{ cart.shoppingList.length === 1 ? '' : 's'}.
           </Typography>
         </ConfirmDialog>
         <GroceryFormEditDialog open={editDialog.isOpen} onCancel={editDialog.close} onSave={saveEditDialog} initialValue={editDialog.data} />
@@ -114,5 +109,3 @@ export function Plan({ core }) {
     />
   );
 }
-
-
