@@ -6,7 +6,7 @@ export const AutocompleteForPlanning = ({ core, items, onItemsModified }) => {
     core.addToItemPlannedQuantity(id, 1);
     core.updateItemAndTimestamp({ Id: id });
     onItemsModified(id);
-  }
+  };
 
   const createItem = Name => {
     const item = core.createItem({ Name, PlannedQuantity: 1 });
@@ -16,5 +16,5 @@ export const AutocompleteForPlanning = ({ core, items, onItemsModified }) => {
   return (
     <GroceryItemInput items={items} onSelect={addItem} onCreate={createItem} />
   );
-}
+};
 

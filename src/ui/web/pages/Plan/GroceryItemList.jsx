@@ -24,7 +24,7 @@ export const GroceryItemList = ({
   updateQuantity,
   setQuantity,
   actions,
-  lastChanged,
+  recentlyChangedItems,
   doEdit
 }) => {
   const [sortMode, setSortMode] = useState(SortMode.NEWEST_FIRST.key);
@@ -41,7 +41,7 @@ export const GroceryItemList = ({
     <SortModeToggle value={sortMode} onChange={setSortMode} />
     <List>
       { displayItems.map(item =>
-        <ListItem key={item.value.Id} selected={lastChanged.has(item.value.Id)} divider>
+        <ListItem key={item.value.Id} selected={recentlyChangedItems.has(item.value.Id)} divider>
           <ListItemAvatar><Avatar sx={{ bgcolor: colors.grey[100] }}><ItemTypeIcon type={item.value.Type} /></Avatar></ListItemAvatar>
           <Box sx={{ flexDirection: 'column', display: 'flex', flexGrow: 1 }}>
             <Link color="inherit" underline="none" onClick={() => doEdit(item.value)}>
