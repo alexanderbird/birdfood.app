@@ -8,7 +8,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import EventRepeatIcon from '@mui/icons-material/EventRepeat';
 
 import { useDialogState } from '../../hooks/useDialogState';
-import { useSerial } from '../../hooks/useSerial';
+import { useUpdatingState } from '../../hooks/useUpdatingState';
 import { LabeledValue } from '../../dataStructures/LabeledValue';
 import { Page } from '../../components/Page';
 import { ConfirmDialog } from '../../components/ConfirmDialog.jsx';
@@ -19,11 +19,11 @@ import { PlanPageHeader } from './PlanPageHeader';
 import { lexicalComparison } from './SortMode';
 
 export function Plan({ core }) {
-  const [lastChanged, setLastChanged] = useState(new Set());
-  const [serial, triggerUpdate] = useSerial();
-  const [cart, setCart] = useState(core.getEmptyShoppingList());
   const editDialog = useDialogState();
   const clearListDialog = useDialogState();
+  const [cart, triggerUpdate] = useUpdatingState(core.getEmptyShoppingList(), () => core.getShoppingList());
+
+  const [lastChanged, setLastChanged] = useState(new Set());
 
   const saveEditDialog = item => {
     core.updateItem(item);
@@ -64,11 +64,6 @@ export function Plan({ core }) {
 
   const addItem = item => updateQuantity(item.value.Id, 1, true);
 
-  useEffect(() => {
-    setCart(core.getShoppingList());
-  }, [serial]);
-
-  ;
   return (
     <Page
       header={<PlanPageHeader cartTotal={cart.total} />}
