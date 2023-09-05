@@ -4,12 +4,12 @@ export class Core {
   }
 
   addRecurringItems() {
-    const lastUpdated = new Date(Date.now()).toISOString();
-    this.data.batchUpdateItems(this.getShoppingList().recurringItemsToAdd.map(item => ({
+    const toAdd = this.getShoppingList().recurringItemsToAdd;
+    this.data.batchUpdateItems(toAdd.map(item => ({
       id: item.Id,
       updates: [
         {
-          value: lastUpdated,
+          value: this._getCurrentTimestamp(),
           attributeName: 'LastUpdated',
         },
         {
@@ -18,6 +18,7 @@ export class Core {
         }
       ]
     })));
+    return toAdd.map(x => x.Id);
   }
 
   addToItemShoppingListQuantity(id, addend, alsoUpdateLastUpdatedDate) {
@@ -46,11 +47,13 @@ export class Core {
   }
 
   createItem(attributes) {
-    this.data.createItem({
+    const item = {
       ...attributes,
       LastUpdated: this._getCurrentTimestamp(),
       Id: 'i-' + ((Math.random().toString(36) + "00").slice(2))
-    })
+    };
+    this.data.createItem(item)
+    return item;
   }
 
   setItemPlannedQuantity(id, plannedQuantity) {

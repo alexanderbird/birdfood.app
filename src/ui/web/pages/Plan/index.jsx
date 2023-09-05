@@ -85,6 +85,7 @@ function SortModeToggle({ value, onChange }) {
 
 export function Plan() {
   const core = new Core(new StaticData());
+  const [lastChanged, setLastChanged] = useState(new Set());
   const [serial, setSerial] = useState(Date.now());
   const [sortMode, setSortMode] = useState(SortMode.NEWEST_FIRST.key);
   const triggerUpdate = () => setSerial(Date.now());
@@ -94,27 +95,33 @@ export function Plan() {
   const openConfirmEmptyDialog = () => setConfirmEmptyDialogOpen(true);
 
   const createItem = Name => {
-    core.createItem({ Name, PlannedQuantity: 1 })
+    const item = core.createItem({ Name, PlannedQuantity: 1 })
+    setLastChanged(new Set([item.Id]));
     triggerUpdate();
   }
 
   const addRecurringItems = () => {
-    core.addRecurringItems();
+    const addedItemIds = core.addRecurringItems();
+    setLastChanged(new Set(addedItemIds));
     triggerUpdate();
+    document.body.scrollTop = document.documentElement.scrollTop = 0;
   }
 
   const updateQuantity = (id, difference, alsoUpdateLastUpdatedDate) => {
     core.addToItemShoppingListQuantity(id, difference, alsoUpdateLastUpdatedDate);
+    setLastChanged(new Set([id]));
     triggerUpdate();
   }
 
   const setQuantity = (id, quantity) => {
     core.setItemPlannedQuantity(id, quantity);
+    setLastChanged(new Set([id]));
     triggerUpdate();
   }
 
   const clearAll = () => {
     core.removeItemsFromShoppingList(selectedItems.map(x => x.value.Id));
+    setLastChanged(new Set());
     triggerUpdate();
   }
 
@@ -139,7 +146,11 @@ export function Plan() {
       <Container>
         <GroceryItemInput items={items} onSelect={addItem} onCreate={createItem}/>
         <SortModeToggle value={sortMode} onChange={setSortMode} />
-        <GroceryItemList items={selectedItems} removeAll={openConfirmEmptyDialog} updateQuantity={updateQuantity} setQuantity={setQuantity}
+        <GroceryItemList items={selectedItems}
+          lastChanged={lastChanged}
+          removeAll={openConfirmEmptyDialog}
+          updateQuantity={updateQuantity}
+          setQuantity={setQuantity}
           addRecurringItems={addRecurringItems}
           thereAreMoreRecurringItemsToAdd={cart.recurringItemsToAdd.length > 0}
           />
@@ -172,7 +183,10 @@ function asItems(groceryItems) {
   }));
 }
 
-const GroceryItemList = ({ items, removeAll, updateQuantity, setQuantity, addRecurringItems, thereAreMoreRecurringItemsToAdd }) => {
+const GroceryItemList = ({
+  items, removeAll, updateQuantity, setQuantity,
+  addRecurringItems, thereAreMoreRecurringItemsToAdd,
+  lastChanged }) => {
 
   const MinusIcon = ({ item }) =>
     item.value.PlannedQuantity > 1
@@ -182,7 +196,7 @@ const GroceryItemList = ({ items, removeAll, updateQuantity, setQuantity, addRec
   return (
     <List>
       { items.map(item => <>
-        <ListItem>
+        <ListItem selected={lastChanged.has(item.value.Id)}>
           <ListItemAvatar><Avatar><ItemTypeIcon type={item.value.Type} /></Avatar></ListItemAvatar>
           <Box sx={{ flexDirection: 'column', display: 'flex', flexGrow: 1 }}>
             <ListItemText primary={item.label} sx={{ alignSelf: 'flex-start' }}/>
