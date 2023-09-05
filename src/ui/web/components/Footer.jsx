@@ -1,18 +1,10 @@
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
 
 import { useLocation } from 'preact-iso';
-import * as React from 'react';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import EventRepeatIcon from '@mui/icons-material/EventRepeat';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import ListItemText from '@mui/material/ListItemText';
-import Avatar from '@mui/material/Avatar';
 
 const assembleAction = ({ href, label, IconComponent }) =>
   <BottomNavigationAction
@@ -21,7 +13,7 @@ const assembleAction = ({ href, label, IconComponent }) =>
     href={href}
     label={label}
     icon={<IconComponent />}
-    />
+  />;
 
 export function Footer() {
   const { url } = useLocation();

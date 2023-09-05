@@ -43,5 +43,6 @@ module.exports = {
             "always"
         ],
         "unused-imports/no-unused-imports": "warn",
+        "react-hooks/exhaustive-deps": "off",
     }
 };

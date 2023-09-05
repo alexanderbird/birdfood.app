@@ -54,9 +54,9 @@ export class Core {
     const item = {
       ...attributes,
       LastUpdated: this._getCurrentTimestamp(),
-      Id: 'i-' + ((Math.random().toString(36) + "00").slice(2))
+      Id: `i-${  (`${Math.random().toString(36)  }00`).slice(2)}`
     };
-    this.data.createItem(item)
+    this.data.createItem(item);
     return item;
   }
 
@@ -78,7 +78,7 @@ export class Core {
   }
 
   getEmptyShoppingList() {
-    return { all: [], shoppingList: [], unselectedItems: [], recurringItemsToAdd: [], total: 0 }
+    return { all: [], shoppingList: [], unselectedItems: [], recurringItemsToAdd: [], total: 0 };
   }
 
   getShoppingList() {
@@ -109,7 +109,7 @@ export class Core {
       RecurringQuantity: 0,
       Type: "OTHER",
       ...item
-    }
+    };
   }
 
   _getCurrentTimestamp() {

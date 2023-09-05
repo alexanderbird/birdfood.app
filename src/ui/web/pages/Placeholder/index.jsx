@@ -1,5 +1,4 @@
 import { useLocation } from 'preact-iso';
-import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import { Header } from '../../components/Header.jsx';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
