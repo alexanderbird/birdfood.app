@@ -3,6 +3,9 @@ import Box from '@mui/material/Box';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import ClearIcon from '@mui/icons-material/Clear';
+import EventRepeatIcon from '@mui/icons-material/EventRepeat';
 
 import { useDialogState } from '../../hooks/useDialogState';
 import { useSerial } from '../../hooks/useSerial';
@@ -74,12 +77,19 @@ export function Plan({ core }) {
           <GroceryItemInput items={cart.all} onSelect={addItem} onCreate={createItem} />
           <GroceryItemList items={cart.shoppingList}
             lastChanged={lastChanged}
-            removeAll={clearListDialog.open}
             updateQuantity={updateQuantity}
             setQuantity={setQuantity}
-            addRecurringItems={addRecurringItems}
-            thereAreMoreRecurringItemsToAdd={cart.recurringItemsToAdd.length > 0}
             doEdit={editDialog.open}
+            actions={[
+              <Button onClick={addRecurringItems}
+                disabled={cart.recurringItemsToAdd.length <= 0}
+                startIcon={<EventRepeatIcon />}
+                >Add Recurring Items</Button>,
+              <Button onClick={clearListDialog.open}
+                disabled={!cart.shoppingList.length}
+                startIcon={<ClearIcon />}
+                >Clear List</Button>,
+            ]}
           />
         </Container>
       }

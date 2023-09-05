@@ -23,11 +23,9 @@ import { LabeledValue } from '../../dataStructures/LabeledValue';
 
 export const GroceryItemList = ({
   items,
-  removeAll,
   updateQuantity,
   setQuantity,
-  addRecurringItems,
-  thereAreMoreRecurringItemsToAdd,
+  actions,
   lastChanged,
   doEdit
 }) => {
@@ -59,17 +57,9 @@ export const GroceryItemList = ({
           </Box>
         </ListItem>
       ) }
-      { !items.length ? null : <>
-        <ListItem>
-          <Button startIcon={<ClearIcon />} onClick={removeAll}>Clear List</Button>
-        </ListItem>
-        <Divider component="li" />
-      </>}
-      { !thereAreMoreRecurringItemsToAdd ? null : 
-        <ListItem>
-          <Button startIcon={<EventRepeatIcon />} onClick={addRecurringItems}>Add Recurring Items</Button>
-        </ListItem>
-      }
+      { actions.filter(x => !!x).map(action => (
+        <ListItem divider>{ action }</ListItem>
+      ))}
     </List>
   </>);
 };
