@@ -16,3 +16,14 @@ export const ItemTypeIcon = ({ type }) => {
   if (type === "FROZEN") return <FrozenFoodIcon />
   return null;
 }
+
+export const ItemType = {
+  BABY: { key: "BABY", label: "Baby Food" },
+  DRY_GOOD: { key: "DRY_GOOD", label: "Dry Goods" },
+  DAIRY: { key: "DAIRY", label: "Dairy" },
+  DELI: { key: "DELI", label: "Meats" },
+  BAKERY: { key: "BAKERY", label: "Bakery" },
+  PRODUCE: { key: "PRODUCE", label: "Produce" },
+  FROZEN: { key: "FROZEN", label: "Frozen" },
+  OTHER: { key: "OTHER", label: "Other" }
+}
