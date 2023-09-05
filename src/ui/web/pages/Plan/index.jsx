@@ -130,13 +130,16 @@ export function Plan() {
   return (<>
     <Header>
       <ShoppingCartIcon sx={{ mr: 1 }} />
-      <Typography variant="h6" component="div">Plan the next shop ({formatter.format(cart.total)})</Typography>
+      <Box display="flex" justifyContent="space-between" width="100%">
+        <Typography variant="h6" component="div">Plan the next shop</Typography>
+        <Typography variant="h6" component="div">{formatter.format(cart.total)}</Typography>
+      </Box>
     </Header>
     <Box sx={{ width: '100%', maxWidth: 520, marginX: 'auto', bgcolor: 'background.paper' }}>
       <Container>
         <AddItemInput items={items} onSelect={addItem} onCreate={createItem}/>
         <SortModeToggle value={sortMode} onChange={setSortMode} />
-        <TheList items={selectedItems} removeAll={openConfirmEmptyDialog} updateQuantity={updateQuantity} setQuantity={setQuantity}
+        <GroceryItemList items={selectedItems} removeAll={openConfirmEmptyDialog} updateQuantity={updateQuantity} setQuantity={setQuantity}
           addRecurringItems={addRecurringItems}
           thereAreMoreRecurringItemsToAdd={cart.recurringItemsToAdd.length > 0}
           />
@@ -169,7 +172,7 @@ function asItems(groceryItems) {
   }));
 }
 
-const TheList = ({ items, removeAll, updateQuantity, setQuantity, addRecurringItems, thereAreMoreRecurringItemsToAdd }) => {
+const GroceryItemList = ({ items, removeAll, updateQuantity, setQuantity, addRecurringItems, thereAreMoreRecurringItemsToAdd }) => {
 
   const MinusIcon = ({ item }) =>
     item.value.PlannedQuantity > 1
