@@ -23,7 +23,7 @@ export function useGroceryFormEditDialog({ onSave }) {
       onCancel={editDialog.close}
       initialValue={editDialog.data}
       onSave={item => { onSave(item); editDialog.close(); }} 
-    />
+    />;
 
   return [editDialog.open, StatefulGroceryFormEditDialog];
 }
