@@ -52,6 +52,7 @@ const ItemType = {
   DAIRY: { key: "DAIRY", label: "Dairy" },
   DELI: { key: "DELI", label: "Meats" },
   BAKERY: { key: "BAKERY", label: "Bakery" },
+  PRODUCE: { key: "PRODUCE", label: "Produce" },
   FROZEN: { key: "FROZEN", label: "Frozen" },
   OTHER: { key: "OTHER", label: "Other" }
 }
@@ -101,7 +102,6 @@ export function Plan() {
   const openConfirmEmptyDialog = () => setConfirmEmptyDialogOpen(true);
 
   const saveEditDialog = item => {
-    console.log(item);
     core.updateItem(item);
     closeEditDialog();
     triggerUpdate();
