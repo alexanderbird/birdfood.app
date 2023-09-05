@@ -4,17 +4,18 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
-import { Header } from '../../components/Header.jsx';
+import { LabeledValue } from '../../dataStructures/LabeledValue';
+import { Page } from '../../components/Page';
 import { ConfirmDialog } from '../../components/ConfirmDialog.jsx';
 import { GroceryFormEditDialog } from './GroceryFormEditDialog';
 import { GroceryItemInput } from './GroceryItemInput';
 import { GroceryItemList } from './GroceryItemList';
-import { SortMode, SortModeToggle, lexicalComparison } from './SortMode';
+import { PlanPageHeader } from './PlanPageHeader';
+import { lexicalComparison } from './SortMode';
 
 export function Plan({ core }) {
   const [lastChanged, setLastChanged] = useState(new Set());
   const [serial, setSerial] = useState(Date.now());
-  const [sortMode, setSortMode] = useState(SortMode.NEWEST_FIRST.key);
   const triggerUpdate = () => setSerial(Date.now());
   const [cart, setCart] = useState(core.getEmptyShoppingList());
   const [editDialogData, setEditDialogData] = useState(false);
@@ -56,7 +57,7 @@ export function Plan({ core }) {
   };
 
   const clearAll = () => {
-    core.removeItemsFromShoppingList(selectedItems.map(x => x.value.Id));
+    core.removeItemsFromShoppingList(cart.shoppingList.map(x => x.Id));
     setLastChanged(new Set());
     triggerUpdate();
   };
@@ -67,30 +68,25 @@ export function Plan({ core }) {
     setCart(core.getShoppingList());
   }, [serial]);
 
-  const selectedItems = asItems(cart.shoppingList).sort(SortMode[sortMode].sortFunction); 
-  const items = asItems(cart.all.sort((lhs, rhs) => lexicalComparison(lhs.Type, rhs.Type))); 
-  const formatter = new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' });
-  return (<>
-    <Header>
-      <ShoppingCartIcon sx={{ mr: 1 }} />
-      <Box display="flex" justifyContent="space-between" width="100%">
-        <Typography variant="h6" component="div">Shopping List</Typography>
-        <Typography fontWeight="bold" variant="h6" component="div">{formatter.format(cart.total)}</Typography>
-      </Box>
-    </Header>
-    <Box sx={{ width: '100%', maxWidth: 520, marginX: 'auto', bgcolor: 'background.paper' }}>
-      <Container>
-        <GroceryItemInput items={items} onSelect={addItem} onCreate={createItem} />
-        <SortModeToggle value={sortMode} onChange={setSortMode} />
-        <GroceryItemList items={selectedItems}
-          lastChanged={lastChanged}
-          removeAll={openConfirmEmptyDialog}
-          updateQuantity={updateQuantity}
-          setQuantity={setQuantity}
-          addRecurringItems={addRecurringItems}
-          thereAreMoreRecurringItemsToAdd={cart.recurringItemsToAdd.length > 0}
-          doEdit={setEditDialogData}
-        />
+  ;
+  return (
+    <Page
+      header={<PlanPageHeader cartTotal={cart.total} />}
+      body={
+        <Container>
+          <GroceryItemInput items={cart.all} onSelect={addItem} onCreate={createItem} />
+          <GroceryItemList items={cart.shoppingList}
+            lastChanged={lastChanged}
+            removeAll={openConfirmEmptyDialog}
+            updateQuantity={updateQuantity}
+            setQuantity={setQuantity}
+            addRecurringItems={addRecurringItems}
+            thereAreMoreRecurringItemsToAdd={cart.recurringItemsToAdd.length > 0}
+            doEdit={setEditDialogData}
+          />
+        </Container>
+      }
+      dialogs={<>
         <ConfirmDialog
           open={confirmEmptyDialogOpen}
           onCancel={closeConfirmEmptyDialog}
@@ -99,25 +95,17 @@ export function Plan({ core }) {
         >
           <Typography>
             Do you want to remove
-            { selectedItems.length === 1
-              ? ` "${selectedItems[0].label.trim()}" `
-              : ` all ${selectedItems.length} items `
+            { cart.shoppingList.length === 1
+              ? ` "${cart.shoppingList[0].label.trim()}" `
+              : ` all ${cart.shoppingList.length} items `
             }
             from the list?
           </Typography>
         </ConfirmDialog>
         <GroceryFormEditDialog open={editDialogOpen} onCancel={closeEditDialog} onSave={saveEditDialog} initialValue={editDialogData} />
-
-      </Container>
-    </Box>
-  </>);
-}
-
-function asItems(groceryItems) {
-  return groceryItems.map(x => ({
-    label: x.Name,
-    value: x
-  }));
+      </>}
+      />
+  );
 }
 
 

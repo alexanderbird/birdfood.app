@@ -1,3 +1,4 @@
+import { useState } from 'preact/hooks';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Box from '@mui/material/Box';
@@ -17,20 +18,33 @@ import Avatar from '@mui/material/Avatar';
 import * as colors from '@mui/material/colors';
 
 import { ItemTypeIcon } from '../../components/ItemTypeIcon';
+import { SortMode, SortModeToggle } from './SortMode';
+import { LabeledValue } from '../../dataStructures/LabeledValue';
 
 export const GroceryItemList = ({
-  items, removeAll, updateQuantity, setQuantity,
-  addRecurringItems, thereAreMoreRecurringItemsToAdd,
-  lastChanged, doEdit }) => {
+  items,
+  removeAll,
+  updateQuantity,
+  setQuantity,
+  addRecurringItems,
+  thereAreMoreRecurringItemsToAdd,
+  lastChanged,
+  doEdit
+}) => {
+  const [sortMode, setSortMode] = useState(SortMode.NEWEST_FIRST.key);
 
   const MinusIcon = ({ item }) =>
     item.value.PlannedQuantity > 1
       ? <RemoveIcon sx={{ fontSize: 14 }} />
       : <ClearIcon sx={{ fontSize: 14 }} />;
 
-  return (
+  const displayItems = items
+    .map(LabeledValue.factory(x => x.Name))
+    .sort(SortMode[sortMode].sortFunction);
+  return (<>
+    <SortModeToggle value={sortMode} onChange={setSortMode} />
     <List>
-      { items.map(item =>
+      { displayItems.map(item =>
         <ListItem key={item.value.Id} selected={lastChanged.has(item.value.Id)} divider>
           <ListItemAvatar><Avatar sx={{ bgcolor: colors.grey[100] }}><ItemTypeIcon type={item.value.Type} /></Avatar></ListItemAvatar>
           <Box sx={{ flexDirection: 'column', display: 'flex', flexGrow: 1 }}>
@@ -57,7 +71,7 @@ export const GroceryItemList = ({
         </ListItem>
       }
     </List>
-  );
+  </>);
 };
 
 function QuantitySelector({ value, onChange }) {

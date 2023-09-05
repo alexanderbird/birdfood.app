@@ -7,6 +7,8 @@ import ListItem from '@mui/material/ListItem';
 import TextField from '@mui/material/TextField';
 
 import { ItemType } from '../../components/ItemTypeIcon';
+import { lexicalComparison } from './SortMode';
+import { LabeledValue } from '../../dataStructures/LabeledValue';
 
 export function GroceryItemInput({ items, onSelect, onCreate }) {
   const ref = useRef();
@@ -20,6 +22,9 @@ export function GroceryItemInput({ items, onSelect, onCreate }) {
     resetInput();
     onCreate(inputValue);
   };
+  const displayItems = items
+    .sort((lhs, rhs) => lexicalComparison(lhs.Type, rhs.Type))
+    .map(LabeledValue.factory(x => x.Name));
   return (
     <Autocomplete
       ref={ref}
@@ -30,7 +35,7 @@ export function GroceryItemInput({ items, onSelect, onCreate }) {
       autoComplete
       clearOnBlur
       inputValue={inputValue}
-      options={items}
+      options={displayItems}
       onInputChange={(event, input) => {
         setInputValue(input);
       }}

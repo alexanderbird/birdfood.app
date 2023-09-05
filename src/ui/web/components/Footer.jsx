@@ -28,7 +28,7 @@ export function Footer({ core }) {
     });
     return () => {
       core.offShoppingListUpdate("components.Footer");
-    }
+    };
   });
   return (
     <BottomNavigation showLabels={true} value={url} sx={{ paddingTop: 5, paddingBottom: 4 }}>{[
