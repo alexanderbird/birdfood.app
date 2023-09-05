@@ -1,6 +1,15 @@
 export class Core {
   constructor(data) {
     this.data = data;
+    this.shoppingListConsumers = {};
+  }
+
+  offShoppingListUpdate(key) {
+    delete this.shoppingListConsumers[key];
+  }
+
+  onShoppingListUpdate(key, consumeShoppingList) {
+    this.shoppingListConsumers[key] = { key, consumeShoppingList };
   }
 
   addRecurringItems() {
@@ -99,7 +108,11 @@ export class Core {
         unselectedItems.push(item);
       }
     });
-    return { all, shoppingList, unselectedItems, recurringItemsToAdd, total };
+    const result = { all, shoppingList, unselectedItems, recurringItemsToAdd, total };
+    setTimeout(() => {
+      Object.values(this.shoppingListConsumers).forEach(consumer => consumer.consumeShoppingList(result));
+    });
+    return result;
   }
 
   _supplyMissingFields(item) {

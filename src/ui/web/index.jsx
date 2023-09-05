@@ -10,9 +10,11 @@ import { Schedule } from './pages/Schedule/index.jsx';
 import { Plan } from './pages/Plan/index.jsx';
 import { Placeholder } from './pages/Placeholder/index.jsx';
 import { NotFound } from './pages/_404.jsx';
-import './style.css';
+import { StaticData } from '../../data/static';
+import { Core } from '../../core';
 
 export function App() {
+  const core = new Core(new StaticData());
   return (
     <LocationProvider>
       <CssBaseline />
@@ -20,13 +22,13 @@ export function App() {
         <Box sx={{ pb: 8 }}>
           <Router>
             <Route path="/schedule" component={Schedule} />
-            <Route path="/plan" component={Plan} />
+            <Plan path="/plan" core={core} />
             <Route path="/shop" component={Placeholder} />
             <Route default component={NotFound} />
           </Router>
         </Box>
         <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 10 }} elevation={3}>
-          <Footer />
+          <Footer core={core} />
         </Paper>
       </Box>
     </LocationProvider>

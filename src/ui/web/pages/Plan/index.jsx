@@ -6,15 +6,12 @@ import Typography from '@mui/material/Typography';
 
 import { Header } from '../../components/Header.jsx';
 import { ConfirmDialog } from '../../components/ConfirmDialog.jsx';
-import { StaticData } from '../../../../data/static';
-import { Core } from '../../../../core';
 import { GroceryFormEditDialog } from './GroceryFormEditDialog';
 import { GroceryItemInput } from './GroceryItemInput';
 import { GroceryItemList } from './GroceryItemList';
 import { SortMode, SortModeToggle, lexicalComparison } from './SortMode';
 
-export function Plan() {
-  const core = new Core(new StaticData());
+export function Plan({ core }) {
   const [lastChanged, setLastChanged] = useState(new Set());
   const [serial, setSerial] = useState(Date.now());
   const [sortMode, setSortMode] = useState(SortMode.NEWEST_FIRST.key);
