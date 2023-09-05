@@ -256,6 +256,36 @@ const GroceryFormEditDialog = ({ open, onCancel, onSave, initialValue }) => {
               startAdornment: <InputAdornment position="start">$</InputAdornment>,
             }}
           />
+          <Box display="flex">
+            <TextField
+              label="Next Shop"
+              onChange={event => setValue(current => ({ ...current, PlannedQuantity: event.target.value }))}
+              value={value.PlannedQuantity}
+              onFocus={event => {
+                event.target.select();
+              }}
+              inputProps={{
+                sx: { textAlign: 'right' },
+              }}
+              InputProps={{
+                startAdornment: <InputAdornment position="start"><ShoppingCartIcon /></InputAdornment>,
+              }}
+            />
+            <TextField
+              label="Recurring"
+              onChange={event => setValue(current => ({ ...current, RecurringQuantity: event.target.value }))}
+              value={value.RecurringQuantity}
+              onFocus={event => {
+                event.target.select();
+              }}
+              inputProps={{
+                sx: { textAlign: 'right' },
+              }}
+              InputProps={{
+                startAdornment: <InputAdornment position="start"><EventRepeatIcon /></InputAdornment>,
+              }}
+            />
+          </Box>
         </Box>
       </DialogContent>
       <DialogActions>
