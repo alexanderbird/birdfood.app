@@ -22,7 +22,6 @@ export function Footer({ core }) {
   useEffect(() => {
     core.onShoppingListUpdate("components.Footer", shoppingList => {
       setBadgeCounts({
-        repeat: shoppingList.unselectedItems.length,
         cart: shoppingList.shoppingList.length,
       });
       
@@ -33,8 +32,8 @@ export function Footer({ core }) {
   });
   return (
     <BottomNavigation showLabels={true} value={url} sx={{ paddingTop: 5, paddingBottom: 4 }}>{[
-      assembleAction({ href:"/schedule", label: "Schedule", badge: badgeCounts.repeat, IconComponent: EventRepeatIcon }),
-      assembleAction({ href:"/plan", label: "Plan", badge: badgeCounts.cart, badgeColor: "primary", IconComponent: ShoppingCartIcon }),
+      assembleAction({ href:"/schedule", label: "Schedule", IconComponent: EventRepeatIcon }),
+      assembleAction({ href:"/plan", label: "Plan", badge: badgeCounts.cart, badgeColor: "secondary", IconComponent: ShoppingCartIcon }),
       assembleAction({ href:"/shop", label: "Shop", IconComponent: CheckBoxIcon })
     ]}
     </BottomNavigation>
