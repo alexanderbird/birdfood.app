@@ -29,8 +29,8 @@ export const GroceryItemList = ({
 
   return (
     <List>
-      { items.map(item => <>
-        <ListItem selected={lastChanged.has(item.value.Id)}>
+      { items.map(item =>
+        <ListItem key={item.value.Id} selected={lastChanged.has(item.value.Id)} divider>
           <ListItemAvatar><Avatar><ItemTypeIcon type={item.value.Type} /></Avatar></ListItemAvatar>
           <Box sx={{ flexDirection: 'column', display: 'flex', flexGrow: 1 }}>
             <Link color="inherit" underline="none" onClick={() => doEdit(item.value)}>
@@ -43,8 +43,7 @@ export const GroceryItemList = ({
             </ButtonGroup>
           </Box>
         </ListItem>
-        <Divider component="li" />
-      </>) }
+      ) }
       { !items.length ? null : <>
         <ListItem>
           <Button startIcon={<ClearIcon />} onClick={removeAll}>Clear List</Button>
@@ -63,7 +62,7 @@ export const GroceryItemList = ({
 function QuantitySelector({ value, onChange }) {
   return (
     <Select value={value} onChange={(event, object) => onChange(object.props.value)} sx={{ borderRadius: 0, height: 28 }}>
-      { Array.from(Array(Math.max(10, (value + 1))).keys()).map(i => <MenuItem value={i}>{i}</MenuItem>) }
+      { Array.from(Array(Math.max(10, (value + 1))).keys()).map(i => <MenuItem key={i} value={i}>{i}</MenuItem>) }
     </Select>
   );
 }

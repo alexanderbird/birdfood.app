@@ -36,7 +36,7 @@ export function SortModeToggle({ value, onChange }) {
     <Box flexDirection="row" justifyContent="space-around" sx={{ marginY: 2, display: 'flex' }}>
       <ToggleButtonGroup value={value} exclusive onChange={(e, v) => onChange(v)}>
         { Object.values(SortMode).map(x =>
-          <ToggleButton value={x.key} sx={{ paddingY: 0 }}>{x.label}</ToggleButton>
+          <ToggleButton key={x.key} value={x.key} sx={{ paddingY: 0 }}>{x.label}</ToggleButton>
         )}
       </ToggleButtonGroup>
     </Box>

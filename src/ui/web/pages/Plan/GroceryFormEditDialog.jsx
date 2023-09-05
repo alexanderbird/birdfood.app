@@ -52,7 +52,7 @@ export const GroceryFormEditDialog = ({ open, onCancel, onSave, initialValue }) 
             value={value.Type}
             onChange={(e, x) => setValue(current => ({ ...current, Type: x.props.value }))} label="Type">
             { Object.values(ItemType).map(itemType =>
-              <MenuItem value={itemType.key}><ItemTypeIcon type={itemType.key} /> {itemType.label}</MenuItem>
+              <MenuItem key={itemType.key} value={itemType.key}><ItemTypeIcon type={itemType.key} /> {itemType.label}</MenuItem>
             ) }
           </TextField>
           <TextField
