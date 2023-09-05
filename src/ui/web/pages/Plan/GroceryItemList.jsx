@@ -14,6 +14,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
+import * as colors from '@mui/material/colors';
 
 import { ItemTypeIcon } from '../../components/ItemTypeIcon';
 
@@ -31,7 +32,7 @@ export const GroceryItemList = ({
     <List>
       { items.map(item =>
         <ListItem key={item.value.Id} selected={lastChanged.has(item.value.Id)} divider>
-          <ListItemAvatar><Avatar><ItemTypeIcon type={item.value.Type} /></Avatar></ListItemAvatar>
+          <ListItemAvatar><Avatar sx={{ bgcolor: colors.grey[100] }}><ItemTypeIcon type={item.value.Type} /></Avatar></ListItemAvatar>
           <Box sx={{ flexDirection: 'column', display: 'flex', flexGrow: 1 }}>
             <Link color="inherit" underline="none" onClick={() => doEdit(item.value)}>
               <ListItemText primary={item.label} sx={{ alignSelf: 'flex-start' }} />
