@@ -4,6 +4,8 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
+import { useDialogState } from '../../hooks/useDialogState';
+import { useSerial } from '../../hooks/useSerial';
 import { LabeledValue } from '../../dataStructures/LabeledValue';
 import { Page } from '../../components/Page';
 import { ConfirmDialog } from '../../components/ConfirmDialog.jsx';
@@ -15,19 +17,14 @@ import { lexicalComparison } from './SortMode';
 
 export function Plan({ core }) {
   const [lastChanged, setLastChanged] = useState(new Set());
-  const [serial, setSerial] = useState(Date.now());
-  const triggerUpdate = () => setSerial(Date.now());
+  const [serial, triggerUpdate] = useSerial();
   const [cart, setCart] = useState(core.getEmptyShoppingList());
-  const [editDialogData, setEditDialogData] = useState(false);
-  const editDialogOpen = !!editDialogData;
-  const closeEditDialog = () => setEditDialogData(false);
-  const [confirmEmptyDialogOpen, setConfirmEmptyDialogOpen] = useState(false);
-  const closeConfirmEmptyDialog = () => setConfirmEmptyDialogOpen(false);
-  const openConfirmEmptyDialog = () => setConfirmEmptyDialogOpen(true);
+  const editDialog = useDialogState();
+  const clearListDialog = useDialogState();
 
   const saveEditDialog = item => {
     core.updateItem(item);
-    closeEditDialog();
+    editDialog.close();
     triggerUpdate();
   };
 
@@ -77,21 +74,21 @@ export function Plan({ core }) {
           <GroceryItemInput items={cart.all} onSelect={addItem} onCreate={createItem} />
           <GroceryItemList items={cart.shoppingList}
             lastChanged={lastChanged}
-            removeAll={openConfirmEmptyDialog}
+            removeAll={clearListDialog.open}
             updateQuantity={updateQuantity}
             setQuantity={setQuantity}
             addRecurringItems={addRecurringItems}
             thereAreMoreRecurringItemsToAdd={cart.recurringItemsToAdd.length > 0}
-            doEdit={setEditDialogData}
+            doEdit={editDialog.open}
           />
         </Container>
       }
       dialogs={<>
         <ConfirmDialog
-          open={confirmEmptyDialogOpen}
-          onCancel={closeConfirmEmptyDialog}
+          open={clearListDialog.isOpen}
+          onCancel={clearListDialog.close}
           confirmText="Clear List"
-          onConfirm={() => { clearAll(); closeConfirmEmptyDialog(); }}
+          onConfirm={() => { clearAll(); clearListDialog.close(); }}
         >
           <Typography>
             Do you want to remove
@@ -102,7 +99,7 @@ export function Plan({ core }) {
             from the list?
           </Typography>
         </ConfirmDialog>
-        <GroceryFormEditDialog open={editDialogOpen} onCancel={closeEditDialog} onSave={saveEditDialog} initialValue={editDialogData} />
+        <GroceryFormEditDialog open={editDialog.isOpen} onCancel={editDialog.close} onSave={saveEditDialog} initialValue={editDialog.data} />
       </>}
       />
   );
