@@ -8,4 +8,4 @@ export const Page = ({ header, body, dialogs }) => {
     </Box>
     { dialogs }
   </>);
-}
+};

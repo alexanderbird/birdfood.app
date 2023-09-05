@@ -1,6 +1,4 @@
-import { useState, useEffect } from 'preact/hooks';
-import Box from '@mui/material/Box';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import { useState } from 'preact/hooks';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -9,14 +7,12 @@ import EventRepeatIcon from '@mui/icons-material/EventRepeat';
 
 import { useDialogState } from '../../hooks/useDialogState';
 import { useUpdatingState } from '../../hooks/useUpdatingState';
-import { LabeledValue } from '../../dataStructures/LabeledValue';
 import { Page } from '../../components/Page';
 import { ConfirmDialog } from '../../components/ConfirmDialog.jsx';
 import { GroceryFormEditDialog } from './GroceryFormEditDialog';
 import { GroceryItemInput } from './GroceryItemInput';
 import { GroceryItemList } from './GroceryItemList';
 import { PlanPageHeader } from './PlanPageHeader';
-import { lexicalComparison } from './SortMode';
 
 export function Plan({ core }) {
   const editDialog = useDialogState();
@@ -49,9 +45,9 @@ export function Plan({ core }) {
     core.updateItemAndTimestamp({ Id: id });
     setLastChanged(new Set([id]));
     triggerUpdate();
-  }
+  };
 
-  const updateQuantity = (id, difference, alsoUpdateLastUpdatedDate) => {
+  const updateQuantity = (id, difference) => {
     core.addToItemPlannedQuantity(id, difference);
     setLastChanged(new Set([id]));
     triggerUpdate();
@@ -83,14 +79,16 @@ export function Plan({ core }) {
             setQuantity={setQuantity}
             doEdit={editDialog.open}
             actions={[
-              <Button onClick={addRecurringItems}
+              <Button key="addRecurringItems"
+                onClick={addRecurringItems}
                 disabled={cart.recurringItemsToAdd.length <= 0}
                 startIcon={<EventRepeatIcon />}
-                >Add Recurring Items</Button>,
-              <Button onClick={clearListDialog.open}
+              >Add Recurring Items</Button>,
+              <Button key="openClearListDialog"
+                onClick={clearListDialog.open}
                 disabled={!cart.shoppingList.length}
                 startIcon={<ClearIcon />}
-                >Clear List</Button>,
+              >Clear List</Button>,
             ]}
           />
         </Container>
@@ -113,7 +111,7 @@ export function Plan({ core }) {
         </ConfirmDialog>
         <GroceryFormEditDialog open={editDialog.isOpen} onCancel={editDialog.close} onSave={saveEditDialog} initialValue={editDialog.data} />
       </>}
-      />
+    />
   );
 }
 

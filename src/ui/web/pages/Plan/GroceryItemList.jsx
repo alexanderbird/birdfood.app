@@ -5,12 +5,10 @@ import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import ClearIcon from '@mui/icons-material/Clear';
-import EventRepeatIcon from '@mui/icons-material/EventRepeat';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import List from '@mui/material/List';
 import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
@@ -58,7 +56,7 @@ export const GroceryItemList = ({
         </ListItem>
       ) }
       { actions.filter(x => !!x).map(action => (
-        <ListItem divider>{ action }</ListItem>
+        <ListItem key={action.props.key} divider>{ action }</ListItem>
       ))}
     </List>
   </>);

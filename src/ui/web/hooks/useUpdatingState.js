@@ -7,5 +7,5 @@ export function useUpdatingState(initialState, getState) {
   useEffect(() => {
     setState(getState());
   }, [serial]);
-  return [state, triggerUpdate]
+  return [state, triggerUpdate];
 }

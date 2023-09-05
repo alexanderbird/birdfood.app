@@ -2,7 +2,6 @@ import { Header } from '../../components/Header.jsx';
 
 import Box from '@mui/material/Box';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
 export const PlanPageHeader = ({ cartTotal }) => {
@@ -16,4 +15,4 @@ export const PlanPageHeader = ({ cartTotal }) => {
       </Box>
     </Header>
   );
-}
+};
