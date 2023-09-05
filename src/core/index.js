@@ -30,19 +30,8 @@ export class Core {
     return toAdd.map(x => x.Id);
   }
 
-  addToItemShoppingListQuantity(id, addend, alsoUpdateLastUpdatedDate) {
+  addToItemPlannedQuantity(id, addend) {
     this.data.addItemValue(id, "PlannedQuantity", addend);
-    if (alsoUpdateLastUpdatedDate) {
-      this.data.batchUpdateItems([{
-        id,
-        updates: [
-          {
-            value: this._getCurrentTimestamp(),
-            attributeName: 'LastUpdated',
-          },
-        ]
-      }]);
-    }
   }
 
   removeItemsFromShoppingList(itemIds) {
@@ -69,21 +58,11 @@ export class Core {
     return item;
   }
 
-  setItemPlannedQuantity(id, plannedQuantity) {
-    const lastUpdated = new Date(Date.now()).toISOString();
-    this.data.batchUpdateItems([{
-      id,
-      updates: [
-        {
-          value: lastUpdated,
-          attributeName: 'LastUpdated',
-        },
-        {
-          value: plannedQuantity,
-          attributeName: "PlannedQuantity"
-        }
-      ]
-    }]);
+  updateItemAndTimestamp(attributes) {
+    this.data.updateItem({
+      ...attributes,
+      LastUpdated: this._getCurrentTimestamp(),
+    });
   }
 
   getEmptyShoppingList() {

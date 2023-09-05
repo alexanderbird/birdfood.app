@@ -44,14 +44,21 @@ export function Plan({ core }) {
     document.body.scrollTop = document.documentElement.scrollTop = 0;
   };
 
+  const updateQuantityAndTimestamp = (id, difference) => {
+    core.addToItemPlannedQuantity(id, difference);
+    core.updateItemAndTimestamp({ Id: id });
+    setLastChanged(new Set([id]));
+    triggerUpdate();
+  }
+
   const updateQuantity = (id, difference, alsoUpdateLastUpdatedDate) => {
-    core.addToItemShoppingListQuantity(id, difference, alsoUpdateLastUpdatedDate);
+    core.addToItemPlannedQuantity(id, difference);
     setLastChanged(new Set([id]));
     triggerUpdate();
   };
 
   const setQuantity = (id, quantity) => {
-    core.setItemPlannedQuantity(id, quantity);
+    core.updateItem({ Id: id, PlannedQuantity: quantity });
     setLastChanged(new Set([id]));
     triggerUpdate();
   };
@@ -62,7 +69,7 @@ export function Plan({ core }) {
     triggerUpdate();
   };
 
-  const addItem = item => updateQuantity(item.value.Id, 1, true);
+  const addItem = item => updateQuantityAndTimestamp(item.value.Id, 1);
 
   return (
     <Page
