@@ -4,6 +4,12 @@ export class Core {
     this.shoppingListConsumers = {};
   }
 
+  startShopping() {
+    return {
+      Id: "s-aaaaaaaaaaaa"
+    };
+  }
+
   offShoppingListUpdate(key) {
     delete this.shoppingListConsumers[key];
   }
