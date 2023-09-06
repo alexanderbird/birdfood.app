@@ -9,12 +9,24 @@ describe('core shopping APIs', () => {
     expect(shoppingEvent.Id).toMatch(/^s-[a-z0-9]{12}$/);
   });
 
-  it.skip('generates a new ID each time you start shopping', () => {
+  it('generates a new ID each time you start shopping', () => {
+    const core = new Core(new StaticData());
     const soMany = 10000;
-    const allIds = new Array(soMany)
+    const allIds = Array(soMany).fill()
       .map(() => core.startShopping())
       .map(x => x.Id);
     expect(new Set(allIds).size).toEqual(soMany);
+  });
+
+  it('uses all numbers and letters in the ID generation', () => {
+    const core = new Core(new StaticData());
+    const soMany = 10000;
+    const allIdCharacters = Array(soMany).fill()
+      .map(() => core.startShopping())
+      .flatMap(x => x.Id.replace("s-", "").split(""))
+      .sort();
+    const uniqueCharacters = Array.from(new Set(allIdCharacters)).join("");
+    expect(uniqueCharacters).toEqual("0123456789abcdefghijklmnopqrstuvwxyz")
   });
 
   // can complete items for a shopping event

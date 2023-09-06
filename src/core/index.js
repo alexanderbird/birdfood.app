@@ -6,7 +6,7 @@ export class Core {
 
   startShopping() {
     return {
-      Id: "s-aaaaaaaaaaaa"
+      Id: this._generateId("s-"),
     };
   }
 
@@ -62,7 +62,7 @@ export class Core {
     const item = {
       ...attributes,
       LastUpdated: this._getCurrentTimestamp(),
-      Id: `i-${  (`${Math.random().toString(36)  }00`).slice(2)}`
+      Id: this._generateId("i-"),
     };
     this.data.createItem(item);
     return item;
@@ -123,5 +123,8 @@ export class Core {
     return new Date(Date.now()).toISOString();
   }
 
-
+  _generateId(prefix) {
+    const randomPart = (`${Math.random().toString(36)}00`).slice(2, 14)
+    return prefix + randomPart;
+  }
 }
