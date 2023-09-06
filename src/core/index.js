@@ -27,11 +27,12 @@ export class Core {
 
   addRecurringItems() {
     const toAdd = this.getShoppingList().recurringItemsToAdd;
+    const currentTimestamp = this._getCurrentTimestamp();
     this.data.batchUpdateItems(toAdd.map(item => ({
       id: item.Id,
       updates: [
         {
-          value: this._getCurrentTimestamp(),
+          value: currentTimestamp,
           attributeName: 'LastUpdated',
         },
         {
@@ -52,12 +53,19 @@ export class Core {
   }
 
   removeItemsFromShoppingList(itemIds) {
+    const currentTimestamp = this._getCurrentTimestamp();
     this.data.batchUpdateItems(itemIds.map(id => ({
       id,
-      updates: [{
-        value: 0,
-        attributeName: "PlannedQuantity"
-      }]
+      updates: [
+        {
+          value: currentTimestamp,
+          attributeName: 'LastUpdated',
+        },
+        {
+          value: 0,
+          attributeName: "PlannedQuantity"
+        }
+      ]
     })));
   }
 
