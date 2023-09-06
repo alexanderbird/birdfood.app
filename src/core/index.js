@@ -28,11 +28,35 @@ export class Core {
     }
   }
 
+  buyItem(shoppingEventId, attributes) {
+    if (!shoppingEventId.startsWith("s-")) {
+      throw new Error('Shopping event Id must start with "s-"');
+    }
+    if (!attributes.ItemId) {
+      throw new Error("Missing required attribute 'ItemId'");
+    }
+    if (!attributes.ItemId.startsWith("i-")) {
+      throw new Error('ItemId must start with "i-"');
+    }
+    const shoppingEvent = this.data.getItem(this._withSuffix(shoppingEventId, "#description"));
+    if (!shoppingEvent) {
+      throw new Error(`No such shopping event "${shoppingEventId}"`);
+    }
+    if (shoppingEvent.Status !== "IN_PROGRESS") {
+      throw new Error(`Cannot buy an item for a shopping event with status "${shoppingEvent.Status}"`);
+    }
+    return {
+      Id: [shoppingEventId.replace(/#description$/, ''), attributes.ItemId].join("#"),
+      ...attributes
+    }
+  }
+
   stopShopping(id) {
     const shoppingEvent = this.data.getItem(id);
     if (!shoppingEvent) {
       throw new Error(`Cannot stop Shopping Event ${id}`);
     }
+    this.data.updateItem({ Id: id, Status: "COMPLETE" });
   }
 
   offShoppingListUpdate(key) {
@@ -184,5 +208,12 @@ export class Core {
       timestampPart,
       this._generateId("-", 6)
     ].join("");
+  }
+
+  _withSuffix(id, suffix) {
+    if (id.endsWith(suffix)) {
+      return id;
+    }
+    return id + suffix;
   }
 }

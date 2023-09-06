@@ -15,7 +15,7 @@ describe('core shopping APIs', () => {
   });
 
   describe('starting a shop', () => {
-    // does not allow overriding ID or status
+    it.skip("does not allow overriding ID or status", () => {});
 
     it('generates a shopping ID from the created timestamp and a random part', () => {
       const shoppingEvent = core.startShopping();
@@ -50,9 +50,53 @@ describe('core shopping APIs', () => {
   });
 
   describe('completing items during a shopping event', () => {
-    it.skip("can complete items for a shopping event", () => {});
-    it.skip("does not allow completing items for non-existent shopping events", () => {});
-    it.skip("cannot complete items for a complete shopping event", () => {});
+    it("can complete items for a shopping event", () => {
+      const shoppingEvent = core.startShopping();
+      const itemId = "i-111111111111"
+      const boughtItem = core.buyItem(shoppingEvent.Id, { ItemId: itemId, ActualUnitPrice: 2.21, Quantity: 4 });
+      expect(boughtItem).toEqual({
+        Id: shoppingEvent.Id.replace(/#description$/, '') + "#" + itemId,
+        ItemId: itemId,
+        ActualUnitPrice: 2.21,
+        Quantity: 4
+      });
+    });
+
+    it("requires an ItemId", () => {
+      const shoppingEvent = core.startShopping();
+      expect(() => core.buyItem(shoppingEvent.Id, {}))
+        .toThrow("Missing required attribute 'ItemId'");
+    });
+
+    it("requires an ItemId starting with i-", () => {
+      const shoppingEvent = core.startShopping();
+      expect(() => core.buyItem(shoppingEvent.Id, { ItemId: "x-000000000000" }))
+        .toThrow('ItemId must start with "i-"');
+    });
+
+    it("requires a shopping event Id starting with s-", () => {
+      expect(() => core.buyItem("x-0000", {}))
+        .toThrow('Shopping event Id must start with "s-"');
+    });
+
+    it("does not allow completing items for non-existent shopping events", () => {
+      expect(() => core.buyItem("s-nope", { ItemId: "i-whatever" }))
+        .toThrow('No such shopping event "s-nope"');
+    });
+
+    it("accepts a shopping event Id that does not end in #description", () => {
+      const shoppingEvent = core.startShopping();
+      const idWithoutHashDescription = shoppingEvent.Id.replace(/#description$/, '');
+      expect(() => core.buyItem(idWithoutHashDescription, { ItemId: "i-whatever" }))
+        .not.toThrow();
+    });
+
+    it("cannot complete items for a complete shopping event", () => {
+      const shoppingEvent = core.startShopping();
+      core.stopShopping(shoppingEvent.Id);
+      expect(() => core.buyItem(shoppingEvent.Id, { ItemId: "i-000000000000" }))
+        .toThrow('Cannot buy an item for a shopping event with status "COMPLETE"');
+    });
   });
 
   describe('completing a shopping event', () => {
@@ -67,7 +111,7 @@ describe('core shopping APIs', () => {
         .toThrow("Cannot stop Shopping Event s-nononononono");
     });
 
-    // updates the planned amounts for all completed items
+    it.skip("updates the planned amounts for all completed items", () => {});
 
   });
 
@@ -88,9 +132,17 @@ describe('core shopping APIs', () => {
       });
     });
 
+    it('includes the status for completed events', () => {
+      const { Id } = core.startShopping({ Store: "Costco", EstimatedTotal: 129.5 });
+      core.stopShopping(Id);
+      const { description } = core.getShoppingEvent(Id);
+      expect(description.Status).toEqual("COMPLETE");
+    });
+
     it.skip("includes every planned item", () => {});
     it.skip("includes information about whether each planned item is complete", () => {});
     it.skip("does not include any completed item info from other shopping events", () => {});
+    it.skip("still includes the item details even if it is not part of the plan", () => {});
   });
 
   describe('listing all shopping events', () => {
