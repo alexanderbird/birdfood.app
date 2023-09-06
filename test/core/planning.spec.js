@@ -201,10 +201,76 @@ describe('core planning APIs', () => {
   });
 
   describe("shopping list subscriptions", () => {
-    it.skip("can subscribe to shopping list updates", () => { });
-    it.skip("can unsubscribe to shopping list updates", () => { });
-    it.skip("can override a shopping list update subscription", () => { });
+    async function clearEventQueue() {
+      await new Promise(x => setTimeout(x));
+    }
+
+    function expectedCart(...items) {
+      return {
+        all: items,
+        recurringItems: [],
+        recurringItemsToAdd: [],
+        shoppingList: [],
+        unselectedItems: items,
+        total: 0,
+        totalOfRecurringItems: 0,
+      };
+    }
+    it("can subscribe to shopping list updates", async () => {
+      const apples = core.createItem({ Name: "Apples" });
+      const bananas = core.createItem({ Name: "Bananas" });
+      let cart;
+      core.onShoppingListUpdate("test-subscription", x => { cart = x; });
+      expect(cart).toBeUndefined();
+      core.getShoppingList()
+      await clearEventQueue();
+      expect(cart).toEqual(expectedCart(apples, bananas));
+      const applesUpdated = { ...apples, Name: "Apples (Fuji)" };
+      core.updateItem(applesUpdated);
+      await clearEventQueue();
+      expect(cart).toEqual(expectedCart(apples, bananas));
+      core.getShoppingList()
+      await clearEventQueue();
+      expect(cart).toEqual(expectedCart(applesUpdated, bananas));
+    });
+
+    it("can subscribe multiple times to shopping list updates", async () => {
+      let cart1;
+      let cart2;
+      core.onShoppingListUpdate("the-first", x => { cart1 = x; });
+      core.onShoppingListUpdate("the-second", x => { cart2 = x; });
+      const item = core.createItem({ Name: "X" });
+      core.getShoppingList()
+      await clearEventQueue();
+      expect(cart1.all).toEqual([item]);
+      expect(cart2.all).toEqual([item]);
+    });
+
+    it("can unsubscribe to shopping list updates", async () => {
+      let cart;
+      core.onShoppingListUpdate("test-subscription", x => { cart = x; });
+      const item = core.createItem({ Name: "X" });
+      core.getShoppingList()
+      await clearEventQueue();
+      expect(cart.all).toEqual([item]);
+      core.offShoppingListUpdate("test-subscription");
+      core.createItem({ Name: "Y" });
+      core.getShoppingList()
+      await clearEventQueue();
+      expect(cart.all).toEqual([item]);
+    });
+
+    it("can override a shopping list update subscription", async () => {
+      const calls = [];
+      core.onShoppingListUpdate("test-subscription", () => calls.push("first"));
+      core.getShoppingList()
+      await clearEventQueue();
+      core.onShoppingListUpdate("test-subscription", () => calls.push("second"));
+      core.getShoppingList()
+      await clearEventQueue();
+      expect(calls).toEqual(["first", "second"]);
+    });
   });
 
-  // everything is async
+  // TODO: everything should be async to prepare for a real database
 });
