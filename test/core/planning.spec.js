@@ -1,4 +1,5 @@
 import { EmptyStaticData } from '../../src/data/static';
+import { SteppingChronometer } from '../../src/core/Chronometer';
 import { Core } from '../../src/core';
 import { describe, it, expect, beforeEach } from 'vitest';
 
@@ -6,7 +7,7 @@ describe('core planning APIs', () => {
   let core;
 
   beforeEach(() => {
-    core = new Core(new EmptyStaticData());
+    core = new Core(new EmptyStaticData(), new SteppingChronometer());
   });
 
   describe("create, read, and update operations", () => {
@@ -35,7 +36,52 @@ describe('core planning APIs', () => {
         .toThrow("Name is required.");
     });
 
-    it.skip("can update an item and the item timestamp", () => { });
+    it("can create an item with only a name", () => {
+      const item = core.createItem({ Name: "jam" });
+      expect(item).toEqual({
+        Id: item.Id,
+        Name: "jam",
+        LastUpdated: "0000-00-00T00:00:000Z",
+        PlannedQuantity: 0,
+        RecurringQuantity: 0,
+        Type: "OTHER"
+      });
+    });
+
+    it("can update an item and the item timestamp", () => {
+      const originalItem = core.createItem({ Name: "jam" });
+      core.updateItemAndTimestamp({ Id: originalItem.Id, Name: "Strawberry Jam" });
+      expect(core.getItem(originalItem.Id)).toEqual({
+        ...originalItem,
+        Name: "Strawberry Jam",
+        LastUpdated: "0000-00-00T00:00:001Z"
+      });
+    });
+
+    it("prevents overriding timestamp when updating", () => {
+      const originalItem = core.createItem({ Name: "jam" });
+      core.updateItemAndTimestamp({
+        Id: originalItem.Id,
+        Name: "Strawberry Jam",
+        LastUpdated: "1111-11-11T11:11:111Z"
+      });
+      expect(core.getItem(originalItem.Id)).toEqual({
+        ...originalItem,
+        Name: "Strawberry Jam",
+        LastUpdated: "0000-00-00T00:00:001Z"
+      });
+    });
+
+    it("can update an item without changing the timestamp", () => {
+      const originalItem = core.createItem({ Name: "jam" });
+      core.updateItem({ Id: originalItem.Id, Name: "Strawberry Jam" });
+      expect(core.getItem(originalItem.Id)).toEqual({
+        ...originalItem,
+        Name: "Strawberry Jam",
+        LastUpdated: "0000-00-00T00:00:000Z"
+      });
+    });
+
     it.skip("generates an Id on create", () => {});
     it.skip("generates an Id on create (even if one was passed as an argument)", () => {});
     it.skip("sets the timestamp on create", () => {});

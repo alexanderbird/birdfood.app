@@ -16,7 +16,7 @@ export function usePlanState(core) {
 
   const GroceryItemEditFormDialogForPlan = useGroceryItemEditFormDialog({
     onSave: item => {
-      core.updateItem(item);
+      core.updateItemAndTimestamp(item);
       onItemsModified(item.Id);
     }
   });

@@ -1,5 +1,8 @@
+import { Chronometer } from './Chronometer';
+
 export class Core {
-  constructor(data) {
+  constructor(data, chronometer) {
+    this.chronometer = chronometer || new Chronometer();
     this.data = data;
     this.shoppingListConsumers = {};
   }
@@ -76,7 +79,7 @@ export class Core {
       Id: this._generateId("i-"),
     };
     this.data.createItem(item);
-    return item;
+    return this._supplyMissingFields(item);
   }
 
   updateItemAndTimestamp(attributes) {
@@ -131,7 +134,7 @@ export class Core {
   }
 
   _getCurrentTimestamp() {
-    return new Date(Date.now()).toISOString();
+    return this.chronometer.getCurrentTimestamp();
   }
 
   _generateId(prefix) {

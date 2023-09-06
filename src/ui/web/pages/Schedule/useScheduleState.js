@@ -15,7 +15,7 @@ export function useScheduleState(core) {
 
   const GroceryItemEditFormDialogForSchedule = useGroceryItemEditFormDialog({
     onSave: item => {
-      core.updateItem(item);
+      core.updateItemAndTimestamp(item);
       onItemsModified(item.Id);
     }
   });
