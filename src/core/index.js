@@ -94,12 +94,14 @@ export class Core {
     const shoppingList = [];
     const unselectedItems = [];
     let total = 0;
+    let totalOfRecurringItems = 0;
     const recurringItemsToAdd = [];
     const recurringItems = [];
     this.data.listItems().map(item => this._supplyMissingFields(item)).forEach(item => {
       all.push(item);
       if (item.RecurringQuantity) {
         recurringItems.push(item);
+        totalOfRecurringItems += item.RecurringQuantity * item.UnitPriceEstimate;
 
         if (item.PlannedQuantity < item.RecurringQuantity) {
           recurringItemsToAdd.push(item);
@@ -112,7 +114,7 @@ export class Core {
         unselectedItems.push(item);
       }
     });
-    const result = { all, shoppingList, unselectedItems, recurringItems, recurringItemsToAdd, total };
+    const result = { all, shoppingList, unselectedItems, recurringItems, recurringItemsToAdd, total, totalOfRecurringItems };
     setTimeout(() => {
       Object.values(this.shoppingListConsumers).forEach(consumer => consumer.consumeShoppingList(result));
     });
@@ -124,6 +126,7 @@ export class Core {
       LastUpdated: '0000-00-00T00:00:00.000Z',
       PlannedQuantity: 0,
       RecurringQuantity: 0,
+      UnitPriceEstimate: 0,
       Type: "OTHER",
       ...item
     };

@@ -44,6 +44,7 @@ describe('core planning APIs', () => {
         LastUpdated: "0000-00-00T00:00:000Z",
         PlannedQuantity: 0,
         RecurringQuantity: 0,
+        UnitPriceEstimate: 0,
         Type: "OTHER"
       });
     });
@@ -58,12 +59,14 @@ describe('core planning APIs', () => {
         Name: "jam",
         PlannedQuantity: 3,
         RecurringQuantity: 8,
+        UnitPriceEstimate: 2.7,
         Type: "DRY_GOOD"
       });
       expect(item).toEqual({
         Id: item.Id,
         LastUpdated: "0000-00-00T00:00:000Z",
         Name: "jam",
+        UnitPriceEstimate: 2.7,
         PlannedQuantity: 3,
         RecurringQuantity: 8,
         Type: "DRY_GOOD"
@@ -115,8 +118,32 @@ describe('core planning APIs', () => {
     });
   });
 
+  function createItem(core, UnitPriceEstimate, PlannedQuantity, RecurringQuantity, Name, Type) {
+    return core.createItem({ Name, UnitPriceEstimate, PlannedQuantity, RecurringQuantity, Type });
+  }
+
   describe("list operations", () => {
-    it.skip("can retrieve a full shopping list", () => { });
+    it("can retrieve a full shopping list", () => {
+
+      // UnitPriceEstimate, PlannedQuantity, RecurringQuantity, Name, Type
+      // __________________ ________________ __________________ _____ ____
+      const i1 = createItem(core, 1.50, 2, 2, "apples"        , "PRODUCE");
+      const i2 = createItem(core, 2.50, 2, 1, "bananas"       , "PRODUCE");
+      const i3 = createItem(core, 3.50, 1, 2, "carrots"       , "PRODUCE");
+      const i4 = createItem(core, 6.00, 0, 2, "donuts (dozen)", "BAKERY");
+      const i5 = createItem(core, 8.00, 2, 0, "eggs (dozen)"  , "DAIRY");
+
+      const cart = core.getShoppingList();
+      expect(cart).toEqual({
+        all: [i1, i2, i3, i4, i5],
+        recurringItems: [i1, i2, i3, i4],
+        recurringItemsToAdd: [i3, i4],
+        shoppingList: [i1, i2, i3, i5],
+        unselectedItems: [i4],
+        total: 27.5,
+        totalOfRecurringItems: 24.5,
+      });
+    });
   });
 
   describe("advaned operations", () => {

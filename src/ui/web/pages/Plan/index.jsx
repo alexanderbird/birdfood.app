@@ -18,7 +18,7 @@ export function Plan({ core }) {
   return (
     <Page
       isLoading={!cart}
-      header={<PlanPageHeader cartTotal={cart.total} />}
+      header={<PlanPageHeader cartTotal={cart?.total || 0} />}
       body={() => 
         <Container>
           <AutocompleteForPlanning

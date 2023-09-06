@@ -17,7 +17,7 @@ export function Schedule({ core }) {
   return (
     <Page
       isLoading={!cart}
-      header={<SchedulePageHeader cartTotal={cart.total} />}
+      header={<SchedulePageHeader cartTotal={cart?.totalOfRecurringItems || 0} />}
       body={() =>
         <Container>
           <AutocompleteForScheduling
