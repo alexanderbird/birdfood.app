@@ -18,36 +18,51 @@ export class Core {
     return shoppingEvent;
   }
 
-  getShoppingEvent(Id) {
-    if (!Id.match(/^s-.*#description$/)) {
-      throw new Error('The shopping event description ID must start with "s-" and end with "#description"');
-    }
-    const description = this.data.getItem(Id);
-    return {
-      description
-    }
-  }
-
   buyItem(shoppingEventId, attributes) {
+    const itemId = attributes.ItemId;
     if (!shoppingEventId.startsWith("s-")) {
       throw new Error('Shopping event Id must start with "s-"');
     }
-    if (!attributes.ItemId) {
+    if (!itemId) {
       throw new Error("Missing required attribute 'ItemId'");
     }
-    if (!attributes.ItemId.startsWith("i-")) {
+    if (!itemId.startsWith("i-")) {
       throw new Error('ItemId must start with "i-"');
     }
-    const shoppingEvent = this.data.getItem(this._withSuffix(shoppingEventId, "#description"));
+    const fullShoppingEventId = this._withSuffix(shoppingEventId, "#description");
+    const shoppingEvent = this.data.getItem(fullShoppingEventId);
     if (!shoppingEvent) {
-      throw new Error(`No such shopping event "${shoppingEventId}"`);
+      throw new Error(`No such shopping event "${fullShoppingEventId}"`);
     }
     if (shoppingEvent.Status !== "IN_PROGRESS") {
       throw new Error(`Cannot buy an item for a shopping event with status "${shoppingEvent.Status}"`);
     }
-    return {
-      Id: [shoppingEventId.replace(/#description$/, ''), attributes.ItemId].join("#"),
+    const idSuffix = '#' + itemId;
+    const boughtItem = {
+      Id: fullShoppingEventId.replace(/#description$/, idSuffix),
       ...attributes
+    }
+    this.data.createItem(boughtItem);
+    return boughtItem;
+  }
+
+  getShoppingEvent(id) {
+    if (!id.match(/^s-.*#description$/)) {
+      throw new Error('The shopping event description ID must start with "s-" and end with "#description"');
+    }
+    const description = this.data.getItem(id);
+    const list = this.data.listItems("i-")
+      .filter(x => x.PlannedQuantity)
+      .map(plannedItem => ({
+        Id: plannedItem.Id,
+        Name: plannedItem.Name,
+        RequiredQuantity: plannedItem.PlannedQuantity,
+        UnitPriceEstimate: plannedItem.UnitPriceEstimate,
+        BoughtQuantity: 0,
+      }));
+    return {
+      description,
+      list
     }
   }
 
