@@ -32,6 +32,7 @@ export const GroceryListForPlanning = ({ items,
 
   return (
     <GroceryItemList items={items}
+      getQuantityForItem={item => item.PlannedQuantity}
       recentlyChangedItems={recentlyChangedItems}
       updateQuantity={updateQuantity}
       setQuantity={setQuantity}

@@ -21,6 +21,7 @@ import { LabeledValue } from '../../dataStructures/LabeledValue';
 
 export const GroceryItemList = ({
   items,
+  getQuantityForItem,
   updateQuantity,
   setQuantity,
   actions,
@@ -30,7 +31,7 @@ export const GroceryItemList = ({
   const [sortMode, setSortMode] = useState(SortMode.NEWEST_FIRST.key);
 
   const MinusIcon = ({ item }) =>
-    item.value.PlannedQuantity > 1
+    getQuantityForItem(item.value) > 1
       ? <RemoveIcon sx={{ fontSize: 14 }} />
       : <ClearIcon sx={{ fontSize: 14 }} />;
 
@@ -49,7 +50,7 @@ export const GroceryItemList = ({
             </Link>
             <ButtonGroup sx={{ width: '100%', justifyContent: 'flex-end' }}>
               <Button onClick={() => updateQuantity(item.value.Id, -1)}><MinusIcon item={item} /></Button>
-              <QuantitySelector value={item.value.PlannedQuantity} onChange={quantity => setQuantity(item.value.Id, quantity)} />
+              <QuantitySelector value={getQuantityForItem(item.value)} onChange={quantity => setQuantity(item.value.Id, quantity)} />
               <Button onClick={() => updateQuantity(item.value.Id, 1)}><AddIcon sx={{ fontSize: 14 }} /></Button>
             </ButtonGroup>
           </Box>

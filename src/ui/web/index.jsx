@@ -21,7 +21,7 @@ export function App() {
       <Box>
         <Box sx={{ pb: 8 }}>
           <Router>
-            <Route path="/schedule" component={Schedule} />
+            <Schedule path="/schedule" core={core} />
             <Plan path="/plan" core={core} />
             <Route path="/shop" component={Placeholder} />
             <Route default component={NotFound} />

@@ -34,6 +34,10 @@ export class Core {
     this.data.addItemValue(id, "PlannedQuantity", addend);
   }
 
+  addToItemRecurringQuantity(id, addend) {
+    this.data.addItemValue(id, "RecurringQuantity", addend);
+  }
+
   removeItemsFromShoppingList(itemIds) {
     this.data.batchUpdateItems(itemIds.map(id => ({
       id,
@@ -66,7 +70,7 @@ export class Core {
   }
 
   getEmptyShoppingList() {
-    return { all: [], shoppingList: [], unselectedItems: [], recurringItemsToAdd: [], total: 0 };
+    return { all: [], shoppingList: [], unselectedItems: [], recurringItems: [], recurringItemsToAdd: [], total: 0 };
   }
 
   getShoppingList() {
@@ -75,10 +79,15 @@ export class Core {
     const unselectedItems = [];
     let total = 0;
     const recurringItemsToAdd = [];
+    const recurringItems = [];
     this.data.listItems().map(item => this._supplyMissingFields(item)).forEach(item => {
       all.push(item);
-      if (item.PlannedQuantity < item.RecurringQuantity) {
-        recurringItemsToAdd.push(item);
+      if (item.RecurringQuantity) {
+        recurringItems.push(item);
+
+        if (item.PlannedQuantity < item.RecurringQuantity) {
+          recurringItemsToAdd.push(item);
+        }
       }
       if (item.PlannedQuantity) {
         shoppingList.push(item);
@@ -87,7 +96,7 @@ export class Core {
         unselectedItems.push(item);
       }
     });
-    const result = { all, shoppingList, unselectedItems, recurringItemsToAdd, total };
+    const result = { all, shoppingList, unselectedItems, recurringItems, recurringItemsToAdd, total };
     setTimeout(() => {
       Object.values(this.shoppingListConsumers).forEach(consumer => consumer.consumeShoppingList(result));
     });
