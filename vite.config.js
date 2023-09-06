@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [preact()],
   test: {
     coverage: {
+      all: true,
       provider: 'istanbul',
       reporter: ['html'],
     },

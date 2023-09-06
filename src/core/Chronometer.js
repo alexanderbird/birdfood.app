@@ -15,6 +15,6 @@ export class SteppingChronometer {
   getCurrentTimestamp() {
     const milliseconds = this.step.toString().padStart(3, "0");
     this.step += 1;
-    return `0000-00-00T00:00:${milliseconds}Z`;
+    return `0000-00-00T00:00:00.${milliseconds}Z`;
   }
 }

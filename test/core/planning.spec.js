@@ -41,7 +41,7 @@ describe('core planning APIs', () => {
       expect(item).toEqual({
         Id: item.Id,
         Name: "jam",
-        LastUpdated: "0000-00-00T00:00:000Z",
+        LastUpdated: "0000-00-00T00:00:00.000Z",
         PlannedQuantity: 0,
         RecurringQuantity: 0,
         UnitPriceEstimate: 0,
@@ -64,7 +64,7 @@ describe('core planning APIs', () => {
       });
       expect(item).toEqual({
         Id: item.Id,
-        LastUpdated: "0000-00-00T00:00:000Z",
+        LastUpdated: "0000-00-00T00:00:00.000Z",
         Name: "jam",
         UnitPriceEstimate: 2.7,
         PlannedQuantity: 3,
@@ -80,7 +80,7 @@ describe('core planning APIs', () => {
 
     it("sets the timestamp on create (even if one was passed as an argument)", () => {
       const { LastUpdated } = core.createItem({ LastUpdated: "1111-11-11T11:11:111Z", Name: "jam" });
-      expect(LastUpdated).toEqual("0000-00-00T00:00:000Z");
+      expect(LastUpdated).toEqual("0000-00-00T00:00:00.000Z");
     });
 
     it("can update an item and the item timestamp", () => {
@@ -89,7 +89,7 @@ describe('core planning APIs', () => {
       expect(core.getItem(originalItem.Id)).toEqual({
         ...originalItem,
         Name: "Strawberry Jam",
-        LastUpdated: "0000-00-00T00:00:001Z"
+        LastUpdated: "0000-00-00T00:00:00.001Z"
       });
     });
 
@@ -103,7 +103,7 @@ describe('core planning APIs', () => {
       expect(core.getItem(originalItem.Id)).toEqual({
         ...originalItem,
         Name: "Strawberry Jam",
-        LastUpdated: "0000-00-00T00:00:001Z"
+        LastUpdated: "0000-00-00T00:00:00.001Z"
       });
     });
 
@@ -113,7 +113,7 @@ describe('core planning APIs', () => {
       expect(core.getItem(originalItem.Id)).toEqual({
         ...originalItem,
         Name: "Strawberry Jam",
-        LastUpdated: "0000-00-00T00:00:000Z"
+        LastUpdated: "0000-00-00T00:00:00.000Z"
       });
     });
   });
@@ -155,12 +155,12 @@ describe('core planning APIs', () => {
       const i3Updated = {
         ...i3,
         PlannedQuantity: 2,
-        LastUpdated: "0000-00-00T00:00:006Z"
+        LastUpdated: "0000-00-00T00:00:00.006Z"
       }
       const i4Updated = {
         ...i4,
         PlannedQuantity: 2,
-        LastUpdated: "0000-00-00T00:00:006Z"
+        LastUpdated: "0000-00-00T00:00:00.006Z"
       }
       expect(cart).toEqual({
         all: [i1, i2, i3Updated, i4Updated, i5, i6],
@@ -180,12 +180,12 @@ describe('core planning APIs', () => {
       const i2Updated = {
         ...i2,
         PlannedQuantity: 0,
-        LastUpdated: "0000-00-00T00:00:006Z"
+        LastUpdated: "0000-00-00T00:00:00.006Z"
       }
       const i3Updated = {
         ...i3,
         PlannedQuantity: 0,
-        LastUpdated: "0000-00-00T00:00:006Z"
+        LastUpdated: "0000-00-00T00:00:00.006Z"
       }
       const cart = core.getShoppingList();
       expect(cart).toEqual({
