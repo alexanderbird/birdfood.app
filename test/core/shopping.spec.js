@@ -121,41 +121,48 @@ describe('core shopping APIs', () => {
         .toThrow('The shopping event description ID must start with "s-" and end with "#description"');
     });
 
-    it('includes the event description', () => {
-      const { Id } = core.startShopping({ Store: "Costco", EstimatedTotal: 129.5 });
-      const { description } = core.getShoppingEvent(Id);
-      expect(description).toEqual({
-        Id,
-        Store: "Costco",
-        Status: "IN_PROGRESS",
-        EstimatedTotal: 129.5,
+    describe('description', () => {
+      it('includes the event information', () => {
+        const { Id } = core.startShopping({ Store: "Costco", EstimatedTotal: 129.5 });
+        const { description } = core.getShoppingEvent(Id);
+        expect(description).toEqual({
+          Id,
+          Store: "Costco",
+          Status: "IN_PROGRESS",
+          EstimatedTotal: 129.5,
+        });
+      });
+
+      it('includes the status for completed events', () => {
+        const { Id } = core.startShopping({ Store: "Costco", EstimatedTotal: 129.5 });
+        core.stopShopping(Id);
+        const { description } = core.getShoppingEvent(Id);
+        expect(description.Status).toEqual("COMPLETE");
       });
     });
 
-    it('includes the status for completed events', () => {
-      const { Id } = core.startShopping({ Store: "Costco", EstimatedTotal: 129.5 });
-      core.stopShopping(Id);
-      const { description } = core.getShoppingEvent(Id);
-      expect(description.Status).toEqual("COMPLETE");
+    describe('list', () => {
+      it("includes every planned item from before and after the start of shopping", () => {
+        const { Id: idForApples } = core.createItem({ Name: "Apples", PlannedQuantity: 2, UnitPriceEstimate: 0.60 });
+        const { Id: idForBananas } = core.createItem({ Name: "Bananas (bunch)", PlannedQuantity: 1, UnitPriceEstimate: 2.01 });
+        const { Id } = core.startShopping();
+        const { Id: idForCarrots } = core.createItem({ Name: "Carrots", PlannedQuantity: 3, UnitPriceEstimate: 1.00 });
+        const { list } = core.getShoppingEvent(Id);
+        expect(list).toEqual([
+          { Id: idForApples, Name: "Apples", RequiredQuantity: 2, BoughtQuantity: 0, UnitPriceEstimate: 0.60 },
+          { Id: idForBananas, Name: "Bananas (bunch)", RequiredQuantity: 1, BoughtQuantity: 0, UnitPriceEstimate: 2.01 },
+          { Id: idForCarrots, Name: "Carrots", RequiredQuantity: 3, BoughtQuantity: 0, UnitPriceEstimate: 1.00 }
+        ]);
+      });
+
+      it.skip("includes information about whether each planned item is complete", () => {});
+      it.skip("still includes the item details even if it is not part of the plan", () => {});
+      it.skip("does not include any completed item info from other shopping events", () => {});
     });
 
-    it("includes every planned item from before and after the start of shopping", () => {
-      const { Id: idForApples } = core.createItem({ Name: "Apples", PlannedQuantity: 2, UnitPriceEstimate: 0.60 });
-      const { Id: idForBananas } = core.createItem({ Name: "Bananas (bunch)", PlannedQuantity: 1, UnitPriceEstimate: 2.01 });
-      const { Id } = core.startShopping();
-      const { Id: idForCarrots } = core.createItem({ Name: "Carrots", PlannedQuantity: 3, UnitPriceEstimate: 1.00 });
-      const { list } = core.getShoppingEvent(Id);
-      expect(list).toEqual([
-        { Id: idForApples, Name: "Apples", RequiredQuantity: 2, BoughtQuantity: 0, UnitPriceEstimate: 0.60 },
-        { Id: idForBananas, Name: "Bananas (bunch)", RequiredQuantity: 1, BoughtQuantity: 0, UnitPriceEstimate: 2.01 },
-        { Id: idForCarrots, Name: "Carrots", RequiredQuantity: 3, BoughtQuantity: 0, UnitPriceEstimate: 1.00 }
-      ]);
+    describe('statistics', () => {
+      it.skip("includes totals for the cost of the whole shop and for what has been bought already", () => {});
     });
-
-    it.skip("includes information about whether each planned item is complete", () => {});
-    it.skip("includes totals for the cost of the whole shop and for what has been bought already", () => {});
-    it.skip("does not include any completed item info from other shopping events", () => {});
-    it.skip("still includes the item details even if it is not part of the plan", () => {});
   });
 
   describe('listing all shopping events', () => {
