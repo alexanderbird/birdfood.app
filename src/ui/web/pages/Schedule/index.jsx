@@ -16,8 +16,9 @@ export function Schedule({ core }) {
 
   return (
     <Page
+      isLoading={!cart}
       header={<SchedulePageHeader cartTotal={cart.total} />}
-      body={
+      body={() =>
         <Container>
           <AutocompleteForScheduling
             core={core}
@@ -35,7 +36,7 @@ export function Schedule({ core }) {
           />
         </Container>
       }
-      dialogs={<>
+      dialogs={() => <>
         <GroceryItemEditFormDialogForSchedule />
       </>}
     />

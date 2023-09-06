@@ -6,7 +6,7 @@ import { useClearListDialog } from '../../components/ClearListDialog';
 
 export function usePlanState(core) {
   const [recentlyChangedItems, setLastChanged] = useState(new Set());
-  const [cart, triggerUpdate] = useUpdatingState(core.getEmptyShoppingList(), () => core.getShoppingList());
+  const [cart, triggerUpdate] = useUpdatingState(false, () => core.getShoppingList());
 
   const onItemsModified = idOrIds => {
     const ids = Array.isArray(idOrIds) ? idOrIds : [idOrIds];

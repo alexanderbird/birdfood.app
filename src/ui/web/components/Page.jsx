@@ -1,11 +1,12 @@
 import Box from '@mui/material/Box';
+import { Spinner } from './Spinner';
 
-export const Page = ({ header, body, dialogs }) => {
+export const Page = ({ isLoading, header, body, dialogs }) => {
   return (<>
     { header }
     <Box sx={{ width: '100%', maxWidth: 520, marginX: 'auto', bgcolor: 'background.paper' }}>
-      { body }
+      { isLoading ? <Spinner /> : body() }
     </Box>
-    { dialogs }
+    { isLoading ? null : dialogs() }
   </>);
 };

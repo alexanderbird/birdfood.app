@@ -115,14 +115,13 @@ describe('core planning APIs', () => {
     });
   });
 
+  describe("list operations", () => {
+    it.skip("can retrieve a full shopping list", () => { });
+  });
+
   describe("advaned operations", () => {
     it.skip("can add all recurring items to the plan", () => { });
     it.skip("can remove a batch of items from the plan", () => { });
-  });
-
-  describe("list operations", () => {
-    it.skip("can retrieve an empty shopping list", () => { });
-    it.skip("can retrieve a full shopping list", () => { });
   });
 
   describe('subscribing to changes', () => {

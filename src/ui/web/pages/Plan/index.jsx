@@ -17,8 +17,9 @@ export function Plan({ core }) {
 
   return (
     <Page
+      isLoading={!cart}
       header={<PlanPageHeader cartTotal={cart.total} />}
-      body={
+      body={() => 
         <Container>
           <AutocompleteForPlanning
             core={core}
@@ -36,7 +37,7 @@ export function Plan({ core }) {
           />
         </Container>
       }
-      dialogs={<>
+      dialogs={() => <>
         <ClearListDialogForPlan itemsCount={cart.shoppingList.length} />
         <GroceryItemEditFormDialogForPlan />
       </>}

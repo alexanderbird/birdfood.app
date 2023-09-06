@@ -89,10 +89,6 @@ export class Core {
     });
   }
 
-  getEmptyShoppingList() {
-    return { all: [], shoppingList: [], unselectedItems: [], recurringItems: [], recurringItemsToAdd: [], total: 0 };
-  }
-
   getShoppingList() {
     const all = [];
     const shoppingList = [];
