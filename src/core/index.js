@@ -58,11 +58,18 @@ export class Core {
     })));
   }
 
+  getItem(id) {
+    return this._supplyMissingFields(this.data.getItem(id));
+  }
+
   updateItem(attributes) {
     this.data.updateItem(attributes);
   }
 
   createItem(attributes) {
+    if (!attributes.Name) {
+      throw new Error("Name is required.");
+    }
     const item = {
       ...attributes,
       LastUpdated: this._getCurrentTimestamp(),

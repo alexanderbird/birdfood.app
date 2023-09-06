@@ -1,16 +1,16 @@
-import { StaticData } from '../../src/data/static';
+import { EmptyStaticData } from '../../src/data/static';
 import { Core } from '../../src/core';
 import { describe, it, expect } from 'vitest';
 
 describe('core shopping APIs', () => {
   it('generates a reasonable ID when you start shopping', () => {
-    const core = new Core(new StaticData());
+    const core = new Core(new EmptyStaticData());
     const shoppingEvent = core.startShopping();
     expect(shoppingEvent.Id).toMatch(/^s-[a-z0-9]{12}$/);
   });
 
   it('generates a new ID each time you start shopping', () => {
-    const core = new Core(new StaticData());
+    const core = new Core(new EmptyStaticData());
     const soMany = 10000;
     const allIds = Array(soMany).fill()
       .map(() => core.startShopping())
@@ -19,7 +19,7 @@ describe('core shopping APIs', () => {
   });
 
   it('uses all numbers and letters in the ID generation', () => {
-    const core = new Core(new StaticData());
+    const core = new Core(new EmptyStaticData());
     const soMany = 10000;
     const allIdCharacters = Array(soMany).fill()
       .map(() => core.startShopping())
@@ -30,7 +30,7 @@ describe('core shopping APIs', () => {
   });
 
   it("does not allow completing a non-existent shopping event", () => {
-    const core = new Core(new StaticData());
+    const core = new Core(new EmptyStaticData());
    expect(() => core.stopShopping("s-nononononono"))
       .toThrow("Cannot stop Shopping Event s-nononononono");
   });

@@ -1,8 +1,8 @@
 import staticItems from './items.json';
 
-export class StaticData {
-  constructor() {
-    this.items = staticItems;
+export class EmptyStaticData {
+  constructor(items) {
+    this.items = items || [];
   }
 
   updateItem({ Id, ...attributes }) {
@@ -10,6 +10,10 @@ export class StaticData {
       this.items.find(x => x.Id === Id),
       attributes
     );
+  }
+
+  getItem(id) {
+    return this.items.find(x => x.Id === id);
   }
 
   createItem(attributes) {
@@ -36,3 +40,10 @@ export class StaticData {
     return this.items;
   }
 }
+
+export class StaticData extends EmptyStaticData {
+  constructor() {
+    super(staticItems);
+  }
+}
+
