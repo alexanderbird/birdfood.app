@@ -36,8 +36,8 @@ export class EmptyStaticData {
     });
   }
 
-  listItems() {
-    return this.items;
+  listItems(prefix) {
+    return this.items.filter(x => x.Id.startsWith(prefix));
   }
 }
 

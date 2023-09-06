@@ -5,9 +5,11 @@ import { describe, it, expect, beforeEach } from 'vitest';
 
 describe('core planning APIs', () => {
   let core;
+  let data;
 
   beforeEach(() => {
-    core = new Core(new EmptyStaticData(), new SteppingChronometer());
+    data = new EmptyStaticData();
+    core = new Core(data, new SteppingChronometer());
   });
 
   describe("create, read, and update operations", () => {
@@ -52,6 +54,24 @@ describe('core planning APIs', () => {
     it("generates an Id on create", () => {
       const item = core.createItem({ Name: "jam" });
       expect(item.Id).toMatch(/^i-[a-z0-9]{12}$/);
+    });
+
+    it('generates a unique Id each time you create', () => {
+      const soMany = 10000;
+      const allIds = Array(soMany).fill()
+        .map(() => core.createItem({ Name: "Pears" }))
+        .map(x => x.Id);
+      expect(new Set(allIds).size).toEqual(soMany);
+    });
+
+    it('uses all numbers and letters in the ID generation', () => {
+      const soMany = 10000;
+      const allIdCharacters = Array(soMany).fill()
+        .map(() => core.createItem({ Name: "Pears" }))
+        .flatMap(x => x.Id.replace("i-", "").split(""))
+        .sort();
+      const uniqueCharacters = Array.from(new Set(allIdCharacters)).join("");
+      expect(uniqueCharacters).toEqual("0123456789abcdefghijklmnopqrstuvwxyz")
     });
 
     it("accepts all properties other than Id and Timestamp on create", () => {
@@ -147,6 +167,15 @@ describe('core planning APIs', () => {
         total: 27.5,
         totalOfRecurringItems: 24.5,
       });
+    });
+
+    it("includes only item entries when listing items (other database entries are ignored)", () => {
+      data.createItem({ Id: "x-123" });
+      data.createItem({ Id: "whatever" });
+      data.createItem({ Id: "ix000000000000" });
+      data.createItem({ Id: "I-000000000000" });
+      const cart = core.getShoppingList();
+      expect(cart.all).toEqual([i1, i2, i3, i4, i5, i6]);
     });
 
     it("can add all recurring items to the plan", () => {

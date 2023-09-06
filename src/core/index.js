@@ -9,7 +9,7 @@ export class Core {
 
   startShopping() {
     const shoppingEvent = {
-      Id: this._generateId("s-"),
+      Id: this._generateTimestampId("s-", 4),
     };
     this.shoppingEvent = shoppingEvent;
     this.data.createItem(shoppingEvent);
@@ -90,7 +90,7 @@ export class Core {
     const item = {
       ...attributes,
       LastUpdated: this._getCurrentTimestamp(),
-      Id: this._generateId("i-"),
+      Id: this._generateId("i-", 12),
     };
     this.data.createItem(item);
     return this._supplyMissingFields(item);
@@ -111,7 +111,7 @@ export class Core {
     let totalOfRecurringItems = 0;
     const recurringItemsToAdd = [];
     const recurringItems = [];
-    this.data.listItems().map(item => this._supplyMissingFields(item)).forEach(item => {
+    this.data.listItems("i-").map(item => this._supplyMissingFields(item)).forEach(item => {
       all.push(item);
       if (item.RecurringQuantity) {
         recurringItems.push(item);
@@ -150,11 +150,22 @@ export class Core {
     return this.chronometer.getCurrentTimestamp();
   }
 
-  _generateId(prefix) {
+  _generateId(prefix, length) {
     const randomPart = (
       Math.random().toString(36).slice(2)
       + Math.random().toString(36).slice(2)
-    ).slice(0, 12);
+    ).slice(0, length);
     return prefix + randomPart;
+  }
+
+  _generateTimestampId(prefix) {
+    const timestampPart = this._getCurrentTimestamp()
+      .replace(/\d\d\.\d\d\dZ/, '')
+      .replace(/[^\d]/g, '');
+    return [
+      prefix,
+      timestampPart,
+      this._generateId("-", 6)
+    ].join("");
   }
 }
