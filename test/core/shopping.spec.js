@@ -31,12 +31,27 @@ describe('core shopping APIs', () => {
 
   it("does not allow completing a non-existent shopping event", () => {
     const core = new Core(new EmptyStaticData());
-   expect(() => core.stopShopping("s-nononononono"))
+    expect(() => core.stopShopping("s-nononononono"))
       .toThrow("Cannot stop Shopping Event s-nononononono");
   });
 
+  it('can complete a shopping event', () => {
+    const core = new Core(new EmptyStaticData());
+    const { Id } = core.startShopping();
+    expect(() => core.stopShopping(Id))
+      .not.toThrow();
+  });
+
+  it('stores the shopping event in the database', () => {
+    const data = new EmptyStaticData();
+    const core1 = new Core(data);
+    const core2 = new Core(data);
+    const { Id: shoppingEventId } = core1.startShopping();
+    expect(() => core2.stopShopping(shoppingEventId))
+      .not.toThrow();
+  });
+
   // can list shopping events with status
-  // can complete a shopping event
   
   // can complete items for a shopping event
   // does not allow completing items for non-existent shopping events

@@ -8,13 +8,19 @@ export class Core {
   }
 
   startShopping() {
-    return {
+    const shoppingEvent = {
       Id: this._generateId("s-"),
     };
+    this.shoppingEvent = shoppingEvent;
+    this.data.createItem(shoppingEvent);
+    return shoppingEvent;
   }
 
   stopShopping(id) {
-    throw new Error(`Cannot stop Shopping Event ${id}`);
+    const shoppingEvent = this.data.getItem(id);
+    if (!shoppingEvent) {
+      throw new Error(`Cannot stop Shopping Event ${id}`);
+    }
   }
 
   offShoppingListUpdate(key) {
