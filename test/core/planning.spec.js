@@ -157,8 +157,8 @@ describe('core planning APIs', () => {
     });
 
     it("can retrieve a full shopping list", () => {
-      const cart = core.getShoppingList();
-      expect(cart).toEqual({
+      const plan = core.getShoppingPlan();
+      expect(plan).toEqual({
         all: [i1, i2, i3, i4, i5, i6],
         recurringItems: [i1, i2, i3, i4],
         recurringItemsToAdd: [i3, i4],
@@ -174,13 +174,13 @@ describe('core planning APIs', () => {
       data.createItem({ Id: "whatever" });
       data.createItem({ Id: "ix000000000000" });
       data.createItem({ Id: "I-000000000000" });
-      const cart = core.getShoppingList();
-      expect(cart.all).toEqual([i1, i2, i3, i4, i5, i6]);
+      const plan = core.getShoppingPlan();
+      expect(plan.all).toEqual([i1, i2, i3, i4, i5, i6]);
     });
 
     it("can add all recurring items to the plan", () => {
       core.addRecurringItems();
-      const cart = core.getShoppingList();
+      const plan = core.getShoppingPlan();
       const i3Updated = {
         ...i3,
         PlannedQuantity: 2,
@@ -191,7 +191,7 @@ describe('core planning APIs', () => {
         PlannedQuantity: 2,
         LastUpdated: "0000-00-00T00:00:00.006Z"
       }
-      expect(cart).toEqual({
+      expect(plan).toEqual({
         all: [i1, i2, i3Updated, i4Updated, i5, i6],
         recurringItems: [i1, i2, i3Updated, i4Updated],
         recurringItemsToAdd: [],
@@ -216,8 +216,8 @@ describe('core planning APIs', () => {
         PlannedQuantity: 0,
         LastUpdated: "0000-00-00T00:00:00.006Z"
       }
-      const cart = core.getShoppingList();
-      expect(cart).toEqual({
+      const plan = core.getShoppingPlan();
+      expect(plan).toEqual({
         all: [i1, i2Updated, i3Updated, i4, i5, i6],
         recurringItems: [i1, i2Updated, i3Updated, i4],
         recurringItemsToAdd: [i2Updated, i3Updated, i4],
@@ -248,54 +248,54 @@ describe('core planning APIs', () => {
     it("can subscribe to shopping list updates", async () => {
       const apples = core.createItem({ Name: "Apples" });
       const bananas = core.createItem({ Name: "Bananas" });
-      let cart;
-      core.onShoppingListUpdate("test-subscription", x => { cart = x; });
-      expect(cart).toBeUndefined();
-      core.getShoppingList()
+      let plan;
+      core.onShoppingListUpdate("test-subscription", x => { plan = x; });
+      expect(plan).toBeUndefined();
+      core.getShoppingPlan()
       await clearEventQueue();
-      expect(cart).toEqual(expectedCart(apples, bananas));
+      expect(plan).toEqual(expectedCart(apples, bananas));
       const applesUpdated = { ...apples, Name: "Apples (Fuji)" };
       core.updateItem(applesUpdated);
       await clearEventQueue();
-      expect(cart).toEqual(expectedCart(apples, bananas));
-      core.getShoppingList()
+      expect(plan).toEqual(expectedCart(apples, bananas));
+      core.getShoppingPlan()
       await clearEventQueue();
-      expect(cart).toEqual(expectedCart(applesUpdated, bananas));
+      expect(plan).toEqual(expectedCart(applesUpdated, bananas));
     });
 
     it("can subscribe multiple times to shopping list updates", async () => {
-      let cart1;
-      let cart2;
-      core.onShoppingListUpdate("the-first", x => { cart1 = x; });
-      core.onShoppingListUpdate("the-second", x => { cart2 = x; });
+      let plan1;
+      let plan2;
+      core.onShoppingListUpdate("the-first", x => { plan1 = x; });
+      core.onShoppingListUpdate("the-second", x => { plan2 = x; });
       const item = core.createItem({ Name: "X" });
-      core.getShoppingList()
+      core.getShoppingPlan()
       await clearEventQueue();
-      expect(cart1.all).toEqual([item]);
-      expect(cart2.all).toEqual([item]);
+      expect(plan1.all).toEqual([item]);
+      expect(plan2.all).toEqual([item]);
     });
 
     it("can unsubscribe to shopping list updates", async () => {
-      let cart;
-      core.onShoppingListUpdate("test-subscription", x => { cart = x; });
+      let plan;
+      core.onShoppingListUpdate("test-subscription", x => { plan = x; });
       const item = core.createItem({ Name: "X" });
-      core.getShoppingList()
+      core.getShoppingPlan()
       await clearEventQueue();
-      expect(cart.all).toEqual([item]);
+      expect(plan.all).toEqual([item]);
       core.offShoppingListUpdate("test-subscription");
       core.createItem({ Name: "Y" });
-      core.getShoppingList()
+      core.getShoppingPlan()
       await clearEventQueue();
-      expect(cart.all).toEqual([item]);
+      expect(plan.all).toEqual([item]);
     });
 
     it("can override a shopping list update subscription", async () => {
       const calls = [];
       core.onShoppingListUpdate("test-subscription", () => calls.push("first"));
-      core.getShoppingList()
+      core.getShoppingPlan()
       await clearEventQueue();
       core.onShoppingListUpdate("test-subscription", () => calls.push("second"));
-      core.getShoppingList()
+      core.getShoppingPlan()
       await clearEventQueue();
       expect(calls).toEqual(["first", "second"]);
     });

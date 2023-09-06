@@ -7,13 +7,25 @@ export class Core {
     this.shoppingListConsumers = {};
   }
 
-  startShopping() {
+  startShopping(attributes) {
     const shoppingEvent = {
-      Id: this._generateTimestampId("s-", 4),
+      Id: this._generateTimestampId("s-", 4) + "#description",
+      Status: "IN_PROGRESS",
+      ...attributes,
     };
     this.shoppingEvent = shoppingEvent;
     this.data.createItem(shoppingEvent);
     return shoppingEvent;
+  }
+
+  getShoppingEvent(Id) {
+    if (!Id.match(/^s-.*#description$/)) {
+      throw new Error('The shopping event description ID must start with "s-" and end with "#description"');
+    }
+    const description = this.data.getItem(Id);
+    return {
+      description
+    }
   }
 
   stopShopping(id) {
@@ -104,6 +116,11 @@ export class Core {
   }
 
   getShoppingList() {
+    console.warn("DEPRECATED. Use getShoppingPlan() instead");
+    return this.getShoppingPlan();
+  }
+  
+  getShoppingPlan() {
     const all = [];
     const shoppingList = [];
     const unselectedItems = [];
