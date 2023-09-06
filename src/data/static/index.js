@@ -18,7 +18,9 @@ export class StaticData {
 
   addItemValue(id, attribute, addend) {
     const item = this.items.find(x => x.Id === id);
-    item[attribute] = (item[attribute] || 0) + addend;
+    const newValue = (item[attribute] || 0) + addend;
+    const positiveNewValue = Math.max(0, newValue);
+    item[attribute] = positiveNewValue;
   }
 
   batchUpdateItems(itemChanges) {
