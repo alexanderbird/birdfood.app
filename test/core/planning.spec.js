@@ -48,6 +48,38 @@ describe('core planning APIs', () => {
       });
     });
 
+    it("generates an Id on create", () => {
+      const item = core.createItem({ Name: "jam" });
+      expect(item.Id).toMatch(/^i-[a-z0-9]{12}$/);
+    });
+
+    it("accepts all properties other than Id and Timestamp on create", () => {
+      const item = core.createItem({
+        Name: "jam",
+        PlannedQuantity: 3,
+        RecurringQuantity: 8,
+        Type: "DRY_GOOD"
+      });
+      expect(item).toEqual({
+        Id: item.Id,
+        LastUpdated: "0000-00-00T00:00:000Z",
+        Name: "jam",
+        PlannedQuantity: 3,
+        RecurringQuantity: 8,
+        Type: "DRY_GOOD"
+      });
+    });
+
+    it("generates an Id on create (even if one was passed as an argument)", () => {
+      const { Id } = core.createItem({ Id: "i-xxxxxxxxxxxx", Name: "jam" });
+      expect(Id).not.toEqual("i-xxxxxxxxxxxx");
+    });
+
+    it("sets the timestamp on create (even if one was passed as an argument)", () => {
+      const { LastUpdated } = core.createItem({ LastUpdated: "1111-11-11T11:11:111Z", Name: "jam" });
+      expect(LastUpdated).toEqual("0000-00-00T00:00:000Z");
+    });
+
     it("can update an item and the item timestamp", () => {
       const originalItem = core.createItem({ Name: "jam" });
       core.updateItemAndTimestamp({ Id: originalItem.Id, Name: "Strawberry Jam" });
@@ -81,11 +113,6 @@ describe('core planning APIs', () => {
         LastUpdated: "0000-00-00T00:00:000Z"
       });
     });
-
-    it.skip("generates an Id on create", () => {});
-    it.skip("generates an Id on create (even if one was passed as an argument)", () => {});
-    it.skip("sets the timestamp on create", () => {});
-    it.skip("sets the timestamp on create (even if one was passed as an argument)", () => {});
   });
 
   describe("advaned operations", () => {
