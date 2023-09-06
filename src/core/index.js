@@ -10,6 +10,10 @@ export class Core {
     };
   }
 
+  stopShopping(id) {
+    throw new Error(`Cannot stop Shopping Event ${id}`);
+  }
+
   offShoppingListUpdate(key) {
     delete this.shoppingListConsumers[key];
   }
@@ -124,7 +128,10 @@ export class Core {
   }
 
   _generateId(prefix) {
-    const randomPart = (`${Math.random().toString(36)}00`).slice(2, 14)
+    const randomPart = (
+      Math.random().toString(36).slice(2)
+      + Math.random().toString(36).slice(2)
+    ).slice(0, 12);
     return prefix + randomPart;
   }
 }

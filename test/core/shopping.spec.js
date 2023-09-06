@@ -29,10 +29,18 @@ describe('core shopping APIs', () => {
     expect(uniqueCharacters).toEqual("0123456789abcdefghijklmnopqrstuvwxyz")
   });
 
-  // can complete items for a shopping event
-  // does not allow completing items for non-existent shopping events
+  it("does not allow completing a non-existent shopping event", () => {
+    const core = new Core(new StaticData());
+   expect(() => core.stopShopping("s-nononononono"))
+      .toThrow("Cannot stop Shopping Event s-nononononono");
+  });
+
   // can list shopping events with status
   // can complete a shopping event
+  
+  // can complete items for a shopping event
+  // does not allow completing items for non-existent shopping events
+  // does not mix up completed items between shopping events
   // cannot complete items for a complete shopping event
   // can get a shopping event list which includes the merge of all items in the shopping list and all the completed events in the shopping event
 });
