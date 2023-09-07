@@ -11,6 +11,7 @@ export class Core {
     const shoppingEvent = {
       ...attributes,
       Id: this._generateTimestampId("se-"),
+      StartedAt: this._getCurrentTimestamp(),
       Status: "IN_PROGRESS",
     };
     this.shoppingEvent = shoppingEvent;
@@ -63,6 +64,11 @@ export class Core {
       throw new Error('The shopping event description ID must start with "se-"');
     }
     const description = this.data.getItem(id);
+    if (!description) {
+      const error = new Error(`Shopping Event not found "${id}"`);
+      error.code = "ResourceNotFound";
+      throw error;
+    }
     const completedItems = Object.fromEntries(
       this.data.listItems('sei#' + id + '#i-')
         .map(x => [x.Id.replace(/^sei#se-[0-9a-z-]+#/, ''), x]));
