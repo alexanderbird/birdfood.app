@@ -239,6 +239,10 @@ describe('core shopping APIs', () => {
   });
 
   describe('listing all shopping events', () => {
+    // technical note: we'll need to move the #description to the prefix 
+    // so we get a contiguous block of descriptions
+    // sine we only ever list shopping event items (not shopping event items and the description)
+    // we don't need the shopping event items to be contiguous with the shopping event description
     it.skip("can list shopping events between certain dates", () => {});
     it.skip("includes status, store, estimated total, and real total in the shopping events list", () => {});
     it.skip("can list includes only shopping events within range", () => {});
