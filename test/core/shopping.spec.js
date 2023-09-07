@@ -15,8 +15,6 @@ describe('core shopping APIs', () => {
   });
 
   describe('starting a shop', () => {
-    it.skip("does not allow overriding ID or status", () => {});
-
     it('generates a shopping ID from the created timestamp and a random part', () => {
       const shoppingEvent = core.startShopping();
       expect(shoppingEvent.Id).toMatch(/^s-[0-9]{12}-[a-z0-9]{8}#description$/);
@@ -46,6 +44,13 @@ describe('core shopping APIs', () => {
       const { Id: shoppingEventId } = core.startShopping();
       expect(() => otherCore.stopShopping(shoppingEventId))
         .not.toThrow();
+    });
+
+    it("does not allow overriding ID or status", () => {
+      chronometer.getCurrentTimestamp.mockReturnValue("1999-12-31T18:45:26.184Z");
+      const shoppingEvent = core.startShopping({ Id: "1111", Status: "NOPE" });
+      expect(shoppingEvent.Status).toEqual("IN_PROGRESS");
+      expect(shoppingEvent.Id).toMatch(/^s-199912311845-[a-z0-9]{8}#description$/);
     });
   });
 
@@ -80,25 +85,41 @@ describe('core shopping APIs', () => {
     });
 
     it("does not allow completing items for non-existent shopping events", () => {
-      expect(() => core.buyItem("s-nope", { ItemId: "i-whatever" }))
+      expect(() => core.buyItem("s-nope", { ItemId: "i-whatever", Quantity: 1 }))
         .toThrow('No such shopping event "s-nope#description"');
     });
 
     it("accepts a shopping event Id that does not end in #description", () => {
       const shoppingEvent = core.startShopping();
       const idWithoutHashDescription = shoppingEvent.Id.replace(/#description$/, '');
-      expect(() => core.buyItem(idWithoutHashDescription, { ItemId: "i-whatever" }))
+      expect(() => core.buyItem(idWithoutHashDescription, { ItemId: "i-whatever", Quantity: 1 }))
         .not.toThrow();
     });
 
     it("cannot complete items for a complete shopping event", () => {
       const shoppingEvent = core.startShopping();
       core.stopShopping(shoppingEvent.Id);
-      expect(() => core.buyItem(shoppingEvent.Id, { ItemId: "i-000000000000" }))
+      expect(() => core.buyItem(shoppingEvent.Id, { ItemId: "i-000000000000", Quantity: 1 }))
         .toThrow('Cannot buy an item for a shopping event with status "COMPLETE"');
     });
 
-    it.skip("can update the amounts for a completed item", () => {
+    it("requires a quantity", () => {
+      const shoppingEvent = core.startShopping();
+      expect(() => core.buyItem(shoppingEvent.Id, { ItemId: 'i-xxxxxxx' }))
+        .toThrow("Missing required attribute 'Quantity'");
+    });
+
+    it("can update the amounts for a completed item", () => {
+      const shoppingEvent = core.startShopping();
+      const itemId = "i-111111111111"
+      core.buyItem(shoppingEvent.Id, { ItemId: itemId, ActualUnitPrice: 0.02, Quantity: 1 });
+      const boughtItem = core.buyItem(shoppingEvent.Id, { ItemId: itemId, ActualUnitPrice: 2.21, Quantity: 4 });
+      expect(boughtItem).toEqual({
+        Id: shoppingEvent.Id.replace(/#description$/, '') + "#" + itemId,
+        ItemId: itemId,
+        ActualUnitPrice: 2.21,
+        Quantity: 4
+      });
     });
   });
 
@@ -114,7 +135,22 @@ describe('core shopping APIs', () => {
         .toThrow("Cannot stop Shopping Event s-nononononono");
     });
 
-    it.skip("updates the planned amounts for all completed items", () => {});
+    it("updates the planned amounts for all completed items", () => {
+      const itemX = core.createItem({ Name: "X", PlannedQuantity: 5 });
+      const itemY = core.createItem({ Name: "Y", PlannedQuantity: 2 });
+      const itemZ = core.createItem({ Name: "Z", PlannedQuantity: 9 });
+      const { Id } = core.startShopping();
+      core.buyItem(Id, { ItemId: itemX.Id, Quantity: 3 });
+      core.buyItem(Id, { ItemId: itemY.Id, Quantity: 4 });
+      core.stopShopping(Id);
+      const { all } = core.getShoppingPlan();
+      const actual = all.map(({ Name, PlannedQuantity }) => ({ Name, PlannedQuantity }));
+      expect(actual).toEqual([
+        { Name: "X", PlannedQuantity: 2 },
+        { Name: "Y", PlannedQuantity: 0 },
+        { Name: "Z", PlannedQuantity: 9 },
+      ]);
+    });
 
   });
 
@@ -164,6 +200,7 @@ describe('core shopping APIs', () => {
         const { Id: idForCarrots } = core.createItem({ Name: "Carrots", PlannedQuantity: 3, UnitPriceEstimate: 1.00 });
         const { Id } = core.startShopping();
         core.buyItem(Id, { ItemId: idForApples, Quantity: 2, ActualUnitPrice: 1.02 });
+        core.buyItem(Id, { ItemId: idForCarrots, Quantity: 100, ActualUnitPrice: 2 });
         core.buyItem(Id, { ItemId: idForCarrots, Quantity: 1, ActualUnitPrice: 2 });
         const { list } = core.getShoppingEvent(Id);
         expect(list).toEqual([
@@ -182,10 +219,18 @@ describe('core shopping APIs', () => {
         expect(list).toEqual([
           { Id: idForApples, Name: "Apples", RequiredQuantity: 0, BoughtQuantity: 2, UnitPriceEstimate: 0.60, ActualUnitPrice: 1.02 }
         ]);
-
       });
 
-      it.skip("does not include any completed item info from other shopping events", () => {});
+      it("does not include any completed item info from other shopping events", () => {
+        const { Id: idForApples } = core.createItem({ Name: "Apples", PlannedQuantity: 2, UnitPriceEstimate: 0.60 });
+        const event1 = core.startShopping();
+        const event2 = core.startShopping();
+        core.buyItem(event2.Id, { ItemId: idForApples, Quantity: 2, ActualUnitPrice: 1.02 });
+        const { list } = core.getShoppingEvent(event1.Id);
+        expect(list).toEqual([
+          { Id: idForApples, Name: "Apples", RequiredQuantity: 2, BoughtQuantity: 0, UnitPriceEstimate: 0.60 }
+        ]);
+      });
     });
 
     describe('statistics', () => {

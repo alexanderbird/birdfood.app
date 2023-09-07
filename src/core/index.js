@@ -9,9 +9,9 @@ export class Core {
 
   startShopping(attributes) {
     const shoppingEvent = {
+      ...attributes,
       Id: this._generateTimestampId("s-", 4) + "#description",
       Status: "IN_PROGRESS",
-      ...attributes,
     };
     this.shoppingEvent = shoppingEvent;
     this.data.createItem(shoppingEvent);
@@ -28,6 +28,9 @@ export class Core {
     }
     if (!itemId.startsWith("i-")) {
       throw new Error('ItemId must start with "i-"');
+    }
+    if (!attributes.Quantity) {
+      throw new Error("Missing required attribute 'Quantity'");
     }
     const fullShoppingEventId = this._withSuffix(shoppingEventId, "#description");
     const shoppingEvent = this.data.getItem(fullShoppingEventId);
@@ -87,7 +90,22 @@ export class Core {
     if (!shoppingEvent) {
       throw new Error(`Cannot stop Shopping Event ${id}`);
     }
-    this.data.updateItem({ Id: id, Status: "COMPLETE" });
+    const shoppingEventItemsPrefix = id.replace(/#description$/, '#i-');
+    const completedItems = this.data.listItems(shoppingEventItemsPrefix);
+    const currentPlannedQuantities = Object.fromEntries(
+      this.data.batchGetItems(completedItems.map(x => x.ItemId))
+        .map(x => [x.Id, x.PlannedQuantity]));
+    const updates = completedItems
+      .map(completedItem => ({
+        id: completedItem.ItemId,
+        updates: [{
+          attributeName: "PlannedQuantity",
+          value: Math.max(0,
+            currentPlannedQuantities[completedItem.ItemId] - completedItem.Quantity)
+        }]
+      }))
+      .concat({ id, updates: [{ attributeName: "Status", value: "COMPLETE" }] });
+    this.data.batchUpdateItems(updates);
   }
 
   offShoppingListUpdate(key) {
