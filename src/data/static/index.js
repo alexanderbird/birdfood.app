@@ -16,6 +16,11 @@ export class EmptyStaticData {
     return this.items.find(x => x.Id === id);
   }
 
+  batchGetItems(ids) {
+    const idsSet = new Set(ids);
+    return this.items.filter(x => idsSet.has(x.Id));
+  }
+
   createItem(attributes) {
     this.items.push(attributes);
   }

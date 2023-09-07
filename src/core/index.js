@@ -46,6 +46,17 @@ export class Core {
     return boughtItem;
   }
 
+  _assembleItemForShoppingEvent(plannedItem, completedItem) {
+    return ({
+      Id: plannedItem.Id,
+      Name: plannedItem.Name,
+      RequiredQuantity: plannedItem.PlannedQuantity,
+      UnitPriceEstimate: plannedItem.UnitPriceEstimate,
+      BoughtQuantity: completedItem?.Quantity || 0,
+      ActualUnitPrice: completedItem?.ActualUnitPrice
+    });
+  }
+
   getShoppingEvent(id) {
     if (!id.match(/^s-.*#description$/)) {
       throw new Error('The shopping event description ID must start with "s-" and end with "#description"');
@@ -54,19 +65,17 @@ export class Core {
     const completedItems = Object.fromEntries(
       this.data.listItems(id.replace(/#description$/, '#i-'))
         .map(x => [x.Id.replace(/^s-[0-9a-z-]+#/, ''), x]));
-    const list = this.data.listItems("i-")
+    const completedItemIds = new Set(Object.keys(completedItems));
+    const processedItemIds = new Set();
+    const listA = this.data.listItems("i-")
       .filter(x => x.PlannedQuantity)
-      .map(plannedItem => {
-        const completedItem = completedItems[plannedItem.Id];
-        return ({
-          Id: plannedItem.Id,
-          Name: plannedItem.Name,
-          RequiredQuantity: plannedItem.PlannedQuantity,
-          UnitPriceEstimate: plannedItem.UnitPriceEstimate,
-          BoughtQuantity: completedItem?.Quantity || 0,
-          ActualUnitPrice: completedItem?.ActualUnitPrice
-        })
-      });
+      .map(x => { processedItemIds.add(x.Id); return x; })
+      .map(plannedItem => this._assembleItemForShoppingEvent(plannedItem, completedItems[plannedItem.Id]));
+    const itemsThatHaveBeenRemovedFromThePlannedListAfterMarkingThemAsComplete =
+      Array.from(completedItemIds).filter(id => !processedItemIds.has(id));
+    const listB = this.data.batchGetItems(itemsThatHaveBeenRemovedFromThePlannedListAfterMarkingThemAsComplete)
+      .map(plannedItem => this._assembleItemForShoppingEvent(plannedItem, completedItems[plannedItem.Id]))
+    const list = listA.concat(listB);
     return {
       description,
       list
@@ -229,7 +238,7 @@ export class Core {
     return [
       prefix,
       timestampPart,
-      this._generateId("-", 6)
+      this._generateId("-", 8)
     ].join("");
   }
 

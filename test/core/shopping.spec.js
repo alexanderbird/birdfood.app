@@ -19,7 +19,7 @@ describe('core shopping APIs', () => {
 
     it('generates a shopping ID from the created timestamp and a random part', () => {
       const shoppingEvent = core.startShopping();
-      expect(shoppingEvent.Id).toMatch(/^s-[0-9]{12}-[a-z0-9]{6}#description$/);
+      expect(shoppingEvent.Id).toMatch(/^s-[0-9]{12}-[a-z0-9]{8}#description$/);
     });
 
     it('generates a new ID each time you start shopping (even if the timestamp is the same)', () => {
@@ -173,7 +173,18 @@ describe('core shopping APIs', () => {
         ]);
       });
 
-      it.skip("still includes the item details even if it is not part of the plan", () => {});
+      it("still includes the item details even if it is not part of the plan", () => {
+        const { Id: idForApples } = core.createItem({ Name: "Apples", PlannedQuantity: 2, UnitPriceEstimate: 0.60 });
+        const { Id } = core.startShopping();
+        core.buyItem(Id, { ItemId: idForApples, Quantity: 2, ActualUnitPrice: 1.02 });
+        core.updateItem({ Id: idForApples, PlannedQuantity: 0 });
+        const { list } = core.getShoppingEvent(Id);
+        expect(list).toEqual([
+          { Id: idForApples, Name: "Apples", RequiredQuantity: 0, BoughtQuantity: 2, UnitPriceEstimate: 0.60, ActualUnitPrice: 1.02 }
+        ]);
+
+      });
+
       it.skip("does not include any completed item info from other shopping events", () => {});
     });
 
