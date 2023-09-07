@@ -17,7 +17,7 @@ describe('core shopping APIs', () => {
   describe('starting a shop', () => {
     it('generates a shopping ID from the created timestamp and a random part', () => {
       const shoppingEvent = core.startShopping();
-      expect(shoppingEvent.Id).toMatch(/^s-[0-9]{12}-[a-z0-9]{8}#description$/);
+      expect(shoppingEvent.Id).toMatch(/^se-[0-9]{12}-[a-z0-9]{8}$/);
     });
 
     it('generates a new ID each time you start shopping (even if the timestamp is the same)', () => {
@@ -33,7 +33,7 @@ describe('core shopping APIs', () => {
       const soMany = 10000;
       const allIdCharacters = Array(soMany).fill()
         .map(() => core.startShopping())
-        .flatMap(x => x.Id.replace("s-", "").replace(/-/, '').replace(/#description$/, '').split(""))
+        .flatMap(x => x.Id.replace("se-", "").replace(/-/, '').split(""))
         .sort();
       const uniqueCharacters = Array.from(new Set(allIdCharacters)).join("");
       expect(uniqueCharacters).toEqual("0123456789abcdefghijklmnopqrstuvwxyz")
@@ -50,7 +50,7 @@ describe('core shopping APIs', () => {
       chronometer.getCurrentTimestamp.mockReturnValue("1999-12-31T18:45:26.184Z");
       const shoppingEvent = core.startShopping({ Id: "1111", Status: "NOPE" });
       expect(shoppingEvent.Status).toEqual("IN_PROGRESS");
-      expect(shoppingEvent.Id).toMatch(/^s-199912311845-[a-z0-9]{8}#description$/);
+      expect(shoppingEvent.Id).toMatch(/^se-199912311845-[a-z0-9]{8}$/);
     });
   });
 
@@ -60,7 +60,7 @@ describe('core shopping APIs', () => {
       const itemId = "i-111111111111"
       const boughtItem = core.buyItem(shoppingEvent.Id, { ItemId: itemId, ActualUnitPrice: 2.21, Quantity: 4 });
       expect(boughtItem).toEqual({
-        Id: shoppingEvent.Id.replace(/#description$/, '') + "#" + itemId,
+        Id: 'sei#' + shoppingEvent.Id + "#" + itemId,
         ItemId: itemId,
         ActualUnitPrice: 2.21,
         Quantity: 4
@@ -79,21 +79,14 @@ describe('core shopping APIs', () => {
         .toThrow('ItemId must start with "i-"');
     });
 
-    it("requires a shopping event Id starting with s-", () => {
+    it("requires a shopping event Id starting with se-", () => {
       expect(() => core.buyItem("x-0000", {}))
-        .toThrow('Shopping event Id must start with "s-"');
+        .toThrow('Shopping event Id must start with "se-"');
     });
 
     it("does not allow completing items for non-existent shopping events", () => {
-      expect(() => core.buyItem("s-nope", { ItemId: "i-whatever", Quantity: 1 }))
-        .toThrow('No such shopping event "s-nope#description"');
-    });
-
-    it("accepts a shopping event Id that does not end in #description", () => {
-      const shoppingEvent = core.startShopping();
-      const idWithoutHashDescription = shoppingEvent.Id.replace(/#description$/, '');
-      expect(() => core.buyItem(idWithoutHashDescription, { ItemId: "i-whatever", Quantity: 1 }))
-        .not.toThrow();
+      expect(() => core.buyItem("se-nope", { ItemId: "i-whatever", Quantity: 1 }))
+        .toThrow('No such shopping event "se-nope"');
     });
 
     it("cannot complete items for a complete shopping event", () => {
@@ -115,7 +108,7 @@ describe('core shopping APIs', () => {
       core.buyItem(shoppingEvent.Id, { ItemId: itemId, ActualUnitPrice: 0.02, Quantity: 1 });
       const boughtItem = core.buyItem(shoppingEvent.Id, { ItemId: itemId, ActualUnitPrice: 2.21, Quantity: 4 });
       expect(boughtItem).toEqual({
-        Id: shoppingEvent.Id.replace(/#description$/, '') + "#" + itemId,
+        Id: 'sei#' + shoppingEvent.Id + "#" + itemId,
         ItemId: itemId,
         ActualUnitPrice: 2.21,
         Quantity: 4
@@ -131,8 +124,8 @@ describe('core shopping APIs', () => {
     });
 
     it("does not allow completing a non-existent shopping event", () => {
-      expect(() => core.stopShopping("s-nononononono"))
-        .toThrow("Cannot stop Shopping Event s-nononononono");
+      expect(() => core.stopShopping("se-nononononono"))
+        .toThrow("Cannot stop Shopping Event se-nononononono");
     });
 
     it("updates the planned amounts for all completed items", () => {
@@ -156,8 +149,8 @@ describe('core shopping APIs', () => {
 
   describe('describing one shopping event', () => {
     it('requires a shopping event description Id', () => {
-      expect(() => core.getShoppingEvent("s-000000000000-aaaaaa#descriptiox"))
-        .toThrow('The shopping event description ID must start with "s-" and end with "#description"');
+      expect(() => core.getShoppingEvent("sx-000000000000-aaaaaa"))
+        .toThrow('The shopping event description ID must start with "se-"');
     });
 
     describe('description', () => {
@@ -239,10 +232,6 @@ describe('core shopping APIs', () => {
   });
 
   describe('listing all shopping events', () => {
-    // technical note: we'll need to move the #description to the prefix 
-    // so we get a contiguous block of descriptions
-    // sine we only ever list shopping event items (not shopping event items and the description)
-    // we don't need the shopping event items to be contiguous with the shopping event description
     it.skip("can list shopping events between certain dates", () => {});
     it.skip("includes status, store, estimated total, and real total in the shopping events list", () => {});
     it.skip("can list includes only shopping events within range", () => {});

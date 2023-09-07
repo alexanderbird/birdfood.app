@@ -10,7 +10,7 @@ export class Core {
   startShopping(attributes) {
     const shoppingEvent = {
       ...attributes,
-      Id: this._generateTimestampId("s-", 4) + "#description",
+      Id: this._generateTimestampId("se-", 4),
       Status: "IN_PROGRESS",
     };
     this.shoppingEvent = shoppingEvent;
@@ -20,8 +20,8 @@ export class Core {
 
   buyItem(shoppingEventId, attributes) {
     const itemId = attributes.ItemId;
-    if (!shoppingEventId.startsWith("s-")) {
-      throw new Error('Shopping event Id must start with "s-"');
+    if (!shoppingEventId.startsWith("se-")) {
+      throw new Error('Shopping event Id must start with "se-"');
     }
     if (!itemId) {
       throw new Error("Missing required attribute 'ItemId'");
@@ -32,17 +32,15 @@ export class Core {
     if (!attributes.Quantity) {
       throw new Error("Missing required attribute 'Quantity'");
     }
-    const fullShoppingEventId = this._withSuffix(shoppingEventId, "#description");
-    const shoppingEvent = this.data.getItem(fullShoppingEventId);
+    const shoppingEvent = this.data.getItem(shoppingEventId);
     if (!shoppingEvent) {
-      throw new Error(`No such shopping event "${fullShoppingEventId}"`);
+      throw new Error(`No such shopping event "${shoppingEventId}"`);
     }
     if (shoppingEvent.Status !== "IN_PROGRESS") {
       throw new Error(`Cannot buy an item for a shopping event with status "${shoppingEvent.Status}"`);
     }
-    const idSuffix = '#' + itemId;
     const boughtItem = {
-      Id: fullShoppingEventId.replace(/#description$/, idSuffix),
+      Id: 'sei#' + shoppingEventId + '#' + itemId,
       ...attributes
     }
     this.data.createItem(boughtItem);
@@ -61,19 +59,20 @@ export class Core {
   }
 
   getShoppingEvent(id) {
-    if (!id.match(/^s-.*#description$/)) {
-      throw new Error('The shopping event description ID must start with "s-" and end with "#description"');
+    if (!id.startsWith("se-")) {
+      throw new Error('The shopping event description ID must start with "se-"');
     }
     const description = this.data.getItem(id);
     const completedItems = Object.fromEntries(
-      this.data.listItems(id.replace(/#description$/, '#i-'))
-        .map(x => [x.Id.replace(/^s-[0-9a-z-]+#/, ''), x]));
+      this.data.listItems('sei#' + id + '#i-')
+        .map(x => [x.Id.replace(/^sei#se-[0-9a-z-]+#/, ''), x]));
     const completedItemIds = new Set(Object.keys(completedItems));
     const processedItemIds = new Set();
     const listA = this.data.listItems("i-")
       .filter(x => x.PlannedQuantity)
       .map(x => { processedItemIds.add(x.Id); return x; })
       .map(plannedItem => this._assembleItemForShoppingEvent(plannedItem, completedItems[plannedItem.Id]));
+
     const itemsThatHaveBeenRemovedFromThePlannedListAfterMarkingThemAsComplete =
       Array.from(completedItemIds).filter(id => !processedItemIds.has(id));
     const listB = this.data.batchGetItems(itemsThatHaveBeenRemovedFromThePlannedListAfterMarkingThemAsComplete)
@@ -90,7 +89,7 @@ export class Core {
     if (!shoppingEvent) {
       throw new Error(`Cannot stop Shopping Event ${id}`);
     }
-    const shoppingEventItemsPrefix = id.replace(/#description$/, '#i-');
+    const shoppingEventItemsPrefix = "sei#" + id + "#i-";
     const completedItems = this.data.listItems(shoppingEventItemsPrefix);
     const currentPlannedQuantities = Object.fromEntries(
       this.data.batchGetItems(completedItems.map(x => x.ItemId))
@@ -258,12 +257,5 @@ export class Core {
       timestampPart,
       this._generateId("-", 8)
     ].join("");
-  }
-
-  _withSuffix(id, suffix) {
-    if (id.endsWith(suffix)) {
-      return id;
-    }
-    return id + suffix;
   }
 }
