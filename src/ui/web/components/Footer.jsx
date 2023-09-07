@@ -5,7 +5,7 @@ import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import EventRepeatIcon from '@mui/icons-material/EventRepeat';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import CheckListIcon from '@mui/icons-material/CheckList';
 
 const assembleAction = ({ href, label, badge, badgeColor, IconComponent }) =>
   <BottomNavigationAction
@@ -34,7 +34,7 @@ export function Footer({ core }) {
     <BottomNavigation showLabels={true} value={url} sx={{ paddingTop: 5, paddingBottom: 4 }}>{[
       assembleAction({ href:"/schedule", label: "Schedule", IconComponent: EventRepeatIcon }),
       assembleAction({ href:"/plan", label: "Plan", badge: badgeCounts.cart, badgeColor: "secondary", IconComponent: ShoppingCartIcon }),
-      assembleAction({ href:"/shop", label: "Shop", IconComponent: CheckBoxIcon })
+      assembleAction({ href:"/shop", label: "Shop", IconComponent: CheckListIcon })
     ]}
     </BottomNavigation>
   );

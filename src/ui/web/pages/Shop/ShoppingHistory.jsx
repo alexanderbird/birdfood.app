@@ -1,6 +1,7 @@
 import { useLocation } from 'preact-iso';
 
 import Container from '@mui/material/Container';
+import Alert from '@mui/material/Alert';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PendingIcon from '@mui/icons-material/Pending';
@@ -21,6 +22,7 @@ import { ShoppingEventSummary } from './ShoppingEventSummary';
 
 export const ShoppingHistory = ({ core }) => {
   const location = useLocation();
+  const { eventNotFound } = location.query;
 
   const listShoppingEvents = () => {
     core.getShoppingPlan();
@@ -37,9 +39,10 @@ export const ShoppingHistory = ({ core }) => {
       header={<ShoppingHistoryPageHeader />}
       body={() =>
         <Container>
+          { !eventNotFound ? null : <Alert severity="error">There is no shopping event with ID {eventNotFound}</Alert> }
           <List dense>
             <ListItem>
-              <Button disabled={shoppingEvents.find(x => x.Status === "IN_PROGRESS")} sx={{ margin: "auto" }} onClick={() => location.route('/shop/' + core.startShopping().Id)}>Start Shopping</Button>
+              <Button disabled={!!shoppingEvents.find(x => x.Status === "IN_PROGRESS")} sx={{ margin: "auto" }} onClick={() => location.route('/shop/' + core.startShopping().Id)}>Start Shopping</Button>
             </ListItem>
             { !shoppingEvents ? null : shoppingEvents.reverse().map(shoppingEvent => (
               <ListItem selected={shoppingEvent.Status === "IN_PROGRESS"}>

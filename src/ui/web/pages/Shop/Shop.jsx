@@ -28,7 +28,7 @@ export function Shop({ core, shoppingEventId }) {
   }
   const [shoppingEvent, triggerUpdate] = useUpdatingState(false, getShoppingEvent);
   if (shoppingEvent === null) {
-    location.route('/not-found');
+    location.route('/shop?eventNotFound=' + shoppingEventId);
   }
 
   return (
@@ -39,11 +39,11 @@ export function Shop({ core, shoppingEventId }) {
         <Container>
           <List>
             { shoppingEvent?.list.map(item => (
-              <ListItem dense onClick={() => { core.buyItem(shoppingEventId, { ItemId: item.Id, Quantity: item.BoughtQuantity + 1 }); triggerUpdate(); }}>
+              <ListItem dense onClick={() => { core.buyItem(shoppingEventId, { ItemId: item.Id, Quantity: item.RequiredQuantity }); triggerUpdate(); }}>
                 <ListItemIcon>
                   { item.BoughtQuantity >= item.RequiredQuantity
-                    ? <CheckBoxIcon />
-                    : <CheckBoxOutlineBlankIcon />
+                    ? <CheckBoxIcon fontSize="large"/>
+                    : <CheckBoxOutlineBlankIcon fontSize="large" />
                   }
                 </ListItemIcon>
                 <ListItemText
@@ -52,7 +52,7 @@ export function Shop({ core, shoppingEventId }) {
               </ListItem>
             ))}
             <ListItem>
-              <Button onClick={() => { core.stopShopping(shoppingEventId); location.route('/shop'); }}>Finish Shopping</Button>
+              <Button sx={{ margin: 'auto' }} onClick={() => { core.stopShopping(shoppingEventId); location.route('/shop'); }}>Finish Shopping</Button>
             </ListItem>
           </List>
         </Container>
