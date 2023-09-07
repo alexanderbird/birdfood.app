@@ -97,6 +97,9 @@ describe('core shopping APIs', () => {
       expect(() => core.buyItem(shoppingEvent.Id, { ItemId: "i-000000000000" }))
         .toThrow('Cannot buy an item for a shopping event with status "COMPLETE"');
     });
+
+    it.skip("can update the amounts for a completed item", () => {
+    });
   });
 
   describe('completing a shopping event', () => {
@@ -155,7 +158,21 @@ describe('core shopping APIs', () => {
         ]);
       });
 
-      it.skip("includes information about whether each planned item is complete", () => {});
+      it("includes information about whether each planned item is complete", () => {
+        const { Id: idForApples } = core.createItem({ Name: "Apples", PlannedQuantity: 2, UnitPriceEstimate: 0.60 });
+        const { Id: idForBananas } = core.createItem({ Name: "Bananas (bunch)", PlannedQuantity: 1, UnitPriceEstimate: 2.01 });
+        const { Id: idForCarrots } = core.createItem({ Name: "Carrots", PlannedQuantity: 3, UnitPriceEstimate: 1.00 });
+        const { Id } = core.startShopping();
+        core.buyItem(Id, { ItemId: idForApples, Quantity: 2, ActualUnitPrice: 1.02 });
+        core.buyItem(Id, { ItemId: idForCarrots, Quantity: 1, ActualUnitPrice: 2 });
+        const { list } = core.getShoppingEvent(Id);
+        expect(list).toEqual([
+          { Id: idForApples, Name: "Apples", RequiredQuantity: 2, BoughtQuantity: 2, UnitPriceEstimate: 0.60, ActualUnitPrice: 1.02 },
+          { Id: idForBananas, Name: "Bananas (bunch)", RequiredQuantity: 1, BoughtQuantity: 0, UnitPriceEstimate: 2.01 },
+          { Id: idForCarrots, Name: "Carrots", RequiredQuantity: 3, BoughtQuantity: 1, UnitPriceEstimate: 1.00, ActualUnitPrice: 2 }
+        ]);
+      });
+
       it.skip("still includes the item details even if it is not part of the plan", () => {});
       it.skip("does not include any completed item info from other shopping events", () => {});
     });

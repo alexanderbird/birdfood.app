@@ -51,15 +51,22 @@ export class Core {
       throw new Error('The shopping event description ID must start with "s-" and end with "#description"');
     }
     const description = this.data.getItem(id);
+    const completedItems = Object.fromEntries(
+      this.data.listItems(id.replace(/#description$/, '#i-'))
+        .map(x => [x.Id.replace(/^s-[0-9a-z-]+#/, ''), x]));
     const list = this.data.listItems("i-")
       .filter(x => x.PlannedQuantity)
-      .map(plannedItem => ({
-        Id: plannedItem.Id,
-        Name: plannedItem.Name,
-        RequiredQuantity: plannedItem.PlannedQuantity,
-        UnitPriceEstimate: plannedItem.UnitPriceEstimate,
-        BoughtQuantity: 0,
-      }));
+      .map(plannedItem => {
+        const completedItem = completedItems[plannedItem.Id];
+        return ({
+          Id: plannedItem.Id,
+          Name: plannedItem.Name,
+          RequiredQuantity: plannedItem.PlannedQuantity,
+          UnitPriceEstimate: plannedItem.UnitPriceEstimate,
+          BoughtQuantity: completedItem?.Quantity || 0,
+          ActualUnitPrice: completedItem?.ActualUnitPrice
+        })
+      });
     return {
       description,
       list
@@ -83,7 +90,7 @@ export class Core {
   }
 
   addRecurringItems() {
-    const toAdd = this.getShoppingList().recurringItemsToAdd;
+    const toAdd = this.getShoppingPlan().recurringItemsToAdd;
     const currentTimestamp = this._getCurrentTimestamp();
     this.data.batchUpdateItems(toAdd.map(item => ({
       id: item.Id,
@@ -155,7 +162,8 @@ export class Core {
   }
 
   getShoppingList() {
-    console.warn("DEPRECATED. Use getShoppingPlan() instead");
+    const caller = (new Error()).stack.split("\n")[2].trim().split(" ")[1];
+    console.warn(`DEPRECATED. Use getShoppingPlan() instead. (Called from ${caller})`);
     return this.getShoppingPlan();
   }
   
