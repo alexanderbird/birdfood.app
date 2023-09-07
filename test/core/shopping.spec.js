@@ -249,7 +249,6 @@ describe('core shopping APIs', () => {
     });
 
     it.skip("includes status, store, estimated total, and real total in the shopping events list", () => {});
-    it.skip("can list includes only shopping events within range", () => {});
     it.skip("includes the set of stores within the range (to use for auto-complete)", () => {});
   });
 });
