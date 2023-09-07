@@ -44,6 +44,11 @@ export class EmptyStaticData {
   listItems(prefix) {
     return this.items.filter(x => x.Id.startsWith(prefix));
   }
+
+  listItemsBetween(startInclusive, endInclusive) {
+    return this.items
+      .filter(x => x.Id >= startInclusive && x.Id <= endInclusive);
+  }
 }
 
 export class StaticData extends EmptyStaticData {

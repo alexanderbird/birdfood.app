@@ -232,7 +232,22 @@ describe('core shopping APIs', () => {
   });
 
   describe('listing all shopping events', () => {
-    it.skip("can list shopping events between certain dates", () => {});
+    it("can list shopping events between certain dates", () => {
+      chronometer.getCurrentTimestamp.mockReturnValue("1990-01-01T00:00:00.000Z");
+      core.startShopping();
+      chronometer.getCurrentTimestamp.mockReturnValue("1991-01-01T00:00:00.000Z");
+      core.startShopping();
+      chronometer.getCurrentTimestamp.mockReturnValue("1992-01-01T00:00:00.000Z");
+      core.startShopping();
+      chronometer.getCurrentTimestamp.mockReturnValue("1993-01-01T00:00:00.000Z");
+      core.startShopping();
+      const startInclusive = new Date(Date.parse("1990-12-31T23:59:59.000Z"));
+      const endInclusive = new Date(Date.parse("1992-12-31T23:59:59.000Z"));
+      const shoppingEvents = core.listShoppingEvents(startInclusive, endInclusive);
+      expect(shoppingEvents.map(x => x.Id).join(","))
+        .toMatch(/^se-199101010000-[a-z0-9]{8},se-199201010000-[a-z0-9]{8}$/);
+    });
+
     it.skip("includes status, store, estimated total, and real total in the shopping events list", () => {});
     it.skip("can list includes only shopping events within range", () => {});
     it.skip("includes the set of stores within the range (to use for auto-complete)", () => {});

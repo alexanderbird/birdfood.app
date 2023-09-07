@@ -10,7 +10,7 @@ export class Core {
   startShopping(attributes) {
     const shoppingEvent = {
       ...attributes,
-      Id: this._generateTimestampId("se-", 4),
+      Id: this._generateTimestampId("se-"),
       Status: "IN_PROGRESS",
     };
     this.shoppingEvent = shoppingEvent;
@@ -82,6 +82,12 @@ export class Core {
       description,
       list
     }
+  }
+
+  listShoppingEvents(startDate, endDate) {
+    const start = this._generateTimestampId("se-", startDate.toISOString());
+    const end = this._generateTimestampId("se-", endDate.toISOString());
+    return this.data.listItemsBetween(start, end);
   }
 
   stopShopping(id) {
@@ -248,8 +254,9 @@ export class Core {
     return prefix + randomPart;
   }
 
-  _generateTimestampId(prefix) {
-    const timestampPart = this._getCurrentTimestamp()
+  _generateTimestampId(prefix, timestamp) {
+    const timestampString = typeof timestamp === 'undefined' ? this._getCurrentTimestamp() : timestamp;
+    const timestampPart = timestampString
       .replace(/\d\d\.\d\d\dZ/, '')
       .replace(/[^\d]/g, '');
     return [
