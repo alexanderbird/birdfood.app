@@ -59,18 +59,26 @@ export class Core {
     });
   }
 
-  getShoppingEvent(id) {
-    if (!id.startsWith("se-")) {
-      const error = new Error('The shopping event description ID must start with "se-"');
-      error.code = "ResourceNotFound";
-      throw error;
-    }
-    const description = this.data.getItem(id);
-    if (!description) {
-      const error = new Error(`Shopping Event not found "${id}"`);
-      error.code = "ResourceNotFound";
-      throw error;
-    }
+  _getItemsForCompletedShoppingEvent(id) {
+    const completedItems = this.data.listItems(`sei#${id}#i-`);
+
+    const itemId = shoppingEventItemId => shoppingEventItemId.replace(/^sei#[^#]*#/, '');
+    const items = this.data.batchGetItems(
+      completedItems.map(x => itemId(x.Id)));
+
+    const itemsMap = Object.fromEntries(items
+      .map(x => [x.Id, x]));
+
+    const list = completedItems
+      .map(completedItem => this._assembleItemForShoppingEvent(itemsMap[itemId(completedItem.Id)], completedItem))
+      .map(({ RequiredQuantity, UnitPriceEstimate, ...rest }) => rest);
+
+    return {
+      list
+    };
+  }
+
+  _getItemsForInProgressShoppingEvent(id) {
     const completedItems = Object.fromEntries(
       this.data.listItems(`sei#${  id  }#i-`)
         .map(x => [x.Id.replace(/^sei#se-[0-9a-z-]+#/, ''), x]));
@@ -97,8 +105,30 @@ export class Core {
     }, { runningTotal: 0, estimatedTotal: 0 });
     return {
       statistics,
-      description,
       list
+    };
+  }
+
+  getShoppingEvent(id) {
+    if (!id.startsWith("se-")) {
+      const error = new Error('The shopping event description ID must start with "se-"');
+      error.code = "ResourceNotFound";
+      throw error;
+    }
+    const description = this.data.getItem(id);
+    if (!description) {
+      const error = new Error(`Shopping Event not found "${id}"`);
+      error.code = "ResourceNotFound";
+      throw error;
+    }
+
+    const itemsAndStatistics = description.Status === "IN_PROGRESS"
+      ? this._getItemsForInProgressShoppingEvent(id)
+      : this._getItemsForCompletedShoppingEvent(id);
+
+    return {
+      ...itemsAndStatistics,
+      description
     };
   }
 

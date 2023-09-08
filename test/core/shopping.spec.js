@@ -172,6 +172,19 @@ describe('core shopping APIs', () => {
         const { description } = core.getShoppingEvent(Id);
         expect(description.Status).toEqual("COMPLETE");
       });
+
+      it('includes the event information for historical events', () => {
+        const { Id } = core.startShopping({ Store: "Costco", EstimatedTotal: 129.5 });
+        core.stopShopping(Id);
+        const { description } = core.getShoppingEvent(Id);
+        expect(description).toEqual({
+          Id,
+          Store: "Costco",
+          Status: "COMPLETE",
+          StartedAt: "0000-00-00T00:00:00.000Z",
+          EstimatedTotal: 129.5,
+        });
+      });
     });
 
     describe('list', () => {
@@ -201,6 +214,21 @@ describe('core shopping APIs', () => {
           { Id: idForApples, Name: "Apples", RequiredQuantity: 2, BoughtQuantity: 2, UnitPriceEstimate: 0.60, ActualUnitPrice: 1.02 },
           { Id: idForBananas, Name: "Bananas (bunch)", RequiredQuantity: 1, BoughtQuantity: 0, UnitPriceEstimate: 2.01 },
           { Id: idForCarrots, Name: "Carrots", RequiredQuantity: 3, BoughtQuantity: 1, UnitPriceEstimate: 1.00, ActualUnitPrice: 2 }
+        ]);
+      });
+
+      it("excludes planned items when retrieving the historical list", () => {
+        const { Id: idForApples } = core.createItem({ Name: "Apples", PlannedQuantity: 2, UnitPriceEstimate: 0.60 });
+        const { Id: idForBananas } = core.createItem({ Name: "Bananas (bunch)", PlannedQuantity: 1, UnitPriceEstimate: 2.01 });
+        const { Id: idForCarrots } = core.createItem({ Name: "Carrots", PlannedQuantity: 3, UnitPriceEstimate: 1.00 });
+        const { Id } = core.startShopping();
+        core.buyItem(Id, { ItemId: idForApples, Quantity: 2, ActualUnitPrice: 1.02 });
+        core.buyItem(Id, { ItemId: idForCarrots, Quantity: 100, ActualUnitPrice: 2 });
+        core.stopShopping(Id);
+        const { list } = core.getShoppingEvent(Id);
+        expect(list).toEqual([
+          { Id: idForApples, Name: "Apples", BoughtQuantity: 2, ActualUnitPrice: 1.02 },
+          { Id: idForCarrots, Name: "Carrots", BoughtQuantity: 100, ActualUnitPrice: 2 },
         ]);
       });
 

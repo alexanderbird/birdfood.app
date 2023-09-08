@@ -33,10 +33,10 @@ export function Shop({ core, shoppingEventId }) {
   if (shoppingEvent === null) {
     location.route(`/history?eventNotFound=${shoppingEventId}`);
   }
-  const readonly = shoppingEvent?.description?.Status === "COMPLETE";
+  const historical = shoppingEvent?.description?.Status === "COMPLETE";
 
   const onListItemClick = item => {
-    if (readonly) {
+    if (historical) {
       return;
     }
     core.buyItem(shoppingEventId, { ItemId: item.Id, Quantity: item.RequiredQuantity });
@@ -48,7 +48,7 @@ export function Shop({ core, shoppingEventId }) {
       isLoading={!shoppingEvent}
       header={!shoppingEvent
         ? <Header><ChecklistIcon sx={{ mr: 1 }} /></Header>
-        : readonly
+        : historical
           ? <HistoricalShopPageHeader shoppingEvent={shoppingEvent} />
           : <ShopPageHeader shoppingEvent={shoppingEvent} />
       }
@@ -58,17 +58,20 @@ export function Shop({ core, shoppingEventId }) {
             { shoppingEvent?.list.map(item => (
               <ListItem key={item.Id} dense onClick={() => onListItemClick(item)}>
                 <ListItemIcon>
-                  { item.BoughtQuantity >= item.RequiredQuantity
+                  { item.BoughtQuantity >= (item.RequiredQuantity || 0)
                     ? <CheckBoxIcon fontSize="large" />
                     : <CheckBoxOutlineBlankIcon fontSize="large" />
                   }
                 </ListItemIcon>
                 <ListItemText
-                  primary={`${item.BoughtQuantity}/${item.RequiredQuantity} ${item.Name}`}
-                  secondary={<Currency>{item.UnitPriceEstimate}</Currency>} />
+                  primary={ historical
+                    ? `${item.BoughtQuantity} ${item.Name}`
+                    : `${item.BoughtQuantity}/${item.RequiredQuantity} ${item.Name}`
+                  }
+                  secondary={<span><Currency>{item.UnitPriceEstimate || item.ActualUnitPrice}</Currency> each</span>} />
               </ListItem>
             ))}
-            { readonly ? null : (
+            { historical ? null : (
               <ListItem>
                 <Button
                   sx={{ margin: 'auto' }}

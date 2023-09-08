@@ -39,7 +39,13 @@ export const ShoppingHistory = ({ core }) => {
                 <ListItemIcon>
                   { shoppingEvent.Status === "COMPLETE" ? <CheckCircleIcon mr={1} /> : <PendingIcon mr={1} color="primary" /> }
                 </ListItemIcon>
-                <ListItemText primary={ <ShoppingEventSummary event={shoppingEvent} />} />
+                <ListItemText
+                  primary={<ShoppingEventSummary variant="primary" event={shoppingEvent} />}
+                  secondary={shoppingEvent?.Status === "IN_PROGRESS"
+                    ? "Shopping in Progress"
+                    : <ShoppingEventSummary variant="secondary" event={shoppingEvent} />
+                  }
+                />
               </ListItem>
             )) }
           </List>

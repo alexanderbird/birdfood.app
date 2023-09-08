@@ -13,13 +13,13 @@ export const HistoricalShopPageHeader = ({ shoppingEvent }) => {
     <Header>
       <ChecklistIcon sx={{ mr: 1 }} />
       <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
-        <Typography variant="h6" component="div"><ShoppingEventSummary event={shoppingEvent?.description} /></Typography>
+        <Typography variant="h6" component="div"><ShoppingEventSummary variant="oneline" event={shoppingEvent?.description} /></Typography>
       </Box>
     </Header>
     <Box>
       <Typography sx={{ px: 4 }}>
-        Estimated <Currency>{shoppingEvent?.statistics.estimatedTotal}</Currency>
-        , spent <Currency>{shoppingEvent?.statistics.runningTotal}</Currency>
+        Estimated <Currency>{shoppingEvent?.description.EstimatedTotal}</Currency>
+        , spent <Currency>{shoppingEvent?.description.TotalSpent}</Currency>
       </Typography>
       <Divider sx={{ mt: 2 }} />
     </Box>

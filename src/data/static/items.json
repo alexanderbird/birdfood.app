@@ -37,9 +37,11 @@
   { "Id": "i-6a1226c0", "Type": "FROZEN", "Name": "Nature's Path Waffles", "UnitPriceEstimate": 6.00, "PlannedQuantity": 0, "RecurringQuantity": 0 },
   { "Id": "i-f8c04af8", "Type": "FROZEN", "Name": "Raspberry Popsicles", "UnitPriceEstimate": 8.00, "PlannedQuantity": 0, "RecurringQuantity": 0 },
   { "Id": "i-6c213d8b", "Type": "DAIRY", "Name": "Ice cream (extra large vanilla)", "UnitPriceEstimate": 10.00, "PlannedQuantity": 1, "RecurringQuantity": 1 },
-  { "Id": "se-202309080029-542c7f3d", "StartedAt": "2023-09-08T00:29:12.413Z", "Status": "COMPLETE" },
-  { "Id": "sei#se-202309080029-542c7f3d#i-5d05eae2", "ItemId": "i-5d05eae2", "Quantity": 1 },
-  { "Id": "sei#se-202309080029-542c7f3d#i-eaaf419c", "ItemId": "i-eaaf419c", "Quantity": 3 },
-  { "Id": "sei#se-202309080029-542c7f3d#i-91f81a83", "ItemId": "i-91f81a83", "Quantity": 1 },
-  { "Id": "sei#se-202309080029-542c7f3d#i-b49cac9a", "ItemId": "i-b49cac9a", "Quantity": 1 }
+  { "Id": "se-202309080029-542c7f3d", "StartedAt": "2023-09-08T00:29:12.413Z", "Status": "COMPLETE", "Store": "Costco", "EstimatedTotal": 211.48, "TotalSpent": 371.22 },
+  { "Id": "sei#se-202309080029-542c7f3d#i-5d05eae2", "ItemId": "i-5d05eae2", "Quantity": 1, "ActualUnitPrice": 2 },
+  { "Id": "sei#se-202309080029-542c7f3d#i-eaaf419c", "ItemId": "i-eaaf419c", "Quantity": 3, "ActualUnitPrice": 5.01 },
+  { "Id": "sei#se-202309080029-542c7f3d#i-91f81a83", "ItemId": "i-91f81a83", "Quantity": 1, "ActualUnitPrice": 1.2 },
+  { "Id": "sei#se-202309080029-542c7f3d#i-b49cac9a", "ItemId": "i-b49cac9a", "Quantity": 1, "ActualUnitPrice": 3 },
+  { "Id": "se-202306181629-542c7f3d", "StartedAt": "2023-06-18T16:29:12.413Z", "Status": "COMPLETE", "Store": "SuperStore", "EstimatedTotal": 211.48, "TotalSpent": 24.44 },
+  { "Id": "sei#se-202306181629-542c7f3d#i-eaaf419c", "ItemId": "i-eaaf419c", "Quantity": 3, "ActualUnitPrice": 5.01 }
 ]
