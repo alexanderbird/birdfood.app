@@ -89,6 +89,8 @@ export const GroceryItemEditFormDialog = ({ open, onCancel, onSave, initialValue
               }}
               inputProps={{
                 sx: { textAlign: 'right' },
+                type: 'number',
+                inputMode: 'numeric'
               }}
               InputProps={{
                 startAdornment: <InputAdornment position="start"><ShoppingCartIcon /></InputAdornment>,
@@ -103,6 +105,8 @@ export const GroceryItemEditFormDialog = ({ open, onCancel, onSave, initialValue
               }}
               inputProps={{
                 sx: { textAlign: 'right' },
+                type: 'number',
+                inputMode: 'numeric'
               }}
               InputProps={{
                 startAdornment: <InputAdornment position="start"><EventRepeatIcon /></InputAdornment>,

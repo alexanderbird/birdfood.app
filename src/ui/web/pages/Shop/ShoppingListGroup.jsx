@@ -70,6 +70,10 @@ const ListItemContent = ({ item, selected, showRequiredAmount, updateItem }) => 
               InputProps={{
                 endAdornment: <InputAdornment position="end">/{item.RequiredQuantity}</InputAdornment>,
               }}
+              inputProps={{
+                type: 'number',
+                inputMode: 'numeric'
+              }}
             />
             <CurrencyTextField
               size="small"
