@@ -13,7 +13,6 @@ import { Header } from '../../components/Header.jsx';
 import { useUpdatingState } from '../../hooks/useUpdatingState';
 import { Page } from '../../components/Page';
 import { ShoppingListGroup } from './ShoppingListGroup';
-import { ShoppingList } from './ShoppingList';
 import { ShopPageHeader } from './ShopPageHeader';
 import { HistoricalShopPageHeader } from './HistoricalShopPageHeader';
 
@@ -64,9 +63,13 @@ export function Shop({ core, shoppingEventId }) {
           <List sx={{ mt: -2 }}>
             { groupedList.map(itemGroup => (
               <ListItem divider key={itemGroup.type}>
-                <ShoppingListGroup type={itemGroup.type} sx={{ mt: 2 }}>
-                  <ShoppingList items={itemGroup.items} showRequiredAmount={!historical} onItemQuantityChange={onItemQuantityChange} />
-                </ShoppingListGroup>
+                <ShoppingListGroup
+                  items={itemGroup.items}
+                  showRequiredAmount={!historical}
+                  onItemQuantityChange={onItemQuantityChange}
+                  type={itemGroup.type}
+                  sx={{ mt: 2 }}
+                />
               </ListItem>
             )) }
             { historical ? null : (<>
