@@ -11,6 +11,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Dialog from '@mui/material/Dialog';
 
+import { CurrencyTextField } from '../CurrencyTextField';
 import { ItemType, ItemTypeIcon } from '../../components/ItemTypeIcon';
 import { useDialogState } from '../../hooks/useDialogState';
 
@@ -71,27 +72,12 @@ export const GroceryItemEditFormDialog = ({ open, onCancel, onSave, initialValue
               <MenuItem key={itemType.key} value={itemType.key}><ItemTypeIcon type={itemType.key} /> {itemType.label}</MenuItem>
             ) }
           </TextField>
-          <TextField
+          <CurrencyTextField 
             fullWidth
             required
             label="Estimated Unit Price"
-            onChange={event => setValue(current => ({ ...current, UnitPriceEstimate: event.target.value }))}
+            setValue={value => setValue(current => ({ ...current, UnitPriceEstimate: value }))}
             value={value.UnitPriceEstimate}
-            onBlur={event => {
-              const formattedValue = Number(event.target.value).toFixed(2);
-              setValue(current => ({ ...current, UnitPriceEstimate: formattedValue }));
-            }}
-            onFocus={event => {
-              const formattedValue = Number(event.target.value);
-              setValue(current => ({ ...current, UnitPriceEstimate: formattedValue }));
-              setTimeout(() => event.target.select());
-            }}
-            inputProps={{
-              sx: { textAlign: 'right' },
-            }}
-            InputProps={{
-              startAdornment: <InputAdornment position="start">$</InputAdornment>,
-            }}
           />
           <Box display="flex">
             <TextField
@@ -132,4 +118,5 @@ export const GroceryItemEditFormDialog = ({ open, onCancel, onSave, initialValue
     </Dialog>
   );
 };
+
 
