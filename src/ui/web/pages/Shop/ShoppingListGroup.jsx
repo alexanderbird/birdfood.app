@@ -10,6 +10,7 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import * as colors from '@mui/material/colors';
 
 import { CurrencyTextField } from '../../components/CurrencyTextField';
 import { Currency } from '../../components/Currency';
@@ -23,8 +24,10 @@ export const ShoppingListGroup = ({ type, items, editable, updateItem, ...props 
     return null;
   }
   const handleItemClick = item => {
-    updateItem({ ItemId: item.Id, Quantity: item.RequiredQuantity });
     setSelectedItem(item.Id);
+    if (item.BoughtQuantity <= 0) {
+      updateItem({ ItemId: item.Id, Quantity: item.RequiredQuantity });
+    }
   };
   const isSelected = item => editable && item.Id === selectedItem;
   return (
@@ -53,7 +56,7 @@ const ListItemContent = ({ item, selected, showRequiredAmount, updateItem }) => 
     </ListItemIcon>
     <ListItemText
       primary={showRequiredAmount
-        ? `${item.BoughtQuantity}/${item.RequiredQuantity} ${item.Name}`
+        ? <span>{item.BoughtQuantity}<Typography variant="inherit" component="span" sx={{ color: colors.grey[500] }}>/{item.RequiredQuantity}</Typography> {item.Name}</span>
         : `${item.BoughtQuantity} ${item.Name}`
       }
       secondary={<>
