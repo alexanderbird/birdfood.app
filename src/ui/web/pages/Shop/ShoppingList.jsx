@@ -5,13 +5,13 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import { Currency } from '../../components/Currency';
 
-export const ShoppingList = ({ items, showRequiredAmount, onListItemClick }) => {
+export const ShoppingList = ({ items, showRequiredAmount, onItemQuantityChange }) => {
   if (!items) {
     return null;
   }
   return (<>
     { items.sort((lhs, rhs) => lhs.Name < rhs.Name ? -1 : 1).map(item => (
-      <ListItem key={item.Id} dense onClick={() => onListItemClick(item)}>
+      <ListItem key={item.Id} dense onClick={() => onItemQuantityChange(item.Id, item.RequiredQuantity)}>
         <ListItemIcon>
           { item.BoughtQuantity >= (item.RequiredQuantity || 0)
             ? <CheckBoxIcon fontSize="large" />
