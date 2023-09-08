@@ -19,7 +19,7 @@ import { ShoppingEventSummary } from './ShoppingEventSummary';
 
 export const ShoppingHistory = ({ core }) => {
   const location = useLocation();
-  const { eventNotFound } = location.query;
+  const { eventNotFound, activeEvent } = location.query;
 
   const [shoppingEvents] = useLastYearShoppingEvents(core);
   return (
@@ -33,7 +33,7 @@ export const ShoppingHistory = ({ core }) => {
             { !shoppingEvents ? null : shoppingEvents.reverse().map(shoppingEvent => (
               <ListItem
                 key={shoppingEvent.Id}
-                selected={shoppingEvent.Status === "IN_PROGRESS"}
+                selected={shoppingEvent.Status === "IN_PROGRESS" || shoppingEvent.Id === activeEvent}
                 onClick={() => location.route(`/shop/${shoppingEvent.Id}`)}
               >
                 <ListItemIcon>

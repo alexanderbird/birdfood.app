@@ -138,7 +138,7 @@ export class Core {
     return this.data.listItemsBetween(start, end);
   }
 
-  stopShopping(id) {
+  stopShopping(id, attributes = {}) {
     const shoppingEvent = this.data.getItem(id);
     if (!shoppingEvent) {
       throw new Error(`Cannot stop Shopping Event ${id}`);
@@ -157,7 +157,9 @@ export class Core {
             currentPlannedQuantities[completedItem.ItemId] - completedItem.Quantity)
         }]
       }))
-      .concat({ id, updates: [{ attributeName: "Status", value: "COMPLETE" }] });
+      .concat({ id, updates: Object.entries({ ...attributes, Status: "COMPLETE" })
+        .map(x => ({ attributeName: x[0], value: x[1] }))
+      });
     this.data.batchUpdateItems(updates);
   }
 

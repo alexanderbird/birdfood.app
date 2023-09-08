@@ -1,4 +1,5 @@
 import { useLocation } from 'preact-iso';
+import { useState } from 'preact/hooks';
 
 import ChecklistIcon from '@mui/icons-material/Checklist';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
@@ -9,7 +10,9 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import Divider from '@mui/material/Divider';
 
+import { CurrencyTextField } from '../../components/CurrencyTextField';
 import { Header } from '../../components/Header.jsx';
 import { useUpdatingState } from '../../hooks/useUpdatingState';
 import { Page } from '../../components/Page';
@@ -19,6 +22,7 @@ import { HistoricalShopPageHeader } from './HistoricalShopPageHeader';
 
 export function Shop({ core, shoppingEventId }) {
   const location = useLocation();
+  const [totalSpent, setTotalSpent] = useState();
   const getShoppingEvent = () => {
     try {
       return core.getShoppingEvent(shoppingEventId);
@@ -71,14 +75,22 @@ export function Shop({ core, shoppingEventId }) {
                   secondary={<span><Currency>{item.UnitPriceEstimate || item.ActualUnitPrice}</Currency> each</span>} />
               </ListItem>
             ))}
-            { historical ? null : (
+            { historical ? null : (<>
+              <Divider />
+              <ListItem sx={{ mt: 1 }}>
+                <CurrencyTextField required fullWidth label="Total Spent" value={totalSpent} setValue={setTotalSpent} />
+              </ListItem>
               <ListItem>
                 <Button
+                  disabled={!Number(totalSpent) || Number.isNaN(Number(totalSpent))}
                   sx={{ margin: 'auto' }}
-                  onClick={() => { core.stopShopping(shoppingEventId); location.route('/history'); }}
+                  onClick={() => {
+                    core.stopShopping(shoppingEventId, { TotalSpent: Number(totalSpent) });
+                    location.route(`/history?activeEvent=${shoppingEventId}`);
+                  }}
                 >Finish Shopping</Button>
               </ListItem>
-            )}
+            </>)}
           </List>
         </Container>
       }
