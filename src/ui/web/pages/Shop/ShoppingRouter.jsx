@@ -1,6 +1,6 @@
 import { useLocation } from 'preact-iso';
 
-import CheckListIcon from '@mui/icons-material/CheckList';
+import ChecklistIcon from '@mui/icons-material/Checklist';
 import Typography from '@mui/material/Typography';
 
 import { useLastYearShoppingEvents } from './useLastYearShoppingEvents';
@@ -28,7 +28,7 @@ const ShoppingLoadingPage = () => {
       isLoading={true}
       header={
         <Header>
-          <CheckListIcon sx={{ mr: 1 }} />
+          <ChecklistIcon sx={{ mr: 1 }} />
           <Typography variant="h6" component="div">Grocery Shopping</Typography>
         </Header>
       }

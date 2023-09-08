@@ -1,7 +1,7 @@
 import { useLocation } from 'preact-iso';
 
 import Box from '@mui/material/Box';
-import CheckListIcon from '@mui/icons-material/CheckList';
+import ChecklistIcon from '@mui/icons-material/Checklist';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
@@ -16,7 +16,7 @@ export function StartShopping({ core }) {
     <Page
       header={
         <Header>
-          <CheckListIcon sx={{ mr: 1 }} />
+          <ChecklistIcon sx={{ mr: 1 }} />
           <Typography variant="h6" component="div">Start Shopping</Typography>
         </Header>
       }

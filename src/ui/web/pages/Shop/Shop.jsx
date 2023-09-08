@@ -1,6 +1,6 @@
 import { useLocation } from 'preact-iso';
 
-import CheckListIcon from '@mui/icons-material/CheckList';
+import ChecklistIcon from '@mui/icons-material/Checklist';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import Container from '@mui/material/Container';
@@ -47,7 +47,7 @@ export function Shop({ core, shoppingEventId }) {
     <Page
       isLoading={!shoppingEvent}
       header={!shoppingEvent
-        ? <Header><CheckListIcon sx={{ mr: 1 }} /></Header>
+        ? <Header><ChecklistIcon sx={{ mr: 1 }} /></Header>
         : readonly
           ? <HistoricalShopPageHeader shoppingEvent={shoppingEvent} />
           : <ShopPageHeader shoppingEvent={shoppingEvent} />
