@@ -1,46 +1,50 @@
-import { useEffect, useRef } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 
-export const CurrencyTextField = ({ setValue, ...props }) => {
+const moneyFormat = number => {
+  if (!number) {
+    return number;
+  }
+  return Number(number).toFixed(2);
+};
+
+export const CurrencyTextField = ({ setValue, value, ...props }) => {
+  const [formattedValue, setFormattedValue] = useState(moneyFormat(value));
   const ref = useRef();
   useEffect(() => {
-    if (props.value === undefined) {
-      return;
-    }
     if (document.activeElement === ref.current.querySelector('input')) {
+      // don't change the value when the input is active
       return;
     }
-    const formattedValue = Number(props.value).toFixed(2);
-    setValue(formattedValue);
-  }, [!!props.value]);
+    setFormattedValue(moneyFormat(value));
+  }, [!!value]);
+  const onChange = event => {
+    setFormattedValue(event.target.value);
+    setValue(Number(event.target.value));
+  };
   return (
     <TextField
       ref={ref}
-      onChange={event => setValue(event.target.value)}
+      onChange={onChange}
       onBlur={event => {
-        const value = Number(event.target.value);
-        if (Number.isNaN(value)) {
-          setValue("");
-        } else {
-          const formattedValue = value.toFixed(2);
-          setValue(formattedValue);
-        }
+        const formattedValue = Number(event.target.value).toFixed(2);
+        setFormattedValue(formattedValue);
       }}
       onFocus={event => {
-        const formattedValue = Number(event.target.value);
+        const editableValue = Number(event.target.value);
+        setFormattedValue(editableValue);
         setTimeout(() => event.target.select());
-        setValue(formattedValue);
       }}
       inputProps={{
         sx: { textAlign: 'right' },
-        type: 'number',
         inputMode: 'decimal'
       }}
       InputProps={{
         startAdornment: <InputAdornment position="start">$</InputAdornment>,
       }}
       {...props}
+      value={formattedValue}
     />
   );
 };
