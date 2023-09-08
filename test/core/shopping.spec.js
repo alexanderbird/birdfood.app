@@ -99,7 +99,7 @@ describe('core shopping APIs', () => {
     it("requires a quantity", () => {
       const shoppingEvent = core.startShopping();
       expect(() => core.buyItem(shoppingEvent.Id, { ItemId: 'i-xxxxxxx' }))
-        .toThrow("Missing required attribute 'Quantity'");
+        .toThrow("Required attribute 'Quantity' is missing or is not an integer");
     });
 
     it("can update the amounts for a completed item", () => {

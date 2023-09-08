@@ -5,7 +5,7 @@
   "scripts": {
     "lint": "eslint src",
     "check": "npm run lint && vitest --run",
-    "test": "vitest",
+    "test": "vitest --run",
     "coverage": "vitest run --coverage && open coverage/index.html",
     "dev": "vite",
     "build": "npm run check && vite build",
