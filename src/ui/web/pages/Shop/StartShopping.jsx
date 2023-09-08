@@ -11,13 +11,13 @@ import Autocomplete from '@mui/material/Autocomplete';
 
 import { CurrencyTextField } from '../../components/CurrencyTextField';
 import { useUpdatingState } from '../../hooks/useUpdatingState';
-import { useLastYearShoppingEvents } from './useLastYearShoppingEvents';
+import { useRecentShoppingEvents } from './useRecentShoppingEvents';
 import { Header } from '../../components/Header.jsx';
 import { Page } from '../../components/Page';
 
 export function StartShopping({ core }) {
   const location = useLocation();
-  const [shoppingEvents] = useLastYearShoppingEvents(core);
+  const [shoppingEvents] = useRecentShoppingEvents(core);
   const [plan] = useUpdatingState(false, () => core.getShoppingPlan());
 
   const [formData, setFormData] = useState({ EstimatedTotal: 0, Store: "" });

@@ -3,13 +3,13 @@ import { useLocation } from 'preact-iso';
 import ChecklistIcon from '@mui/icons-material/Checklist';
 import Typography from '@mui/material/Typography';
 
-import { useLastYearShoppingEvents } from './useLastYearShoppingEvents';
+import { useRecentShoppingEvents } from './useRecentShoppingEvents';
 import { Header } from '../../components/Header.jsx';
 import { Page } from '../../components/Page';
 
 export const ShoppingRouter = ({ core }) => {
   const location = useLocation();
-  const [shoppingEvents] = useLastYearShoppingEvents(core);
+  const [shoppingEvents] = useRecentShoppingEvents(core);
 
   if (!shoppingEvents) {
     return <ShoppingLoadingPage />;

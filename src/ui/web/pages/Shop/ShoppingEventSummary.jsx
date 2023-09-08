@@ -1,4 +1,6 @@
 import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+import Box from '@mui/material/Box';
 
 import { Currency } from '../../components/Currency';
 
@@ -13,27 +15,29 @@ export const ShoppingEventSummary = ({ event, variant }) => {
     return `${event.Store} on ${formattedDate}`;
   }
   if (variant === "primary") {
-    const formattedDate = startedAt.toLocaleDateString('en', {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric'
-    });
-    return formattedDate;
-  }
-  if (variant === "secondary") {
+    const weekday = startedAt.toLocaleDateString('en', { weekday: 'long' });
+    const dayOfMonth = startedAt.toLocaleDateString('en', { day: 'numeric' });
     const formattedTime = new Intl.DateTimeFormat("en", { timeStyle: "short" })
       .format(startedAt)
       .replace(/:\d\d/, '');
     return (
-      <Typography component="span">
-        <Currency>{event.TotalSpent}</Currency>
-        <span>  |  </span>
-        {event.Store}
-        <span>  |  </span>
-        {formattedTime}
-      </Typography>
+      <Box component="span" display="flex" flexDirection="row"
+        sx={{
+          width: 'fit-content',
+          '& > *': {
+            m: 0.5,
+          },
+        }}
+        >
+        <div>{dayOfMonth}</div>
+        <Divider orientation="vertical" variant="middle" flexItem />
+        <div>{weekday}</div>
+        <Divider orientation="vertical" variant="middle" flexItem />
+        <div>{formattedTime}</div>
+        <Divider orientation="vertical" variant="middle" flexItem />
+        <div>{event.Store}</div>
+      </Box>
     );
   }
   throw new Error(`Unsupported variant "${variant}"`);
 };
-
