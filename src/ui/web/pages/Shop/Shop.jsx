@@ -18,6 +18,7 @@ import { Header } from '../../components/Header.jsx';
 import { useUpdatingState } from '../../hooks/useUpdatingState';
 import { Page } from '../../components/Page';
 import { Currency } from '../../components/Currency';
+import { ShoppingList } from './ShoppingList';
 import { ShopPageHeader } from './ShopPageHeader';
 import { HistoricalShopPageHeader } from './HistoricalShopPageHeader';
 
@@ -60,22 +61,7 @@ export function Shop({ core, shoppingEventId }) {
       body={() =>
         <Container>
           <List>
-            { shoppingEvent?.list.map(item => (
-              <ListItem key={item.Id} dense onClick={() => onListItemClick(item)}>
-                <ListItemIcon>
-                  { item.BoughtQuantity >= (item.RequiredQuantity || 0)
-                    ? <CheckBoxIcon fontSize="large" />
-                    : <CheckBoxOutlineBlankIcon fontSize="large" />
-                  }
-                </ListItemIcon>
-                <ListItemText
-                  primary={ historical
-                    ? `${item.BoughtQuantity} ${item.Name}`
-                    : `${item.BoughtQuantity}/${item.RequiredQuantity} ${item.Name}`
-                  }
-                  secondary={<span><Currency>{item.UnitPriceEstimate || item.ActualUnitPrice}</Currency> each</span>} />
-              </ListItem>
-            ))}
+            <ShoppingList items={shoppingEvent?.list} showRequiredAmount={!historical} onListItemClick={onListItemClick} />
             { historical ? null : (<>
               <Divider />
               <ListItem sx={{ mt: 1 }}>
