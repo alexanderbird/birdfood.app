@@ -4,7 +4,6 @@ import Box from '@mui/material/Box';
 import CheckListIcon from '@mui/icons-material/CheckList';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import ListItem from '@mui/material/ListItem';
 import Button from '@mui/material/Button';
 
 import { Header } from '../../components/Header.jsx';

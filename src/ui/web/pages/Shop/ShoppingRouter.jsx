@@ -1,6 +1,5 @@
 import { useLocation } from 'preact-iso';
 
-import Box from '@mui/material/Box';
 import CheckListIcon from '@mui/icons-material/CheckList';
 import Typography from '@mui/material/Typography';
 
@@ -10,7 +9,7 @@ import { Page } from '../../components/Page';
 
 export const ShoppingRouter = ({ core }) => {
   const location = useLocation();
-  const [shoppingEvents, triggerUpdate] = useLastYearShoppingEvents(core);
+  const [shoppingEvents] = useLastYearShoppingEvents(core);
 
   if (!shoppingEvents) {
     return <ShoppingLoadingPage />;

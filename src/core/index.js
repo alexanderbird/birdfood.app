@@ -62,7 +62,7 @@ export class Core {
   getShoppingEvent(id) {
     if (!id.startsWith("se-")) {
       const error = new Error('The shopping event description ID must start with "se-"');
-      error.code = "ResourceNotFound"
+      error.code = "ResourceNotFound";
       throw error;
     }
     const description = this.data.getItem(id);
@@ -93,7 +93,7 @@ export class Core {
       return {
         runningTotal: statistics.runningTotal + actual,
         estimatedTotal: statistics.estimatedTotal + expected,
-      }
+      };
     }, { runningTotal: 0, estimatedTotal: 0 });
     return {
       statistics,

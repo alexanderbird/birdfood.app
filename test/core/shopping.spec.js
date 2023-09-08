@@ -161,6 +161,7 @@ describe('core shopping APIs', () => {
           Id,
           Store: "Costco",
           Status: "IN_PROGRESS",
+          StartedAt: "0000-00-00T00:00:00.000Z",
           EstimatedTotal: 129.5,
         });
       });

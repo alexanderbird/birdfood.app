@@ -2,19 +2,14 @@ import { useLocation } from 'preact-iso';
 
 import Container from '@mui/material/Container';
 import Alert from '@mui/material/Alert';
-import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
-import CheckListIcon from '@mui/icons-material/CheckList';
-import OpenInFullIcon from '@mui/icons-material/OpenInFull';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import Typography from '@mui/material/Typography';
 import PendingIcon from '@mui/icons-material/Pending';
-import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 
 import { useLastYearShoppingEvents } from './useLastYearShoppingEvents';
@@ -26,7 +21,7 @@ export const ShoppingHistory = ({ core }) => {
   const location = useLocation();
   const { eventNotFound } = location.query;
 
-  const [shoppingEvents, triggerUpdate] = useLastYearShoppingEvents(core);
+  const [shoppingEvents] = useLastYearShoppingEvents(core);
   return (
     <Page
       isLoading={!shoppingEvents}
@@ -37,9 +32,10 @@ export const ShoppingHistory = ({ core }) => {
           <List dense>
             { !shoppingEvents ? null : shoppingEvents.reverse().map(shoppingEvent => (
               <ListItem
+                key={shoppingEvent.Id}
                 selected={shoppingEvent.Status === "IN_PROGRESS"}
                 onClick={() => location.route(`/shop/${shoppingEvent.Id}`)}
-                >
+              >
                 <ListItemIcon>
                   { shoppingEvent.Status === "COMPLETE" ? <CheckCircleIcon mr={1} /> : <PendingIcon mr={1} color="primary" /> }
                 </ListItemIcon>

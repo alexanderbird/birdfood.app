@@ -21,7 +21,7 @@ export const HistoricalShopPageHeader = ({ shoppingEvent }) => {
         Estimated <Currency>{shoppingEvent?.statistics.estimatedTotal}</Currency>
         , spent <Currency>{shoppingEvent?.statistics.runningTotal}</Currency>
       </Typography>
-      <Divider sx={{ mt: 2 }}/>
+      <Divider sx={{ mt: 2 }} />
     </Box>
   </>);
 };

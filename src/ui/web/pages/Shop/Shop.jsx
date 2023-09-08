@@ -41,7 +41,7 @@ export function Shop({ core, shoppingEventId }) {
     }
     core.buyItem(shoppingEventId, { ItemId: item.Id, Quantity: item.RequiredQuantity });
     triggerUpdate();
-  }
+  };
 
   return (
     <Page
@@ -49,14 +49,14 @@ export function Shop({ core, shoppingEventId }) {
       header={!shoppingEvent
         ? <Header><CheckListIcon sx={{ mr: 1 }} /></Header>
         : readonly
-        ? <HistoricalShopPageHeader shoppingEvent={shoppingEvent} />
-        : <ShopPageHeader shoppingEvent={shoppingEvent} />
+          ? <HistoricalShopPageHeader shoppingEvent={shoppingEvent} />
+          : <ShopPageHeader shoppingEvent={shoppingEvent} />
       }
       body={() =>
         <Container>
           <List>
             { shoppingEvent?.list.map(item => (
-              <ListItem dense onClick={() => onListItemClick(item)}>
+              <ListItem key={item.Id} dense onClick={() => onListItemClick(item)}>
                 <ListItemIcon>
                   { item.BoughtQuantity >= item.RequiredQuantity
                     ? <CheckBoxIcon fontSize="large" />
@@ -73,7 +73,7 @@ export function Shop({ core, shoppingEventId }) {
                 <Button
                   sx={{ margin: 'auto' }}
                   onClick={() => { core.stopShopping(shoppingEventId); location.route('/history'); }}
-                  >Finish Shopping</Button>
+                >Finish Shopping</Button>
               </ListItem>
             )}
           </List>
@@ -83,11 +83,3 @@ export function Shop({ core, shoppingEventId }) {
     />
   );
 }
-
-const scratch = () => {
-  <Button
-    disabled={shoppingEvent.Status === "COMPLETE"}
-    onClick={() => { core.stopShopping(shoppingEvent.Id); triggerUpdate(); }}
-  >Stop Shopping</Button>;
-};
-

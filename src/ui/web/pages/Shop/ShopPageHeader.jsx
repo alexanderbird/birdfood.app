@@ -5,7 +5,6 @@ import CheckListIcon from '@mui/icons-material/CheckList';
 import Typography from '@mui/material/Typography';
 
 import { Currency } from '../../components/Currency';
-import { ShoppingEventSummary } from './ShoppingEventSummary';
 
 export const ShopPageHeader = ({ shoppingEvent }) => {
   return (<>
