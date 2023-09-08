@@ -1,6 +1,7 @@
 import { useLocation } from 'preact-iso';
 import { useState } from 'preact/hooks';
 
+import Box from '@mui/material/Box';
 import ChecklistIcon from '@mui/icons-material/Checklist';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
@@ -78,17 +79,17 @@ export function Shop({ core, shoppingEventId }) {
             { historical ? null : (<>
               <Divider />
               <ListItem sx={{ mt: 1 }}>
-                <CurrencyTextField required fullWidth label="Total Spent" value={totalSpent} setValue={setTotalSpent} />
-              </ListItem>
-              <ListItem>
-                <Button
-                  disabled={!Number(totalSpent) || Number.isNaN(Number(totalSpent))}
-                  sx={{ margin: 'auto' }}
-                  onClick={() => {
-                    core.stopShopping(shoppingEventId, { TotalSpent: Number(totalSpent) });
-                    location.route(`/history?activeEvent=${shoppingEventId}`);
-                  }}
-                >Finish Shopping</Button>
+                <Box display="flex" flexDirection="row">
+                  <CurrencyTextField required sx={{ flex: 1 }} label="Total Spent" value={totalSpent} setValue={setTotalSpent} />
+                  <Button
+                    disabled={!Number(totalSpent) || Number.isNaN(Number(totalSpent))}
+                    sx={{ margin: 'auto', flex: 1 }}
+                    onClick={() => {
+                      core.stopShopping(shoppingEventId, { TotalSpent: Number(totalSpent) });
+                      location.route(`/history?activeEvent=${shoppingEventId}`);
+                    }}
+                  >Finish Shopping</Button>
+                </Box>
               </ListItem>
             </>)}
           </List>

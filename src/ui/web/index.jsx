@@ -1,4 +1,5 @@
 import { render } from 'preact';
+import { useEffect } from 'preact/hooks';
 import { LocationProvider, Router, Route } from 'preact-iso';
 
 import Box from '@mui/material/Box';
