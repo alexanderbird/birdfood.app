@@ -31,7 +31,7 @@ export function Footer({ core }) {
     };
   });
   return (
-    <BottomNavigation showLabels={true} value={url} sx={{ paddingTop: 5, paddingBottom: 4 }}>
+    <BottomNavigation showLabels={true} value={`/${  url.split('/')[1]}`} sx={{ paddingTop: 5, paddingBottom: 4 }}>
       <BottomNavigationAction {...actionProps({ href:"/schedule", label: "Schedule", IconComponent: EventRepeatIcon })} />
       <BottomNavigationAction {...actionProps({ href:"/plan", label: "Plan", badge: badgeCounts.cart, badgeColor: "secondary", IconComponent: FormatListBulletedIcon })} />
       <BottomNavigationAction {...actionProps({ href:"/shop", label: "Shop", IconComponent: ChecklistIcon })} />
