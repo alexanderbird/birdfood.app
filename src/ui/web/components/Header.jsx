@@ -12,6 +12,9 @@ export function Header({ children }) {
           <Toolbar>{ children }</Toolbar>
         </AppBar>
       </HideOnScroll>
+      {/* for spacing, so the top content isn't hidden */}
+      {/* https://github.com/mui/material-ui/issues/16844#issuecomment-517205129 */}
+      <Toolbar />
     </Box>
   );
 }
