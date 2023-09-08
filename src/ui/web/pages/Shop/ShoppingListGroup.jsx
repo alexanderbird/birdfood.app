@@ -9,6 +9,7 @@ import TextField from '@mui/material/TextField';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
 import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import * as colors from '@mui/material/colors';
 
@@ -35,8 +36,14 @@ export const ShoppingListGroup = ({ type, items, editable, updateItem, ...props 
       <Typography><ItemTypeIcon type={type} /> {ItemType[type].label}</Typography>
       <List>
         { items.sort((lhs, rhs) => lhs.Name < rhs.Name ? -1 : 1).map(item => (
-          <ListItem key={item.Id} dense alignItems="flex-start" onClick={() => handleItemClick(item)} selected={isSelected(item)}>
-            <ListItemContent item={item} showRequiredAmount={editable} selected={isSelected(item)} updateItem={updateItem} />
+          <ListItem key={item.Id} dense alignItems="flex-start" selected={isSelected(item)}>
+            <ListItemContent
+              item={item}
+              showRequiredAmount={editable}
+              selected={isSelected(item)}
+              updateItem={updateItem}
+              onClick={() => handleItemClick(item)}
+            />
           </ListItem>
         ))}
       </List>
@@ -44,15 +51,17 @@ export const ShoppingListGroup = ({ type, items, editable, updateItem, ...props 
   );
 };
 
-const ListItemContent = ({ item, selected, showRequiredAmount, updateItem }) => {
+const ListItemContent = ({ item, selected, showRequiredAmount, updateItem, onClick }) => {
   return (<>
-    <ListItemIcon>
-      { item.BoughtQuantity >= (item.RequiredQuantity || 0)
-        ? <CheckBoxIcon fontSize="large" />
-        : item.BoughtQuantity > 0
-          ? <IndeterminateCheckBoxIcon fontSize="large" />
-          : <CheckBoxOutlineBlankIcon fontSize="large" />
-      }
+    <ListItemIcon onClikc={onClick}>
+      <IconButton aria-label="checkbox" onClick={onClick} sx={{padding: 0}}>
+        { item.BoughtQuantity >= (item.RequiredQuantity || 0)
+          ? <CheckBoxIcon fontSize="large" />
+          : item.BoughtQuantity > 0
+            ? <IndeterminateCheckBoxIcon fontSize="large" />
+            : <CheckBoxOutlineBlankIcon fontSize="large" />
+        }
+      </IconButton>
     </ListItemIcon>
     <ListItemText
       primary={showRequiredAmount
