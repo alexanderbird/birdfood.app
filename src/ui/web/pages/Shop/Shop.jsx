@@ -3,21 +3,15 @@ import { useState } from 'preact/hooks';
 
 import Box from '@mui/material/Box';
 import ChecklistIcon from '@mui/icons-material/Checklist';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Divider from '@mui/material/Divider';
 
 import { CurrencyTextField } from '../../components/CurrencyTextField';
 import { Header } from '../../components/Header.jsx';
 import { useUpdatingState } from '../../hooks/useUpdatingState';
 import { Page } from '../../components/Page';
-import { Currency } from '../../components/Currency';
 import { ShoppingListGroup } from './ShoppingListGroup';
 import { ShoppingList } from './ShoppingList';
 import { ShopPageHeader } from './ShopPageHeader';
@@ -50,6 +44,12 @@ export function Shop({ core, shoppingEventId }) {
     triggerUpdate();
   };
 
+  const groupedList = Object.values((shoppingEvent?.list || []).reduce((grouped, item) => {
+    grouped[item.Type] = grouped[item.Type] || { type: item.Type, items: [] };
+    grouped[item.Type].items.push(item);
+    return grouped;
+  }, {}));
+
   return (
     <Page
       isLoading={!shoppingEvent}
@@ -61,16 +61,17 @@ export function Shop({ core, shoppingEventId }) {
       }
       body={() =>
         <Container>
-          <List>
-            <ListItem divider>
-              <ShoppingListGroup type="OTHER">
-                <ShoppingList items={shoppingEvent?.list} showRequiredAmount={!historical} onListItemClick={onListItemClick} />
-              </ShoppingListGroup>
-            </ListItem>
+          <List sx={{ mt: -2 }}>
+            { groupedList.map(itemGroup => (
+              <ListItem divider key={itemGroup.type}>
+                <ShoppingListGroup type={itemGroup.type} sx={{ mt: 2 }}>
+                  <ShoppingList items={itemGroup.items} showRequiredAmount={!historical} onListItemClick={onListItemClick} />
+                </ShoppingListGroup>
+              </ListItem>
+            )) }
             { historical ? null : (<>
-              <Divider />
               <ListItem sx={{ mt: 1 }}>
-                <Box display="flex" flexDirection="row">
+                <Box display="flex" flexDirection="row" mt={3} mb={4}>
                   <CurrencyTextField required sx={{ flex: 1 }} label="Total Spent" value={totalSpent} setValue={setTotalSpent} />
                   <Button
                     disabled={!Number(totalSpent) || Number.isNaN(Number(totalSpent))}

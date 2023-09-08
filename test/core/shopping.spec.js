@@ -195,9 +195,9 @@ describe('core shopping APIs', () => {
         const { Id: idForCarrots } = core.createItem({ Name: "Carrots", PlannedQuantity: 3, UnitPriceEstimate: 1.00 });
         const { list } = core.getShoppingEvent(Id);
         expect(list).toEqual([
-          { Id: idForApples, Name: "Apples", RequiredQuantity: 2, BoughtQuantity: 0, UnitPriceEstimate: 0.60 },
-          { Id: idForBananas, Name: "Bananas (bunch)", RequiredQuantity: 1, BoughtQuantity: 0, UnitPriceEstimate: 2.01 },
-          { Id: idForCarrots, Name: "Carrots", RequiredQuantity: 3, BoughtQuantity: 0, UnitPriceEstimate: 1.00 }
+          { Id: idForApples, Name: "Apples", RequiredQuantity: 2, BoughtQuantity: 0, UnitPriceEstimate: 0.60, Type: "OTHER" },
+          { Id: idForBananas, Name: "Bananas (bunch)", RequiredQuantity: 1, BoughtQuantity: 0, UnitPriceEstimate: 2.01, Type: "OTHER" },
+          { Id: idForCarrots, Name: "Carrots", RequiredQuantity: 3, BoughtQuantity: 0, UnitPriceEstimate: 1.00, Type: "OTHER" }
         ]);
       });
 
@@ -211,35 +211,35 @@ describe('core shopping APIs', () => {
         core.buyItem(Id, { ItemId: idForCarrots, Quantity: 1, ActualUnitPrice: 2 });
         const { list } = core.getShoppingEvent(Id);
         expect(list).toEqual([
-          { Id: idForApples, Name: "Apples", RequiredQuantity: 2, BoughtQuantity: 2, UnitPriceEstimate: 0.60, ActualUnitPrice: 1.02 },
-          { Id: idForBananas, Name: "Bananas (bunch)", RequiredQuantity: 1, BoughtQuantity: 0, UnitPriceEstimate: 2.01 },
-          { Id: idForCarrots, Name: "Carrots", RequiredQuantity: 3, BoughtQuantity: 1, UnitPriceEstimate: 1.00, ActualUnitPrice: 2 }
+          { Id: idForApples, Name: "Apples", RequiredQuantity: 2, BoughtQuantity: 2, UnitPriceEstimate: 0.60, ActualUnitPrice: 1.02, Type: "OTHER" },
+          { Id: idForBananas, Name: "Bananas (bunch)", RequiredQuantity: 1, BoughtQuantity: 0, UnitPriceEstimate: 2.01, Type: "OTHER" },
+          { Id: idForCarrots, Name: "Carrots", RequiredQuantity: 3, BoughtQuantity: 1, UnitPriceEstimate: 1.00, ActualUnitPrice: 2, Type: "OTHER" }
         ]);
       });
 
       it("excludes planned items when retrieving the historical list", () => {
         const { Id: idForApples } = core.createItem({ Name: "Apples", PlannedQuantity: 2, UnitPriceEstimate: 0.60 });
         const { Id: idForBananas } = core.createItem({ Name: "Bananas (bunch)", PlannedQuantity: 1, UnitPriceEstimate: 2.01 });
-        const { Id: idForCarrots } = core.createItem({ Name: "Carrots", PlannedQuantity: 3, UnitPriceEstimate: 1.00 });
+        const { Id: idForCarrots } = core.createItem({ Name: "Carrots", PlannedQuantity: 3, UnitPriceEstimate: 1.00, Type: "PRODUCE" });
         const { Id } = core.startShopping();
         core.buyItem(Id, { ItemId: idForApples, Quantity: 2, ActualUnitPrice: 1.02 });
         core.buyItem(Id, { ItemId: idForCarrots, Quantity: 100, ActualUnitPrice: 2 });
         core.stopShopping(Id);
         const { list } = core.getShoppingEvent(Id);
         expect(list).toEqual([
-          { Id: idForApples, Name: "Apples", BoughtQuantity: 2, ActualUnitPrice: 1.02 },
-          { Id: idForCarrots, Name: "Carrots", BoughtQuantity: 100, ActualUnitPrice: 2 },
+          { Id: idForApples, Name: "Apples", BoughtQuantity: 2, ActualUnitPrice: 1.02, Type: "OTHER" },
+          { Id: idForCarrots, Name: "Carrots", BoughtQuantity: 100, ActualUnitPrice: 2, Type: "PRODUCE" },
         ]);
       });
 
       it("still includes the item details even if it is not part of the plan", () => {
-        const { Id: idForApples } = core.createItem({ Name: "Apples", PlannedQuantity: 2, UnitPriceEstimate: 0.60 });
+        const { Id: idForApples } = core.createItem({ Name: "Apples", PlannedQuantity: 2, UnitPriceEstimate: 0.60, Type: "DELI" });
         const { Id } = core.startShopping();
         core.buyItem(Id, { ItemId: idForApples, Quantity: 2, ActualUnitPrice: 1.02 });
         core.updateItem({ Id: idForApples, PlannedQuantity: 0 });
         const { list } = core.getShoppingEvent(Id);
         expect(list).toEqual([
-          { Id: idForApples, Name: "Apples", RequiredQuantity: 0, BoughtQuantity: 2, UnitPriceEstimate: 0.60, ActualUnitPrice: 1.02 }
+          { Id: idForApples, Name: "Apples", RequiredQuantity: 0, BoughtQuantity: 2, UnitPriceEstimate: 0.60, ActualUnitPrice: 1.02, Type: "DELI" }
         ]);
       });
 
@@ -250,7 +250,7 @@ describe('core shopping APIs', () => {
         core.buyItem(event2.Id, { ItemId: idForApples, Quantity: 2, ActualUnitPrice: 1.02 });
         const { list } = core.getShoppingEvent(event1.Id);
         expect(list).toEqual([
-          { Id: idForApples, Name: "Apples", RequiredQuantity: 2, BoughtQuantity: 0, UnitPriceEstimate: 0.60 }
+          { Id: idForApples, Name: "Apples", RequiredQuantity: 2, BoughtQuantity: 0, UnitPriceEstimate: 0.60, Type: "OTHER" }
         ]);
       });
     });

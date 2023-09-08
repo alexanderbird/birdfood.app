@@ -52,6 +52,7 @@ export class Core {
     return ({
       Id: plannedItem.Id,
       Name: plannedItem.Name,
+      Type: plannedItem.Type || 'OTHER',
       RequiredQuantity: plannedItem.PlannedQuantity,
       UnitPriceEstimate: plannedItem.UnitPriceEstimate,
       BoughtQuantity: completedItem?.Quantity || 0,

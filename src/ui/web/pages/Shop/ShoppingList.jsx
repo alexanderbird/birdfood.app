@@ -10,7 +10,7 @@ export const ShoppingList = ({ items, showRequiredAmount, onListItemClick }) => 
     return null;
   }
   return (<>
-    { items.map(item => (
+    { items.sort((lhs, rhs) => lhs.Name < rhs.Name ? -1 : 1).map(item => (
       <ListItem key={item.Id} dense onClick={() => onListItemClick(item)}>
         <ListItemIcon>
           { item.BoughtQuantity >= (item.RequiredQuantity || 0)
@@ -27,4 +27,4 @@ export const ShoppingList = ({ items, showRequiredAmount, onListItemClick }) => 
       </ListItem>
     ))}
   </>);
-}
+};

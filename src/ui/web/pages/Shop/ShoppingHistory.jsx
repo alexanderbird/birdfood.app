@@ -52,7 +52,7 @@ export const ShoppingHistory = ({ core }) => {
                   <Typography variant="inherit" sx={{ fontWeight: 'bold' }}> <Currency>{group.total}</Currency></Typography>
                 </Typography>
                 <List dense>
-                  { group.events.sort((lhs, rhs) => lhs.StartedAt < rhs.StartedAt ? -1 : 1).map(shoppingEvent => (
+                  { group.events.sort((lhs, rhs) => lhs.StartedAt < rhs.StartedAt ? 1 : -1).map(shoppingEvent => (
                     <ListItem
                       disableGutters
                       sx={{ mx: -2, px: 2, width: 'auto' }}
