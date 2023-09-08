@@ -17,7 +17,7 @@ export const ShopPageHeader = ({ shoppingEvent }) => {
             <Currency>{shoppingEvent?.statistics?.runningTotal}</Currency>
           </Typography>
           /
-          <Currency>{shoppingEvent?.statistics?.estimatedTotal}</Currency>
+          <Currency>{shoppingEvent?.description?.EstimatedTotal}</Currency>
         </Typography>
       </Box>
     </Header>
