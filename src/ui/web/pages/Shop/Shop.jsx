@@ -35,11 +35,11 @@ export function Shop({ core, shoppingEventId }) {
   }
   const historical = shoppingEvent?.description?.Status === "COMPLETE";
 
-  const onItemQuantityChange = (ItemId, Quantity) => {
+  const updateItem = attributes => {
     if (historical) {
       return;
     }
-    core.buyItem(shoppingEventId, { ItemId, Quantity });
+    core.buyItem(shoppingEventId, attributes);
     triggerUpdate();
   };
 
@@ -64,10 +64,10 @@ export function Shop({ core, shoppingEventId }) {
             { groupedList.map(itemGroup => (
               <ListItem divider key={itemGroup.type}>
                 <ShoppingListGroup
-                  items={itemGroup.items}
-                  showRequiredAmount={!historical}
-                  onItemQuantityChange={onItemQuantityChange}
                   type={itemGroup.type}
+                  items={itemGroup.items}
+                  editable={!historical}
+                  updateItem={updateItem}
                   sx={{ mt: 2 }}
                 />
               </ListItem>

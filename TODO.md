@@ -1,9 +1,6 @@
 # TODO
 
 - better shopping experience
-  - edit the amount (on click, reveal an input for setting the amount --
-    defaults to the required amount -- and also the actual price)
-  - collapsible groups (default collapsed)
   - show items remaining for each group (as a badge on the type icon?)
   - this is a good time to change the group names if they're not quite right
 - storage -- one device

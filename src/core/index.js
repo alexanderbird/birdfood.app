@@ -30,8 +30,8 @@ export class Core {
     if (!itemId.startsWith("i-")) {
       throw new Error('ItemId must start with "i-"');
     }
-    if (!attributes.Quantity) {
-      throw new Error("Missing required attribute 'Quantity'");
+    if (!Number.isInteger(Number(attributes.Quantity))) {
+      throw new Error("Required attribute 'Quantity' is missing or is not an integer");
     }
     const shoppingEvent = this.data.getItem(shoppingEventId);
     if (!shoppingEvent) {
@@ -41,10 +41,11 @@ export class Core {
       throw new Error(`Cannot buy an item for a shopping event with status "${shoppingEvent.Status}"`);
     }
     const boughtItem = {
-      Id: `sei#${  shoppingEventId  }#${  itemId}`,
-      ...attributes
+      Id: `sei#${shoppingEventId}#${itemId}`,
+      ...attributes,
+      Quantity: Number(attributes.Quantity)
     };
-    this.data.createItem(boughtItem);
+    this.data.putItem(boughtItem);
     return boughtItem;
   }
 

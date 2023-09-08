@@ -21,6 +21,15 @@ export class EmptyStaticData {
     return this.items.filter(x => idsSet.has(x.Id));
   }
 
+  putItem(attributes) {
+    const existing = this.getItem(attributes.Id);
+    if (existing) {
+      this.updateItem(attributes);
+    } else {
+      this.createItem(attributes);
+    }
+  }
+
   createItem(attributes) {
     this.items.push(attributes);
   }
