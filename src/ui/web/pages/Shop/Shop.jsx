@@ -18,6 +18,7 @@ import { Header } from '../../components/Header.jsx';
 import { useUpdatingState } from '../../hooks/useUpdatingState';
 import { Page } from '../../components/Page';
 import { Currency } from '../../components/Currency';
+import { ShoppingListGroup } from './ShoppingListGroup';
 import { ShoppingList } from './ShoppingList';
 import { ShopPageHeader } from './ShopPageHeader';
 import { HistoricalShopPageHeader } from './HistoricalShopPageHeader';
@@ -61,7 +62,11 @@ export function Shop({ core, shoppingEventId }) {
       body={() =>
         <Container>
           <List>
-            <ShoppingList items={shoppingEvent?.list} showRequiredAmount={!historical} onListItemClick={onListItemClick} />
+            <ListItem divider>
+              <ShoppingListGroup type="OTHER">
+                <ShoppingList items={shoppingEvent?.list} showRequiredAmount={!historical} onListItemClick={onListItemClick} />
+              </ShoppingListGroup>
+            </ListItem>
             { historical ? null : (<>
               <Divider />
               <ListItem sx={{ mt: 1 }}>
