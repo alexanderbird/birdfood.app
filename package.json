@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "lint": "eslint src",
-    "check": "npm run lint && npm run test",
+    "check": "npm run lint && vitest --run",
     "test": "vitest",
     "coverage": "vitest run --coverage && open coverage/index.html",
     "dev": "vite",

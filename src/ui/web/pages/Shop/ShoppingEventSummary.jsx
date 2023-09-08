@@ -1,8 +1,6 @@
-import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
 
-import { Currency } from '../../components/Currency';
 
 export const ShoppingEventSummary = ({ event, variant }) => {
   if (!event) return null;
@@ -28,7 +26,7 @@ export const ShoppingEventSummary = ({ event, variant }) => {
             m: 0.5,
           },
         }}
-        >
+      >
         <div>{dayOfMonth}</div>
         <Divider orientation="vertical" variant="middle" flexItem />
         <div>{weekday}</div>
