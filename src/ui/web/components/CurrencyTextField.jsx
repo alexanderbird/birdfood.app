@@ -35,7 +35,7 @@ export const CurrencyTextField = ({ setValue, ...props }) => {
       inputProps={{
         sx: { textAlign: 'right' },
         type: 'number',
-        inputMode: 'numeric'
+        inputMode: 'decimal'
       }}
       InputProps={{
         startAdornment: <InputAdornment position="start">$</InputAdornment>,
