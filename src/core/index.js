@@ -41,9 +41,9 @@ export class Core {
       throw new Error(`Cannot buy an item for a shopping event with status "${shoppingEvent.Status}"`);
     }
     const boughtItem = {
-      Id: 'sei#' + shoppingEventId + '#' + itemId,
+      Id: `sei#${  shoppingEventId  }#${  itemId}`,
       ...attributes
-    }
+    };
     this.data.createItem(boughtItem);
     return boughtItem;
   }
@@ -61,7 +61,9 @@ export class Core {
 
   getShoppingEvent(id) {
     if (!id.startsWith("se-")) {
-      throw new Error('The shopping event description ID must start with "se-"');
+      const error = new Error('The shopping event description ID must start with "se-"');
+      error.code = "ResourceNotFound"
+      throw error;
     }
     const description = this.data.getItem(id);
     if (!description) {
@@ -70,7 +72,7 @@ export class Core {
       throw error;
     }
     const completedItems = Object.fromEntries(
-      this.data.listItems('sei#' + id + '#i-')
+      this.data.listItems(`sei#${  id  }#i-`)
         .map(x => [x.Id.replace(/^sei#se-[0-9a-z-]+#/, ''), x]));
     const completedItemIds = new Set(Object.keys(completedItems));
     const processedItemIds = new Set();
@@ -82,12 +84,22 @@ export class Core {
     const itemsThatHaveBeenRemovedFromThePlannedListAfterMarkingThemAsComplete =
       Array.from(completedItemIds).filter(id => !processedItemIds.has(id));
     const listB = this.data.batchGetItems(itemsThatHaveBeenRemovedFromThePlannedListAfterMarkingThemAsComplete)
-      .map(plannedItem => this._assembleItemForShoppingEvent(plannedItem, completedItems[plannedItem.Id]))
+      .map(plannedItem => this._assembleItemForShoppingEvent(plannedItem, completedItems[plannedItem.Id]));
     const list = listA.concat(listB);
+
+    const statistics = list.reduce((statistics, item) => {
+      const actual = item.BoughtQuantity * (item.ActualUnitPrice || item.UnitPriceEstimate);
+      const expected = item.RequiredQuantity * item.UnitPriceEstimate;
+      return {
+        runningTotal: statistics.runningTotal + actual,
+        estimatedTotal: statistics.estimatedTotal + expected,
+      }
+    }, { runningTotal: 0, estimatedTotal: 0 });
     return {
+      statistics,
       description,
       list
-    }
+    };
   }
 
   listShoppingEvents(startDate, endDate) {
@@ -101,7 +113,7 @@ export class Core {
     if (!shoppingEvent) {
       throw new Error(`Cannot stop Shopping Event ${id}`);
     }
-    const shoppingEventItemsPrefix = "sei#" + id + "#i-";
+    const shoppingEventItemsPrefix = `sei#${  id  }#i-`;
     const completedItems = this.data.listItems(shoppingEventItemsPrefix);
     const currentPlannedQuantities = Object.fromEntries(
       this.data.batchGetItems(completedItems.map(x => x.ItemId))

@@ -36,5 +36,10 @@
   { "Id": "i-0adc96a3", "Type": "FROZEN", "Name": "Frozen Organic Peas", "UnitPriceEstimate": 5.00, "PlannedQuantity": 0, "RecurringQuantity": 0 },
   { "Id": "i-6a1226c0", "Type": "FROZEN", "Name": "Nature's Path Waffles", "UnitPriceEstimate": 6.00, "PlannedQuantity": 0, "RecurringQuantity": 0 },
   { "Id": "i-f8c04af8", "Type": "FROZEN", "Name": "Raspberry Popsicles", "UnitPriceEstimate": 8.00, "PlannedQuantity": 0, "RecurringQuantity": 0 },
-  { "Id": "i-6c213d8b", "Type": "DAIRY", "Name": "Ice cream (extra large vanilla)", "UnitPriceEstimate": 10.00, "PlannedQuantity": 1, "RecurringQuantity": 1 }
+  { "Id": "i-6c213d8b", "Type": "DAIRY", "Name": "Ice cream (extra large vanilla)", "UnitPriceEstimate": 10.00, "PlannedQuantity": 1, "RecurringQuantity": 1 },
+  { "Id": "se-202309080029-542c7f3d", "StartedAt": "2023-09-08T00:29:12.413Z", "Status": "COMPLETE" },
+  { "Id": "sei#se-202309080029-542c7f3d#i-5d05eae2", "ItemId": "i-5d05eae2", "Quantity": 1 },
+  { "Id": "sei#se-202309080029-542c7f3d#i-eaaf419c", "ItemId": "i-eaaf419c", "Quantity": 3 },
+  { "Id": "sei#se-202309080029-542c7f3d#i-91f81a83", "ItemId": "i-91f81a83", "Quantity": 1 },
+  { "Id": "sei#se-202309080029-542c7f3d#i-b49cac9a", "ItemId": "i-b49cac9a", "Quantity": 1 }
 ]

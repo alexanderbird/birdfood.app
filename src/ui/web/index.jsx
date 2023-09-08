@@ -8,7 +8,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { Footer } from './components/Footer.jsx';
 import { Schedule } from './pages/Schedule/index.jsx';
 import { Plan } from './pages/Plan/index.jsx';
-import { Shop, ShoppingHistory } from './pages/Shop/index.jsx';
+import { Shop, ShoppingHistory, StartShopping, ShoppingRouter } from './pages/Shop/index.jsx';
 import { NotFound } from './pages/_404.jsx';
 import { StaticData } from '../../data/static';
 import { Core } from '../../core';
@@ -23,8 +23,10 @@ export function App() {
           <Router>
             <Schedule path="/schedule" core={core} />
             <Plan path="/plan" core={core} />
+            <StartShopping path="/shop/start" core={core} />
             <Shop path="/shop/:shoppingEventId" core={core} />
-            <ShoppingHistory path="/shop" core={core} />
+            <ShoppingRouter path="/shop" core={core} />
+            <ShoppingHistory path="/history" core={core} />
             <Route default component={NotFound} />
           </Router>
         </Box>

@@ -7,5 +7,5 @@ export const ShoppingEventSummary = ({ event }) => {
     day: 'numeric' 
   });
   return formattedDate;
-}
+};
 

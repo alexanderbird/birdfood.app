@@ -1,5 +1,6 @@
 import { useLocation } from 'preact-iso';
 
+import CheckListIcon from '@mui/icons-material/CheckList';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import Container from '@mui/material/Container';
@@ -7,13 +8,14 @@ import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 
+import { Header } from '../../components/Header.jsx';
 import { useUpdatingState } from '../../hooks/useUpdatingState';
 import { Page } from '../../components/Page';
 import { Currency } from '../../components/Currency';
 import { ShopPageHeader } from './ShopPageHeader';
+import { HistoricalShopPageHeader } from './HistoricalShopPageHeader';
 
 export function Shop({ core, shoppingEventId }) {
   const location = useLocation();
@@ -24,36 +26,56 @@ export function Shop({ core, shoppingEventId }) {
       if (e.code === "ResourceNotFound") {
         return null;
       }
+      throw e;
     }
-  }
+  };
   const [shoppingEvent, triggerUpdate] = useUpdatingState(false, getShoppingEvent);
   if (shoppingEvent === null) {
-    location.route('/shop?eventNotFound=' + shoppingEventId);
+    location.route(`/history?eventNotFound=${shoppingEventId}`);
+  }
+  const readonly = shoppingEvent?.description?.Status === "COMPLETE";
+
+  const onListItemClick = item => {
+    if (readonly) {
+      return;
+    }
+    core.buyItem(shoppingEventId, { ItemId: item.Id, Quantity: item.RequiredQuantity });
+    triggerUpdate();
   }
 
   return (
     <Page
       isLoading={!shoppingEvent}
-      header={<ShopPageHeader description={shoppingEvent?.description} />}
+      header={!shoppingEvent
+        ? <Header><CheckListIcon sx={{ mr: 1 }} /></Header>
+        : readonly
+        ? <HistoricalShopPageHeader shoppingEvent={shoppingEvent} />
+        : <ShopPageHeader shoppingEvent={shoppingEvent} />
+      }
       body={() =>
         <Container>
           <List>
             { shoppingEvent?.list.map(item => (
-              <ListItem dense onClick={() => { core.buyItem(shoppingEventId, { ItemId: item.Id, Quantity: item.RequiredQuantity }); triggerUpdate(); }}>
+              <ListItem dense onClick={() => onListItemClick(item)}>
                 <ListItemIcon>
                   { item.BoughtQuantity >= item.RequiredQuantity
-                    ? <CheckBoxIcon fontSize="large"/>
+                    ? <CheckBoxIcon fontSize="large" />
                     : <CheckBoxOutlineBlankIcon fontSize="large" />
                   }
                 </ListItemIcon>
                 <ListItemText
                   primary={`${item.BoughtQuantity}/${item.RequiredQuantity} ${item.Name}`}
-                  secondary={<Currency>{item.UnitPriceEstimate}</Currency>}/>
+                  secondary={<Currency>{item.UnitPriceEstimate}</Currency>} />
               </ListItem>
             ))}
-            <ListItem>
-              <Button sx={{ margin: 'auto' }} onClick={() => { core.stopShopping(shoppingEventId); location.route('/shop'); }}>Finish Shopping</Button>
-            </ListItem>
+            { readonly ? null : (
+              <ListItem>
+                <Button
+                  sx={{ margin: 'auto' }}
+                  onClick={() => { core.stopShopping(shoppingEventId); location.route('/history'); }}
+                  >Finish Shopping</Button>
+              </ListItem>
+            )}
           </List>
         </Container>
       }
@@ -63,8 +85,9 @@ export function Shop({ core, shoppingEventId }) {
 }
 
 const scratch = () => {
-                  <Button
-                    disabled={shoppingEvent.Status === "COMPLETE"}
-                    onClick={() => { core.stopShopping(shoppingEvent.Id); triggerUpdate(); }}
-                  >Stop Shopping</Button>
-}
+  <Button
+    disabled={shoppingEvent.Status === "COMPLETE"}
+    onClick={() => { core.stopShopping(shoppingEvent.Id); triggerUpdate(); }}
+  >Stop Shopping</Button>;
+};
+

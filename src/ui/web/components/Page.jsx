@@ -5,8 +5,8 @@ export const Page = ({ isLoading, header, body, dialogs }) => {
   return (<>
     { header }
     <Box sx={{ width: '100%', maxWidth: 520, marginX: 'auto', bgcolor: 'background.paper' }}>
-      { isLoading ? <Spinner /> : body() }
+      { isLoading ? <Spinner /> : body ? body() : null}
     </Box>
-    { isLoading ? null : dialogs() }
+    { isLoading ? null : dialogs ? dialogs() : null }
   </>);
 };
