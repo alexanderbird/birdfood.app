@@ -9,6 +9,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Autocomplete from '@mui/material/Autocomplete';
 
+import { GroceryBagIcon } from '../../components/icons/GroceryBagIcon';
 import { CurrencyTextField } from '../../components/CurrencyTextField';
 import { useUpdatingState } from '../../hooks/useUpdatingState';
 import { useRecentShoppingEvents } from './useRecentShoppingEvents';
@@ -55,6 +56,8 @@ export function StartShopping({ core }) {
             noValidate
             autoComplete="off"
           >
+            <Typography sx={{ alignSelf: 'center', mt: 2 }}>Let's get shopping.</Typography>
+            <GroceryBagIcon sx={{ fontSize: '256px', alignSelf: 'center' }} />
             <Autocomplete
               disablePortal
               freeSolo
@@ -62,10 +65,10 @@ export function StartShopping({ core }) {
               value={formData.Store}
               options={storeSuggestions}
               onInputChange={((e, Store) => setFormData(current => ({ ...current, Store })))}
-              renderInput={(params) => <TextField {...params} required label="Store" />}
+              renderInput={(params) => <TextField {...params} required label="Where to?" />}
             />
             <CurrencyTextField
-              label="Estimate"
+              label="How much?"
               required
               value={formData.EstimatedTotal}
               setValue={EstimatedTotal => setFormData(current => ({ ...current, EstimatedTotal }))}
