@@ -18,7 +18,9 @@ export function Landing() {
       header={
         <Header>
           <BirdFoodIcon sx={{ mr: 1 }} />
-          <Typography variant="h6" component="div" textAlign="center" width="100%">Welcome to Bird Food</Typography>
+          <Typography variant="h6" component="div" textAlign="center" width="100%">Welcome</Typography>
+          {/* add a second invisible icon as a hack to center align the text */}
+          <BirdFoodIcon sx={{ ml: 1, color: 'transparent' }} />
         </Header>
       }
       body={() =>
