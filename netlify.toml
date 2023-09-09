@@ -1,9 +1,4 @@
 [[redirects]]
-  from = "/"
-  to = "/plan"
-  force = true
-
-[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
