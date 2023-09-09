@@ -16,6 +16,10 @@ import { ShoppingListGroup } from './ShoppingListGroup';
 import { ShopPageHeader } from './ShopPageHeader';
 import { HistoricalShopPageHeader } from './HistoricalShopPageHeader';
 
+function updateTheFooterBadges(core) {
+  core.getShoppingPlan();
+}
+
 export function Shop({ core, shoppingEventId }) {
   const location = useLocation();
   const [totalSpent, setTotalSpent] = useState();
@@ -41,6 +45,12 @@ export function Shop({ core, shoppingEventId }) {
     }
     core.buyItem(shoppingEventId, attributes);
     triggerUpdate();
+  };
+
+  const finishShopping = () => {
+    core.stopShopping(shoppingEventId, { TotalSpent: Number(totalSpent) });
+    updateTheFooterBadges(core);
+    location.route(`/history?activeEvent=${shoppingEventId}`);
   };
 
   const groupedList = Object.values((shoppingEvent?.list || []).reduce((grouped, item) => {
@@ -79,10 +89,7 @@ export function Shop({ core, shoppingEventId }) {
                   <Button
                     disabled={!Number(totalSpent) || Number.isNaN(Number(totalSpent))}
                     sx={{ margin: 'auto', flex: 1 }}
-                    onClick={() => {
-                      core.stopShopping(shoppingEventId, { TotalSpent: Number(totalSpent) });
-                      location.route(`/history?activeEvent=${shoppingEventId}`);
-                    }}
+                    onClick={finishShopping}
                   >Finish Shopping</Button>
                 </Box>
               </ListItem>
