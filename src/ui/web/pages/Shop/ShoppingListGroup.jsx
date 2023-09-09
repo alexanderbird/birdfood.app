@@ -68,7 +68,7 @@ const ListItemContent = ({ item, selected, showRequiredAmount, updateItem, onCli
     </ListItemIcon>
     <ListItemText
       primary={showRequiredAmount
-        ? <span>{item.BoughtQuantity}<Typography variant="inherit" component="span" sx={{ color: colors.grey[500] }}>/{item.RequiredQuantity}</Typography> {item.Name}</span>
+        ? <span>{item.BoughtQuantity}<Typography variant="inherit" component="span" sx={{ color: colors.grey[700] }}>/{item.RequiredQuantity}</Typography> {item.Name}</span>
         : `${item.BoughtQuantity} ${item.Name}`
       }
       secondary={<>
@@ -86,7 +86,9 @@ const ListItemContent = ({ item, selected, showRequiredAmount, updateItem, onCli
           }}
         >
           <AccordionSummary>
-            <span><Currency>{item.UnitPriceEstimate || item.ActualUnitPrice}</Currency> each</span>
+            <Typography variant="inherit" component="span" sx={{ color: colors.grey[700] }}>
+              <Currency>{item.UnitPriceEstimate || item.ActualUnitPrice}</Currency> each
+            </Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Box display="flex" flexDirection="row" justifyContent="space-between" mt={2}>
