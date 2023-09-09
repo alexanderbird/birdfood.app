@@ -1,5 +1,8 @@
 import { useState } from 'preact/hooks';
 import List from '@mui/material/List';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
 import ListItem from '@mui/material/ListItem';
 import InputAdornment from '@mui/material/InputAdornment';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -69,32 +72,48 @@ const ListItemContent = ({ item, selected, showRequiredAmount, updateItem, onCli
         : `${item.BoughtQuantity} ${item.Name}`
       }
       secondary={<>
-        <span><Currency>{item.UnitPriceEstimate || item.ActualUnitPrice}</Currency> each</span>
-        { !selected ? null : (
-          <Box display="flex" flexDirection="row" justifyContent="space-between" mt={2}>
-            <TextField
-              size="small"
-              label="Quantity"
-              value={item.BoughtQuantity}
-              sx={{ mr: 1 }}
-              onFocus={e => e.target.select()}
-              onChange={x => updateItem({ ItemId: item.Id, Quantity: x.target.value || 0 })}
-              InputProps={{
-                endAdornment: <InputAdornment position="end">/{item.RequiredQuantity}</InputAdornment>,
-              }}
-              inputProps={{
-                type: 'number',
-                inputMode: 'numeric'
-              }}
-            />
-            <CurrencyTextField
-              size="small"
-              label="Unit Price"
-              value={item.ActualUnitPrice}
-              setValue={ActualUnitPrice => updateItem({ ItemId: item.Id, ActualUnitPrice, Quantity: item.BoughtQuantity })}
-            />
-          </Box>
-        )}
+        <Accordion
+          expanded={selected}
+          elevation={0}
+          sx={{
+            '& .MuiAccordionSummary-root': { padding: 0, margin: 0, minHeight: 0 },
+            '& .MuiAccordionSummary-root.Mui-expanded': { minHeight: 0 },
+            '& .MuiAccordionSummary-content.Mui-expanded': { padding: 0, margin: 0 },
+            '& .MuiAccordionSummary-content': { padding: 0, margin: 0 },
+            '& .MuiAccordionDetails-root': { padding: 0, margin: 0 },
+            '& .MuiButtonBase-root': { cursor: 'default' },
+            background: 'transparent'
+          }}
+        >
+          <AccordionSummary>
+            <span><Currency>{item.UnitPriceEstimate || item.ActualUnitPrice}</Currency> each</span>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Box display="flex" flexDirection="row" justifyContent="space-between" mt={2}>
+              <TextField
+                size="small"
+                label="Quantity"
+                value={item.BoughtQuantity}
+                sx={{ mr: 1 }}
+                onFocus={e => e.target.select()}
+                onChange={x => updateItem({ ItemId: item.Id, Quantity: x.target.value || 0 })}
+                InputProps={{
+                  endAdornment: <InputAdornment position="end">/{item.RequiredQuantity}</InputAdornment>,
+                }}
+                inputProps={{
+                  type: 'number',
+                  inputMode: 'numeric'
+                }}
+              />
+              <CurrencyTextField
+                size="small"
+                label="Unit Price"
+                value={item.ActualUnitPrice}
+                setValue={ActualUnitPrice => updateItem({ ItemId: item.Id, ActualUnitPrice, Quantity: item.BoughtQuantity })}
+              />
+            </Box>
+          </AccordionDetails>
+        </Accordion>
       </>}
     />
   </>);
