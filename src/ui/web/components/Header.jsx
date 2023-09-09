@@ -8,7 +8,7 @@ export function Header({ children }) {
   return (
     <Box sx={{ flexGrow: 1, pb: 1 }}>
       <HideOnScroll>
-        <AppBar>
+        <AppBar sx={{ maxWidth: 600, left: 'auto', right: 'auto'}}>
           <Toolbar>{ children }</Toolbar>
         </AppBar>
       </HideOnScroll>

@@ -34,7 +34,7 @@ export function Landing() {
                 mb: 3
               }
             }}>
-            <BirdFoodLogo sx={{ fontSize: '80vw', margin: 'auto' }} />
+            <BirdFoodLogo sx={{ fontSize: 'min(500px, 70vw)', margin: 'auto' }} />
             <Button variant="outlined" disabled>Login</Button>
             <Button variant="outlined" disabled>Use device storage</Button>
             <Button variant="outlined" onClick={() => location.route('/plan')} >Start Demo</Button>
