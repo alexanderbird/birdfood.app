@@ -3,6 +3,7 @@ import { useState } from 'preact/hooks';
 
 import Box from '@mui/material/Box';
 import ChecklistIcon from '@mui/icons-material/Checklist';
+import HistoryIcon from '@mui/icons-material/History';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import List from '@mui/material/List';
@@ -37,7 +38,15 @@ export function Shop({ core, shoppingEventId }) {
   if (shoppingEvent === null) {
     location.route(`/history?eventNotFound=${shoppingEventId}`);
   }
-  const historical = shoppingEvent?.description?.Status === "COMPLETE";
+  const historical = shoppingEvent
+    ? shoppingEvent.description?.Status === "COMPLETE"
+    : location.url.startsWith('/history');
+  if (shoppingEvent && historical && location.url.startsWith('/shop')) {
+    location.route(`/history/${shoppingEventId}`);
+  }
+  if (shoppingEvent && !historical && location.url.startsWith('/history')) {
+    location.route(`/shop/${shoppingEventId}`);
+  }
 
   const updateItem = async attributes => {
     if (historical) {
@@ -63,7 +72,7 @@ export function Shop({ core, shoppingEventId }) {
     <Page
       isLoading={!shoppingEvent}
       header={!shoppingEvent
-        ? <Header><ChecklistIcon sx={{ mr: 1 }} /></Header>
+        ? <Header>{historical ? <HistoryIcon /> : <ChecklistIcon />}</Header>
         : historical
           ? <HistoricalShopPageHeader shoppingEvent={shoppingEvent} />
           : <ShopPageHeader shoppingEvent={shoppingEvent} />

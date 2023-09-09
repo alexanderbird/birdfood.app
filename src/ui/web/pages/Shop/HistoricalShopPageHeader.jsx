@@ -1,7 +1,7 @@
 import { Header } from '../../components/Header.jsx';
 
 import Box from '@mui/material/Box';
-import ChecklistIcon from '@mui/icons-material/Checklist';
+import HistoryIcon from '@mui/icons-material/History';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 
@@ -11,7 +11,7 @@ import { ShoppingEventSummary } from './ShoppingEventSummary';
 export const HistoricalShopPageHeader = ({ shoppingEvent }) => {
   return (<>
     <Header>
-      <ChecklistIcon sx={{ mr: 1 }} />
+      <HistoryIcon sx={{ mr: 1 }} />
       <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
         <Typography variant="h6" component="div"><ShoppingEventSummary variant="oneline" event={shoppingEvent?.description} /></Typography>
       </Box>

@@ -25,6 +25,7 @@ export function App() {
             <Plan path="/plan" core={core} />
             <StartShopping path="/shop/start" core={core} />
             <Shop path="/shop/:shoppingEventId" core={core} />
+            <Shop path="/history/:shoppingEventId" core={core} />
             <ShoppingRouter path="/shop" core={core} />
             <ShoppingHistory path="/history" core={core} />
             <Route default component={NotFound} />

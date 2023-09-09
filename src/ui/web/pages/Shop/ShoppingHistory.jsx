@@ -58,7 +58,7 @@ export const ShoppingHistory = ({ core }) => {
                       sx={{ mx: -2, px: 2, width: 'auto' }}
                       key={shoppingEvent.Id}
                       selected={shoppingEvent.Status === "IN_PROGRESS" || shoppingEvent.Id === activeEvent}
-                      onClick={() => location.route(`/shop/${shoppingEvent.Id}`)}
+                      onClick={() => location.route(`/history/${shoppingEvent.Id}`)}
                     >
                       <ListItemText primary={<ShoppingEventSummary variant="primary" event={shoppingEvent} />} />
                       <Box sx={{textAlign: 'right'}}>
