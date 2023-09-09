@@ -6,7 +6,7 @@ import useScrollTrigger from '@mui/material/useScrollTrigger';
 
 export function Header({ children }) {
   return (
-    <Box sx={{ flexGrow: 1, pb: 2 }}>
+    <Box sx={{ flexGrow: 1, pb: 1 }}>
       <HideOnScroll>
         <AppBar>
           <Toolbar>{ children }</Toolbar>

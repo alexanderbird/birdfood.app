@@ -14,7 +14,7 @@ export const AutocompleteForPlanning = ({ core, items, onItemsModified }) => {
   };
 
   return (
-    <GroceryItemInput items={items} onSelect={addItem} onCreate={createItem} />
+    <GroceryItemInput items={items} onSelect={addItem} onCreate={createItem} inputLabel="We're running low on..." />
   );
 };
 

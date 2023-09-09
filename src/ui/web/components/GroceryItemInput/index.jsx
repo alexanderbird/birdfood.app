@@ -10,7 +10,7 @@ import { ItemType } from '../../components/ItemTypeIcon';
 import { lexicalComparison } from '../SortMode';
 import { LabeledValue } from '../../dataStructures/LabeledValue';
 
-export function GroceryItemInput({ items, onSelect, onCreate }) {
+export function GroceryItemInput({ items, onSelect, onCreate, inputLabel }) {
   const ref = useRef();
   const [inputValue, setInputValue] = useState("");
   const resetInput = () => {
@@ -46,7 +46,8 @@ export function GroceryItemInput({ items, onSelect, onCreate }) {
         }
       }}
       renderOption={(props, option) => <ListItem {...props} disabled={option.value.PlannedQuantity > 0}>{option.label}</ListItem>}
-      renderInput={(params) => <TextField {...params} label="Add Item" />}
+      renderInput={(params) => <TextField {...params} label={inputLabel} />}
+      sx={{ mb: 8 }}
     />
   );
 }

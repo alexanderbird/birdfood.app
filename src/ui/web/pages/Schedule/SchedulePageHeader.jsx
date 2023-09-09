@@ -10,7 +10,7 @@ export const SchedulePageHeader = ({ cartTotal }) => {
     <Header>
       <EventRepeatIcon sx={{ mr: 1 }} />
       <Box display="flex" justifyContent="space-between" width="100%">
-        <Typography variant="h6" component="div">Schedule Recurring Items</Typography>
+        <Typography variant="h6" component="div">Schedule recurring items</Typography>
         <Typography fontWeight="bold" variant="h6" component="div">{formatter.format(cartTotal)}</Typography>
       </Box>
     </Header>
