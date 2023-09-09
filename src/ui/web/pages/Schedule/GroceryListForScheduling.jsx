@@ -8,13 +8,13 @@ export const GroceryListForScheduling = ({ items,
   openEditDialog
 }) => {
 
-  const setQuantity = (id, quantity) => {
-    core.updateItem({ Id: id, RecurringQuantity: quantity });
+  const setQuantity = async (id, quantity) => {
+    await core.updateItem({ Id: id, RecurringQuantity: quantity });
     onItemsModified(id);
   };
 
-  const updateQuantity = (id, difference) => {
-    core.addToItemRecurringQuantity(id, difference);
+  const updateQuantity = async (id, difference) => {
+    await core.addToItemRecurringQuantity(id, difference);
     onItemsModified(id);
   };
 

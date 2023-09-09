@@ -23,7 +23,7 @@ export function useGroceryItemEditFormDialog({ onSave }) {
       open={editDialog.isOpen}
       onCancel={editDialog.close}
       initialValue={editDialog.data}
-      onSave={item => { onSave(item); editDialog.close(); }} 
+      onSave={async item => { await onSave(item); editDialog.close(); }} 
     />;
 
   StatefulGroceryItemEditFormDialog.open = editDialog.open;

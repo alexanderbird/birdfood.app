@@ -14,18 +14,18 @@ export const GroceryListForPlanning = ({ items,
   openEditDialog
 }) => {
 
-  const setQuantity = (id, quantity) => {
-    core.updateItem({ Id: id, PlannedQuantity: quantity });
+  const setQuantity = async (id, quantity) => {
+    await core.updateItem({ Id: id, PlannedQuantity: quantity });
     onItemsModified(id);
   };
 
-  const updateQuantity = (id, difference) => {
-    core.addToItemPlannedQuantity(id, difference);
+  const updateQuantity = async (id, difference) => {
+    await core.addToItemPlannedQuantity(id, difference);
     onItemsModified(id);
   };
 
-  const addRecurringItems = () => {
-    const addedItemIds = core.addRecurringItems();
+  const addRecurringItems = async () => {
+    const addedItemIds = await core.addRecurringItems();
     onItemsModified(addedItemIds);
     document.body.scrollTop = document.documentElement.scrollTop = 0;
   };

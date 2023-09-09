@@ -1,15 +1,15 @@
 import { GroceryItemInput } from '../../components/GroceryItemInput';
 
 export const AutocompleteForPlanning = ({ core, items, onItemsModified }) => {
-  const addItem = item => {
+  const addItem = async item => {
     const id = item.value.Id;
-    core.addToItemPlannedQuantity(id, 1);
-    core.updateItemAndTimestamp({ Id: id });
+    await core.addToItemPlannedQuantity(id, 1);
+    await core.updateItemAndTimestamp({ Id: id });
     onItemsModified(id);
   };
 
-  const createItem = Name => {
-    const item = core.createItem({ Name, PlannedQuantity: 1 });
+  const createItem = async Name => {
+    const item = await core.createItem({ Name, PlannedQuantity: 1 });
     onItemsModified(item.Id);
   };
 

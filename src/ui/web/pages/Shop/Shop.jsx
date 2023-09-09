@@ -23,9 +23,9 @@ function updateTheFooterBadges(core) {
 export function Shop({ core, shoppingEventId }) {
   const location = useLocation();
   const [totalSpent, setTotalSpent] = useState();
-  const getShoppingEvent = () => {
+  const getShoppingEvent = async () => {
     try {
-      return core.getShoppingEvent(shoppingEventId);
+      return await core.getShoppingEvent(shoppingEventId);
     } catch(e) {
       if (e.code === "ResourceNotFound") {
         return null;
@@ -39,16 +39,16 @@ export function Shop({ core, shoppingEventId }) {
   }
   const historical = shoppingEvent?.description?.Status === "COMPLETE";
 
-  const updateItem = attributes => {
+  const updateItem = async attributes => {
     if (historical) {
       return;
     }
-    core.buyItem(shoppingEventId, attributes);
+    await core.buyItem(shoppingEventId, attributes);
     triggerUpdate();
   };
 
-  const finishShopping = () => {
-    core.stopShopping(shoppingEventId, { TotalSpent: Number(totalSpent) });
+  const finishShopping = async () => {
+    await core.stopShopping(shoppingEventId, { TotalSpent: Number(totalSpent) });
     updateTheFooterBadges(core);
     location.route(`/history?activeEvent=${shoppingEventId}`);
   };

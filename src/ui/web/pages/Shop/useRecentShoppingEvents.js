@@ -1,10 +1,10 @@
 import { useUpdatingState } from '../../hooks/useUpdatingState';
 
 export function useRecentShoppingEvents(core) {
-  const listShoppingEvents = () => {
+  const listShoppingEvents = async () => {
     const from = getFourMonthsAgo();
     const to = getTomorrow();
-    return core.listShoppingEvents(from, to);
+    return await core.listShoppingEvents(from, to);
   };
   return useUpdatingState(false, listShoppingEvents);
 }

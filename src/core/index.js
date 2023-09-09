@@ -7,19 +7,18 @@ export class Core {
     this.shoppingListConsumers = {};
   }
 
-  startShopping(attributes) {
+  async startShopping(attributes) {
     const shoppingEvent = {
       ...attributes,
       Id: this._generateTimestampId("se-"),
       StartedAt: this._getCurrentTimestamp(),
       Status: "IN_PROGRESS",
     };
-    this.shoppingEvent = shoppingEvent;
-    this.data.createItem(shoppingEvent);
+    await this.data.createItem(shoppingEvent);
     return shoppingEvent;
   }
 
-  buyItem(shoppingEventId, attributes) {
+  async buyItem(shoppingEventId, attributes) {
     const itemId = attributes.ItemId;
     if (!shoppingEventId.startsWith("se-")) {
       throw new Error('Shopping event Id must start with "se-"');
@@ -33,7 +32,7 @@ export class Core {
     if (!Number.isInteger(Number(attributes.Quantity))) {
       throw new Error("Required attribute 'Quantity' is missing or is not an integer");
     }
-    const shoppingEvent = this.data.getItem(shoppingEventId);
+    const shoppingEvent = await this.data.getItem(shoppingEventId);
     if (!shoppingEvent) {
       throw new Error(`No such shopping event "${shoppingEventId}"`);
     }
@@ -45,7 +44,7 @@ export class Core {
       ...attributes,
       Quantity: Number(attributes.Quantity)
     };
-    this.data.putItem(boughtItem);
+    await this.data.putItem(boughtItem);
     return boughtItem;
   }
 
@@ -61,11 +60,11 @@ export class Core {
     });
   }
 
-  _getItemsForCompletedShoppingEvent(id) {
-    const completedItems = this.data.listItems(`sei#${id}#i-`);
+  async _getItemsForCompletedShoppingEvent(id) {
+    const completedItems = await this.data.listItems(`sei#${id}#i-`);
 
     const itemId = shoppingEventItemId => shoppingEventItemId.replace(/^sei#[^#]*#/, '');
-    const items = this.data.batchGetItems(
+    const items = await this.data.batchGetItems(
       completedItems.map(x => itemId(x.Id)));
 
     const itemsMap = Object.fromEntries(items
@@ -80,20 +79,20 @@ export class Core {
     };
   }
 
-  _getItemsForInProgressShoppingEvent(id) {
+  async _getItemsForInProgressShoppingEvent(id) {
     const completedItems = Object.fromEntries(
-      this.data.listItems(`sei#${  id  }#i-`)
+      (await this.data.listItems(`sei#${  id  }#i-`))
         .map(x => [x.Id.replace(/^sei#se-[0-9a-z-]+#/, ''), x]));
     const completedItemIds = new Set(Object.keys(completedItems));
     const processedItemIds = new Set();
-    const listA = this.data.listItems("i-")
+    const listA = (await this.data.listItems("i-"))
       .filter(x => x.PlannedQuantity)
       .map(x => { processedItemIds.add(x.Id); return x; })
       .map(plannedItem => this._assembleItemForShoppingEvent(plannedItem, completedItems[plannedItem.Id]));
 
     const itemsThatHaveBeenRemovedFromThePlannedListAfterMarkingThemAsComplete =
       Array.from(completedItemIds).filter(id => !processedItemIds.has(id));
-    const listB = this.data.batchGetItems(itemsThatHaveBeenRemovedFromThePlannedListAfterMarkingThemAsComplete)
+    const listB = (await this.data.batchGetItems(itemsThatHaveBeenRemovedFromThePlannedListAfterMarkingThemAsComplete))
       .map(plannedItem => this._assembleItemForShoppingEvent(plannedItem, completedItems[plannedItem.Id]));
     const list = listA.concat(listB);
 
@@ -111,13 +110,13 @@ export class Core {
     };
   }
 
-  getShoppingEvent(id) {
+  async getShoppingEvent(id) {
     if (!id.startsWith("se-")) {
       const error = new Error('The shopping event description ID must start with "se-"');
       error.code = "ResourceNotFound";
       throw error;
     }
-    const description = this.data.getItem(id);
+    const description = await this.data.getItem(id);
     if (!description) {
       const error = new Error(`Shopping Event not found "${id}"`);
       error.code = "ResourceNotFound";
@@ -125,8 +124,8 @@ export class Core {
     }
 
     const itemsAndStatistics = description.Status === "IN_PROGRESS"
-      ? this._getItemsForInProgressShoppingEvent(id)
-      : this._getItemsForCompletedShoppingEvent(id);
+      ? await this._getItemsForInProgressShoppingEvent(id)
+      : await this._getItemsForCompletedShoppingEvent(id);
 
     return {
       ...itemsAndStatistics,
@@ -134,21 +133,21 @@ export class Core {
     };
   }
 
-  listShoppingEvents(startDate, endDate) {
+  async listShoppingEvents(startDate, endDate) {
     const start = this._generateTimestampId("se-", startDate.toISOString());
     const end = this._generateTimestampId("se-", endDate.toISOString());
-    return this.data.listItemsBetween(start, end);
+    return await this.data.listItemsBetween(start, end);
   }
 
-  stopShopping(id, attributes = {}) {
-    const shoppingEvent = this.data.getItem(id);
+  async stopShopping(id, attributes = {}) {
+    const shoppingEvent = await this.data.getItem(id);
     if (!shoppingEvent) {
       throw new Error(`Cannot stop Shopping Event ${id}`);
     }
     const shoppingEventItemsPrefix = `sei#${  id  }#i-`;
-    const completedItems = this.data.listItems(shoppingEventItemsPrefix);
+    const completedItems = await this.data.listItems(shoppingEventItemsPrefix);
     const currentPlannedQuantities = Object.fromEntries(
-      this.data.batchGetItems(completedItems.map(x => x.ItemId))
+      (await this.data.batchGetItems(completedItems.map(x => x.ItemId)))
         .map(x => [x.Id, x.PlannedQuantity]));
     const updates = completedItems
       .map(completedItem => ({
@@ -162,7 +161,7 @@ export class Core {
       .concat({ id, updates: Object.entries({ ...attributes, Status: "COMPLETE" })
         .map(x => ({ attributeName: x[0], value: x[1] }))
       });
-    this.data.batchUpdateItems(updates);
+    await this.data.batchUpdateItems(updates);
   }
 
   offShoppingListUpdate(key) {
@@ -173,10 +172,10 @@ export class Core {
     this.shoppingListConsumers[key] = { key, consumeShoppingList };
   }
 
-  addRecurringItems() {
-    const toAdd = this.getShoppingPlan().recurringItemsToAdd;
+  async addRecurringItems() {
+    const toAdd = (await this.getShoppingPlan()).recurringItemsToAdd;
     const currentTimestamp = this._getCurrentTimestamp();
-    this.data.batchUpdateItems(toAdd.map(item => ({
+    await this.data.batchUpdateItems(toAdd.map(item => ({
       id: item.Id,
       updates: [
         {
@@ -192,17 +191,17 @@ export class Core {
     return toAdd.map(x => x.Id);
   }
 
-  addToItemPlannedQuantity(id, addend) {
-    this.data.addItemValue(id, "PlannedQuantity", addend);
+  async addToItemPlannedQuantity(id, addend) {
+    await this.data.addItemValue(id, "PlannedQuantity", addend);
   }
 
-  addToItemRecurringQuantity(id, addend) {
-    this.data.addItemValue(id, "RecurringQuantity", addend);
+  async addToItemRecurringQuantity(id, addend) {
+    await this.data.addItemValue(id, "RecurringQuantity", addend);
   }
 
-  removeItemsFromShoppingList(itemIds) {
+  async removeItemsFromShoppingList(itemIds) {
     const currentTimestamp = this._getCurrentTimestamp();
-    this.data.batchUpdateItems(itemIds.map(id => ({
+    await this.data.batchUpdateItems(itemIds.map(id => ({
       id,
       updates: [
         {
@@ -217,15 +216,15 @@ export class Core {
     })));
   }
 
-  getItem(id) {
-    return this._supplyMissingFields(this.data.getItem(id));
+  async getItem(id) {
+    return this._supplyMissingFields(await this.data.getItem(id));
   }
 
-  updateItem(attributes) {
-    this.data.updateItem(attributes);
+  async updateItem(attributes) {
+    await this.data.updateItem(attributes);
   }
 
-  createItem(attributes) {
+  async createItem(attributes) {
     if (!attributes.Name) {
       throw new Error("Name is required.");
     }
@@ -234,24 +233,24 @@ export class Core {
       LastUpdated: this._getCurrentTimestamp(),
       Id: this._generateId("i-", 12),
     };
-    this.data.createItem(item);
+    await this.data.createItem(item);
     return this._supplyMissingFields(item);
   }
 
-  updateItemAndTimestamp(attributes) {
-    this.data.updateItem({
+  async updateItemAndTimestamp(attributes) {
+    await this.data.updateItem({
       ...attributes,
       LastUpdated: this._getCurrentTimestamp(),
     });
   }
 
-  getShoppingList() {
+  async getShoppingList() {
     const caller = (new Error()).stack.split("\n")[2].trim().split(" ")[1];
     console.warn(`DEPRECATED. Use getShoppingPlan() instead. (Called from ${caller})`);
     return this.getShoppingPlan();
   }
   
-  getShoppingPlan() {
+  async getShoppingPlan() {
     const all = [];
     const shoppingList = [];
     const unselectedItems = [];
@@ -259,7 +258,7 @@ export class Core {
     let totalOfRecurringItems = 0;
     const recurringItemsToAdd = [];
     const recurringItems = [];
-    this.data.listItems("i-").map(item => this._supplyMissingFields(item)).forEach(item => {
+    (await this.data.listItems("i-")).map(item => this._supplyMissingFields(item)).forEach(item => {
       all.push(item);
       if (item.RecurringQuantity) {
         recurringItems.push(item);

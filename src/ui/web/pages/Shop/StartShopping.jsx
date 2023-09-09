@@ -76,7 +76,7 @@ export function StartShopping({ core }) {
               disabled={!isFormValid}
               variant="outlined"
               sx={{ margin: "auto", m: 1, width: 'auto' }}
-              onClick={() => location.route(`/shop/${core.startShopping(formData).Id}`)}
+              onClick={() => core.startShopping(formData).then(x => location.route(`/shop/${x.Id}`))}
             >Start</Button>
           </Box>
         </Container>

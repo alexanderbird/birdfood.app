@@ -10,28 +10,30 @@ export class EmptyStaticData {
       this.items.find(x => x.Id === Id),
       attributes
     );
+    return Promise.resolve();
   }
 
   getItem(id) {
-    return this.items.find(x => x.Id === id);
+    return Promise.resolve(this.items.find(x => x.Id === id));
   }
 
   batchGetItems(ids) {
     const idsSet = new Set(ids);
-    return this.items.filter(x => idsSet.has(x.Id));
+    return Promise.resolve(this.items.filter(x => idsSet.has(x.Id)));
   }
 
-  putItem(attributes) {
-    const existing = this.getItem(attributes.Id);
+  async putItem(attributes) {
+    const existing = await this.getItem(attributes.Id);
     if (existing) {
-      this.updateItem(attributes);
-    } else {
-      this.createItem(attributes);
-    }
+      return await this.updateItem(attributes);
+    } 
+    return await this.createItem(attributes);
+    
   }
 
   createItem(attributes) {
     this.items.push(attributes);
+    return Promise.resolve();
   }
 
   addItemValue(id, attribute, addend) {
@@ -39,6 +41,7 @@ export class EmptyStaticData {
     const newValue = (item[attribute] || 0) + addend;
     const positiveNewValue = Math.max(0, newValue);
     item[attribute] = positiveNewValue;
+    return Promise.resolve();
   }
 
   batchUpdateItems(itemChanges) {
@@ -48,10 +51,11 @@ export class EmptyStaticData {
         item[update.attributeName] = update.value;
       });
     });
+    return Promise.resolve();
   }
 
   listItems(prefix) {
-    return this.items.filter(x => x.Id.startsWith(prefix));
+    return Promise.resolve(this.items.filter(x => x.Id.startsWith(prefix)));
   }
 
   listItemsBetween(startInclusive, endInclusive) {
