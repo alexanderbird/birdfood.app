@@ -48,5 +48,5 @@
   { "Id": "se-202306182229-392cwf3l", "StartedAt": "2023-06-18T22:29:12.413Z", "Status": "COMPLETE", "Store": "SuperStore", "EstimatedTotal": 300, "TotalSpent": 441.23 },
   { "Id": "se-202306181729-2e2p7fcl", "StartedAt": "2023-06-18T17:29:12.413Z", "Status": "COMPLETE", "Store": "IGA", "EstimatedTotal": 200, "TotalSpent": 103.44 },
   { "Id": "se-202305182329-b2243fnd", "StartedAt": "2023-05-18T23:29:12.413Z", "Status": "COMPLETE", "Store": "Safeway", "EstimatedTotal": 300, "TotalSpent": 291.93 },
-  { "Id": "se-202305180229-5x2i7f3m", "StartedAt": "2023-05-18T02:29:12.413Z", "Status": "IN_PROGRESS", "Store": "Safeway", "EstimatedTotal": 350, "TotalSpent": 320 }
+  { "Id": "se-202305180229-5x2i7f3m", "StartedAt": "2023-05-18T02:29:12.413Z", "Status": "COMPLETE", "Store": "Safeway", "EstimatedTotal": 350, "TotalSpent": 320 }
 ]
