@@ -21,7 +21,7 @@ export const ItemType = {
   BABY: { key: "BABY", label: "Baby Food" },
   DRY_GOOD: { key: "DRY_GOOD", label: "Dry Goods" },
   DAIRY: { key: "DAIRY", label: "Dairy" },
-  DELI: { key: "DELI", label: "Meats" },
+  DELI: { key: "DELI", label: "Deli" },
   BAKERY: { key: "BAKERY", label: "Bakery" },
   PRODUCE: { key: "PRODUCE", label: "Produce" },
   FROZEN: { key: "FROZEN", label: "Frozen" },

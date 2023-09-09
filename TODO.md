@@ -1,8 +1,9 @@
 # TODO
 
-- better shopping experience
-  - show items remaining for each group (as a badge on the type icon?)
-  - this is a good time to change the group names if they're not quite right
+## MVP
+- storage -- preparation
+  - inject 50ms to 200ms in every call to data, see if the app is still usable
+  - fix any performance issues
 - storage -- one device
   - provide browser storage data in addition to the static data
   - on landing, prompt to either use the demo data or the browser data
@@ -12,3 +13,11 @@
   - implement login with Cognito to authenticate to dynamodb in the web app
   - add a third data option -- login -- which uses cognito and the dynamodb
     adapter
+
+## Improvements
+- nitpicks
+  - planning
+    - show item price on the planning page
+  - shopping
+    - use the real unit price while shopping once it's set
+    - show items remaining for each group (as a badge on the type icon?)
