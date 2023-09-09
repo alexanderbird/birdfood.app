@@ -41,7 +41,7 @@ export function StartShopping({ core }) {
       header={
         <Header>
           <ChecklistIcon sx={{ mr: 1 }} />
-          <Typography variant="h6" component="div">Start Shopping</Typography>
+          <Typography variant="h6" component="div">Start shopping</Typography>
         </Header>
       }
       body={() =>
@@ -56,8 +56,7 @@ export function StartShopping({ core }) {
             noValidate
             autoComplete="off"
           >
-            <Typography sx={{ alignSelf: 'center', mt: 2 }}>Let's get shopping.</Typography>
-            <GroceryBagIcon sx={{ fontSize: '256px', alignSelf: 'center' }} />
+            <GroceryBagIcon sx={{ fontSize: '128px', alignSelf: 'center' }} />
             <Autocomplete
               disablePortal
               freeSolo
@@ -78,7 +77,7 @@ export function StartShopping({ core }) {
               variant="outlined"
               sx={{ margin: "auto", m: 1, width: 'auto' }}
               onClick={() => location.route(`/shop/${core.startShopping(formData).Id}`)}
-            >Start Shopping</Button>
+            >Start</Button>
           </Box>
         </Container>
       }

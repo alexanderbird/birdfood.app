@@ -9,7 +9,7 @@ export const ShoppingHistoryPageHeader = () => {
     <Header>
       <HistoryIcon sx={{ mr: 1 }} />
       <Box display="flex" justifyContent="space-between" width="100%">
-        <Typography variant="h6" component="div">Grocery Shopping History</Typography>
+        <Typography variant="h6" component="div">Grocery shopping history</Typography>
       </Box>
     </Header>
   </>);
