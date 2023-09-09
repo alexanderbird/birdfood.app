@@ -22,12 +22,14 @@ export class EmptyStaticData {
     return Promise.resolve(this.items.filter(x => idsSet.has(x.Id)));
   }
 
-  async putItem(attributes) {
-    const existing = await this.getItem(attributes.Id);
+  putItem(attributes) {
+    const existing = this.items.find(x => x.Id === attributes.Id);
     if (existing) {
-      return await this.updateItem(attributes);
-    } 
-    return await this.createItem(attributes);
+      Object.assign(existing, attributes);
+    } else {
+      this.items.push(attributes);
+    }
+    return Promise.resolve();
     
   }
 
@@ -69,4 +71,3 @@ export class StaticData extends EmptyStaticData {
     super(staticItems);
   }
 }
-

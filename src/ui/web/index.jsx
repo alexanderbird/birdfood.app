@@ -12,10 +12,11 @@ import { Landing } from './pages/Landing/index.jsx';
 import { Shop, ShoppingHistory, StartShopping, ShoppingRouter } from './pages/Shop/index.jsx';
 import { NotFound } from './pages/_404.jsx';
 import { StaticData } from '../../data/static';
+import { withSimulatedNetworkLatency } from '../../data/proxy';
 import { Core } from '../../core';
 
 export function App() {
-  const core = new Core(new StaticData());
+  const core = new Core(withSimulatedNetworkLatency(new StaticData(), { minLatency: 50, maxLatency: 200 }));
   return (
     <LocationProvider>
       <CssBaseline />

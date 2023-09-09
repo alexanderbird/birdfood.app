@@ -92,8 +92,10 @@ export class Core {
 
     const itemsThatHaveBeenRemovedFromThePlannedListAfterMarkingThemAsComplete =
       Array.from(completedItemIds).filter(id => !processedItemIds.has(id));
-    const listB = (await this.data.batchGetItems(itemsThatHaveBeenRemovedFromThePlannedListAfterMarkingThemAsComplete))
-      .map(plannedItem => this._assembleItemForShoppingEvent(plannedItem, completedItems[plannedItem.Id]));
+    const listB = itemsThatHaveBeenRemovedFromThePlannedListAfterMarkingThemAsComplete.length
+      ? (await this.data.batchGetItems(itemsThatHaveBeenRemovedFromThePlannedListAfterMarkingThemAsComplete))
+        .map(plannedItem => this._assembleItemForShoppingEvent(plannedItem, completedItems[plannedItem.Id]))
+      : [];
     const list = listA.concat(listB);
 
     const statistics = list.reduce((statistics, item) => {

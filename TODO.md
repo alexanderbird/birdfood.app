@@ -2,8 +2,13 @@
 
 ## MVP
 - storage -- preparation
-  - inject 50ms to 200ms in every call to data, see if the app is still usable
   - fix any performance issues
+    - don't call a full listItems to re-fetch the shopping list. Actually, since
+      the request succeeded and you know what you just changed, there's no need
+      at all to update that list. We can merge the updated value into the state
+      and trust the HTTP 200 that the update was made. See Appendix A.
+        - we can assume the request succeeds, and on failure show a banner.
+          (Replace `await` with a "fire and forget" + error banner on failure.)
 - storage -- one device
   - provide browser storage data in addition to the static data
   - on landing, prompt to either use the demo data or the browser data
@@ -21,3 +26,15 @@
   - shopping
     - use the real unit price while shopping once it's set
     - show items remaining for each group (as a badge on the type icon?)
+
+## Appendix
+### Appendix A
+
+When checking a checkbox in the shopping list.
+```
+[178ms] data.getItem("se-202309092340-5yr2zzxm") (called from buyItem < updateItem < handleItemClick < onClick < j )
+[66ms] data.putItem({"Id":"sei#se-202309092340-5yr2zzxm#i-747cdce5","ItemId":"i-747cdce5","Quantity":2}) (called from buyItem < async*updateItem < handleItemClick < onClick < j )
+[184ms] data.getItem("se-202309092340-5yr2zzxm") (called from getShoppingEvent < getShoppingEvent < useUpdatingState/< < w < b )
+[96ms] data.listItems("sei#se-202309092340-5yr2zzxm#i-") (called from _getItemsForInProgressShoppingEvent < getShoppingEvent < async*getShoppingEvent < useUpdatingState/< < w )
+[193ms] data.listItems("i-") (called from _getItemsForInProgressShoppingEvent < async*getShoppingEvent < async*getShoppingEvent < useUpdatingState/< < w )
+```
