@@ -42,7 +42,8 @@ export class Core {
     const boughtItem = {
       Id: `sei#${shoppingEventId}#${itemId}`,
       ...attributes,
-      Quantity: Number(attributes.Quantity)
+      BoughtQuantity: Number(attributes.Quantity),
+      Quantity: undefined,
     };
     await this.data.putItem(boughtItem);
     return boughtItem;
@@ -55,7 +56,7 @@ export class Core {
       Type: plannedItem.Type || 'OTHER',
       RequiredQuantity: plannedItem.PlannedQuantity,
       UnitPriceEstimate: plannedItem.UnitPriceEstimate,
-      BoughtQuantity: completedItem?.Quantity || 0,
+      BoughtQuantity: completedItem?.BoughtQuantity || 0,
       ActualUnitPrice: completedItem?.ActualUnitPrice
     });
   }
@@ -77,6 +78,14 @@ export class Core {
     return {
       list
     };
+  }
+
+  getShoppingEventItemCache(id) {
+    return ShoppingEventCache.load({
+      getShoppingEventItems: () => this.data.listItems(`sei#${id}#i-`),
+      getAllItems: () => this.data.listItems("i-"),
+      updateItem: attributes => this.data.updateItem(attributes)
+    });
   }
 
   async getShoppingListItems(id) {
@@ -160,7 +169,7 @@ export class Core {
         updates: [{
           attributeName: "PlannedQuantity",
           value: Math.max(0,
-            currentPlannedQuantities[completedItem.ItemId] - completedItem.Quantity)
+            currentPlannedQuantities[completedItem.ItemId] - completedItem.BoughtQuantity)
         }]
       }))
       .concat({ id, updates: Object.entries({ ...attributes, Status: "COMPLETE" })

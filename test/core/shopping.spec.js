@@ -63,7 +63,7 @@ describe('core shopping APIs', () => {
         Id: 'sei#' + shoppingEvent.Id + "#" + itemId,
         ItemId: itemId,
         ActualUnitPrice: 2.21,
-        Quantity: 4
+        BoughtQuantity: 4
       });
     });
 
@@ -111,7 +111,7 @@ describe('core shopping APIs', () => {
         Id: 'sei#' + shoppingEvent.Id + "#" + itemId,
         ItemId: itemId,
         ActualUnitPrice: 2.21,
-        Quantity: 4
+        BoughtQuantity: 4
       });
     });
   });
