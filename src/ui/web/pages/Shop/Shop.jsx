@@ -26,7 +26,7 @@ export function Shop({ core, shoppingEventId }) {
   const [totalSpent, setTotalSpent] = useState();
   const getShoppingEvent = async () => {
     try {
-      return await core.getShoppingEvent(shoppingEventId);
+      return await core.getShoppingEvent(shoppingEventId, true);
     } catch(e) {
       if (e.code === "ResourceNotFound") {
         return null;

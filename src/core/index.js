@@ -60,7 +60,7 @@ export class Core {
     });
   }
 
-  async _getItemsForCompletedShoppingEvent(id) {
+  async getShoppingEventCompletedItems(id) {
     const completedItems = await this.data.listItems(`sei#${id}#i-`);
 
     const itemId = shoppingEventItemId => shoppingEventItemId.replace(/^sei#[^#]*#/, '');
@@ -79,7 +79,7 @@ export class Core {
     };
   }
 
-  async _getItemsForInProgressShoppingEvent(id) {
+  async getShoppingListItems(id) {
     const completedItems = Object.fromEntries(
       (await this.data.listItems(`sei#${  id  }#i-`))
         .map(x => [x.Id.replace(/^sei#se-[0-9a-z-]+#/, ''), x]));
@@ -112,7 +112,7 @@ export class Core {
     };
   }
 
-  async getShoppingEvent(id) {
+  async getShoppingEvent(id, legacyMode) {
     if (!id.startsWith("se-")) {
       const error = new Error('The shopping event description ID must start with "se-"');
       error.code = "ResourceNotFound";
@@ -124,10 +124,13 @@ export class Core {
       error.code = "ResourceNotFound";
       throw error;
     }
+    if (!legacyMode) {
+      return description;
+    }
 
     const itemsAndStatistics = description.Status === "IN_PROGRESS"
-      ? await this._getItemsForInProgressShoppingEvent(id)
-      : await this._getItemsForCompletedShoppingEvent(id);
+      ? await this.getShoppingListItems(id)
+      : await this.getShoppingEventCompletedItems(id);
 
     return {
       ...itemsAndStatistics,

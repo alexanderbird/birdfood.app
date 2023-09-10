@@ -148,14 +148,14 @@ describe('core shopping APIs', () => {
 
   describe('describing one shopping event', () => {
     it('requires a shopping event description Id', async () => {
-      await expect(() => core.getShoppingEvent("sx-000000000000-aaaaaa"))
+      await expect(() => core.getShoppingEvent("sx-000000000000-aaaaaa", true))
         .rejects.toThrow('The shopping event description ID must start with "se-"');
     });
 
     describe('description', () => {
       it('includes the event information', async () => {
         const { Id } = await core.startShopping({ Store: "Costco", EstimatedTotal: 129.5 });
-        const { description } = await core.getShoppingEvent(Id);
+        const { description } = await core.getShoppingEvent(Id, true);
         expect(description).toEqual({
           Id,
           Store: "Costco",
@@ -168,14 +168,14 @@ describe('core shopping APIs', () => {
       it('includes the status for completed events', async () => {
         const { Id } = await core.startShopping({ Store: "Costco", EstimatedTotal: 129.5 });
         await core.stopShopping(Id);
-        const { description } = await core.getShoppingEvent(Id);
+        const { description } = await core.getShoppingEvent(Id, true);
         expect(description.Status).toEqual("COMPLETE");
       });
 
       it('includes the event information for historical events', async () => {
         const { Id } = await core.startShopping({ Store: "Costco", EstimatedTotal: 129.5 });
         await core.stopShopping(Id);
-        const { description } = await core.getShoppingEvent(Id);
+        const { description } = await core.getShoppingEvent(Id, true);
         expect(description).toEqual({
           Id,
           Store: "Costco",
@@ -192,7 +192,7 @@ describe('core shopping APIs', () => {
         const { Id: idForBananas } = await core.createItem({ Name: "Bananas (bunch)", PlannedQuantity: 1, UnitPriceEstimate: 2.01 });
         const { Id } = await core.startShopping();
         const { Id: idForCarrots } = await core.createItem({ Name: "Carrots", PlannedQuantity: 3, UnitPriceEstimate: 1.00 });
-        const { list } = await core.getShoppingEvent(Id);
+        const { list } = await core.getShoppingEvent(Id, true);
         expect(list).toEqual([
           { Id: idForApples, Name: "Apples", RequiredQuantity: 2, BoughtQuantity: 0, UnitPriceEstimate: 0.60, Type: "OTHER" },
           { Id: idForBananas, Name: "Bananas (bunch)", RequiredQuantity: 1, BoughtQuantity: 0, UnitPriceEstimate: 2.01, Type: "OTHER" },
@@ -208,7 +208,7 @@ describe('core shopping APIs', () => {
         await core.buyItem(Id, { ItemId: idForApples, Quantity: 2, ActualUnitPrice: 1.02 });
         await core.buyItem(Id, { ItemId: idForCarrots, Quantity: 100, ActualUnitPrice: 2 });
         await core.buyItem(Id, { ItemId: idForCarrots, Quantity: 1, ActualUnitPrice: 2 });
-        const { list } = await core.getShoppingEvent(Id);
+        const { list } = await core.getShoppingEvent(Id, true);
         expect(list).toEqual([
           { Id: idForApples, Name: "Apples", RequiredQuantity: 2, BoughtQuantity: 2, UnitPriceEstimate: 0.60, ActualUnitPrice: 1.02, Type: "OTHER" },
           { Id: idForBananas, Name: "Bananas (bunch)", RequiredQuantity: 1, BoughtQuantity: 0, UnitPriceEstimate: 2.01, Type: "OTHER" },
@@ -224,7 +224,7 @@ describe('core shopping APIs', () => {
         await core.buyItem(Id, { ItemId: idForApples, Quantity: 2, ActualUnitPrice: 1.02 });
         await core.buyItem(Id, { ItemId: idForCarrots, Quantity: 100, ActualUnitPrice: 2 });
         await core.stopShopping(Id);
-        const { list } = await core.getShoppingEvent(Id);
+        const { list } = await core.getShoppingEvent(Id, true);
         expect(list).toEqual([
           { Id: idForApples, Name: "Apples", BoughtQuantity: 2, ActualUnitPrice: 1.02, Type: "OTHER" },
           { Id: idForCarrots, Name: "Carrots", BoughtQuantity: 100, ActualUnitPrice: 2, Type: "PRODUCE" },
@@ -236,7 +236,7 @@ describe('core shopping APIs', () => {
         const { Id } = await core.startShopping();
         await core.buyItem(Id, { ItemId: idForApples, Quantity: 2, ActualUnitPrice: 1.02 });
         await core.updateItem({ Id: idForApples, PlannedQuantity: 0 });
-        const { list } = await core.getShoppingEvent(Id);
+        const { list } = await core.getShoppingEvent(Id, true);
         expect(list).toEqual([
           { Id: idForApples, Name: "Apples", RequiredQuantity: 0, BoughtQuantity: 2, UnitPriceEstimate: 0.60, ActualUnitPrice: 1.02, Type: "DELI" }
         ]);
@@ -247,7 +247,7 @@ describe('core shopping APIs', () => {
         const event1 = await core.startShopping();
         const event2 = await core.startShopping();
         await core.buyItem(event2.Id, { ItemId: idForApples, Quantity: 2, ActualUnitPrice: 1.02 });
-        const { list } = await core.getShoppingEvent(event1.Id);
+        const { list } = await core.getShoppingEvent(event1.Id, true);
         expect(list).toEqual([
           { Id: idForApples, Name: "Apples", RequiredQuantity: 2, BoughtQuantity: 0, UnitPriceEstimate: 0.60, Type: "OTHER" }
         ]);

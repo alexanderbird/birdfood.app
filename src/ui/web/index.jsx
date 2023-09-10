@@ -16,7 +16,7 @@ import { withSimulatedNetworkLatency } from '../../data/proxy';
 import { Core } from '../../core';
 
 export function App() {
-  const core = new Core(withSimulatedNetworkLatency(new StaticData(), { minLatency: 50, maxLatency: 200 }));
+  const core = new Core(withSimulatedNetworkLatency(new StaticData(), { minLatency: 150, maxLatency: 400 }));
   return (
     <LocationProvider>
       <CssBaseline />
