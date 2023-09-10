@@ -9,6 +9,8 @@ import TextField from '@mui/material/TextField';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import Dialog from '@mui/material/Dialog';
 
 import { CurrencyTextField } from '../CurrencyTextField';
@@ -66,10 +68,22 @@ export const GroceryItemEditFormDialog = ({ open, onCancel, onSave, initialValue
             select
             required
             fullWidth
+            sx={{
+              '& .MuiInputBase-input': {
+                display: 'flex',
+                '& .MuiListItemIcon-root': {
+                  minWidth: 36,
+                }
+              }
+            }}
             value={value.Type}
-            onChange={(e, x) => setValue(current => ({ ...current, Type: x.props.value }))} label="Type">
+            onChange={(e, x) => setValue(current => ({ ...current, Type: x.props.value }))}
+            label="Type">
             { Object.values(ItemType).map(itemType =>
-              <MenuItem key={itemType.key} value={itemType.key}><ItemTypeIcon type={itemType.key} /> {itemType.label}</MenuItem>
+              <MenuItem key={itemType.key} value={itemType.key}>
+                <ListItemIcon sx={{ minWidth: 0 }}><ItemTypeIcon type={itemType.key} /></ListItemIcon>
+                <ListItemText>{itemType.label}</ListItemText>
+              </MenuItem>
             ) }
           </TextField>
           <CurrencyTextField 

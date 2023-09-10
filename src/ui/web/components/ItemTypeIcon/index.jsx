@@ -5,15 +5,17 @@ import { DairyIcon } from './DairyIcon';
 import { BabyIcon } from './BabyIcon';
 import { ProduceIcon } from './ProduceIcon';
 import { FrozenFoodIcon } from './FrozenFoodIcon';
+import { OtherFoodIcon } from './OtherFoodIcon';
 
-export const ItemTypeIcon = ({ type }) => {
-  if (type === "DRY_GOOD") return <DryGoodIcon />;
-  if (type === "BAKERY") return <BakeryIcon />;
-  if (type === "DELI") return <DeliIcon />;
-  if (type === "DAIRY") return <DairyIcon />;
-  if (type === "BABY") return <BabyIcon />;
-  if (type === "PRODUCE") return <ProduceIcon />;
-  if (type === "FROZEN") return <FrozenFoodIcon />;
+export const ItemTypeIcon = ({ type, ...props }) => {
+  if (type === "DRY_GOOD") return <DryGoodIcon {...props} />;
+  if (type === "BAKERY") return <BakeryIcon {...props} />;
+  if (type === "DELI") return <DeliIcon {...props} />;
+  if (type === "DAIRY") return <DairyIcon {...props} />;
+  if (type === "BABY") return <BabyIcon {...props} />;
+  if (type === "PRODUCE") return <ProduceIcon {...props} />;
+  if (type === "FROZEN") return <FrozenFoodIcon {...props} />;
+  if (type === "OTHER") return <OtherFoodIcon {...props} />;
   return null;
 };
 

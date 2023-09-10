@@ -12,7 +12,7 @@ export class ShoppingEventCache {
 
     const unprocessedCompletedItems = new Set(Object.keys(completedItems));
 
-    const planItemsMap = {}
+    const planItemsMap = {};
     planItems.forEach(planItem => {
       planItemsMap[planItem.Id] = planItem;
       if (planItem.PlannedQuantity) {

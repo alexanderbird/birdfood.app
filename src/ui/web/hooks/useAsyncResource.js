@@ -1,4 +1,3 @@
-import { useSerial } from './useSerial';
 import { useState, useEffect } from 'preact/hooks';
 
 export function useAsyncResource(getResource, initialValue) {

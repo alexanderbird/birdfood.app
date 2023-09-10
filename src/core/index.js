@@ -81,11 +81,7 @@ export class Core {
   }
 
   getShoppingEventItemCache(id) {
-    return ShoppingEventCache.load({
-      getShoppingEventItems: () => this.data.listItems(`sei#${id}#i-`),
-      getAllItems: () => this.data.listItems("i-"),
-      updateItem: attributes => this.data.updateItem(attributes)
-    });
+    console.warn(`getShoppingEventItemCache(${id}) is not implemented`);
   }
 
   async getShoppingListItems(id) {
