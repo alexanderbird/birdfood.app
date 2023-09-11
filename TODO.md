@@ -26,6 +26,10 @@
   - shopping
     - use the real unit price while shopping once it's set
     - show items remaining for each group (as a badge on the type icon?)
+- add loading spinners throughout the app
+- set it up as a proper progressive web app (so when I add it to the home screen
+  I get the app icon, and when I press on the home screen button it doesn't take
+  me back to the root url but leaves me on whatever page I was on
 
 ## Appendix
 ### Appendix A
