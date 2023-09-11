@@ -4,12 +4,17 @@ import Toolbar from '@mui/material/Toolbar';
 import Slide from '@mui/material/Slide';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
 
-export function Header({ children }) {
+import { AppMenu } from './AppMenu';
+
+export function Header({ noMenu, children }) {
   return (
     <Box sx={{ flexGrow: 1, pb: 1 }}>
       <HideOnScroll>
         <AppBar sx={{ maxWidth: 600, left: 'auto', right: 'auto'}}>
-          <Toolbar>{ children }</Toolbar>
+          <Toolbar>
+            { noMenu ? null : <AppMenu /> }
+            { children }
+          </Toolbar>
         </AppBar>
       </HideOnScroll>
       {/* for spacing, so the top content isn't hidden */}

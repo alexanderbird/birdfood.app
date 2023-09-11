@@ -2,8 +2,6 @@ import { useLocation } from 'preact-iso';
 import { useState } from 'preact/hooks';
 
 import Box from '@mui/material/Box';
-import ChecklistIcon from '@mui/icons-material/Checklist';
-import HistoryIcon from '@mui/icons-material/History';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import List from '@mui/material/List';
@@ -72,7 +70,7 @@ export function Shop({ core, shoppingEventId }) {
     <Page
       isLoading={!shoppingEvent}
       header={!shoppingEvent
-        ? <Header>{historical ? <HistoryIcon /> : <ChecklistIcon />}</Header>
+        ? <Header />
         : historical
           ? <HistoricalShopPageHeader shoppingEvent={shoppingEvent} />
           : <ShopPageHeader shoppingEvent={shoppingEvent} />

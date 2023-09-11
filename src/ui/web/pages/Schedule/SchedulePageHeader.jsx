@@ -1,16 +1,14 @@
 import { Header } from '../../components/Header.jsx';
 
 import Box from '@mui/material/Box';
-import EventRepeatIcon from '@mui/icons-material/EventRepeat';
 import Typography from '@mui/material/Typography';
 
 export const SchedulePageHeader = ({ cartTotal }) => {
   const formatter = new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' });
   return (<>
     <Header>
-      <EventRepeatIcon sx={{ mr: 1 }} />
       <Box display="flex" justifyContent="space-between" width="100%">
-        <Typography variant="h6" component="div">Schedule recurring items</Typography>
+        <Typography variant="h6" component="div">Scheduled items</Typography>
         <Typography fontWeight="bold" variant="h6" component="div">{formatter.format(cartTotal)}</Typography>
       </Box>
     </Header>

@@ -5,22 +5,27 @@ import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
+import { useDialogState } from '../../hooks/useDialogState';
+import { ConfirmDialog } from '../../components/ConfirmDialog.jsx';
 import { Header } from '../../components/Header.jsx';
 import { Page } from '../../components/Page';
 import { BirdFoodLogo } from '../../components/icons/BirdFoodLogo';
-import { BirdFoodIcon } from '../../components/icons/BirdFoodIcon';
 
-export function Landing() {
+export function Landing({ setDataSource }) {
   const location = useLocation();
+  const dialog = useDialogState();
+
+  const onDialogConfirm = () => {
+    setDataSource("demo");
+    dialog.close();
+    location.route('/plan');
+  };
 
   return (
     <Page
       header={
-        <Header>
-          <BirdFoodIcon sx={{ mr: 1 }} />
+        <Header noMenu>
           <Typography variant="h6" component="div" textAlign="center" width="100%">Welcome</Typography>
-          {/* add a second invisible icon as a hack to center align the text */}
-          <BirdFoodIcon sx={{ ml: 1, color: 'transparent' }} />
         </Header>
       }
       body={() =>
@@ -37,11 +42,23 @@ export function Landing() {
             <BirdFoodLogo sx={{ fontSize: 'min(500px, 70vw)', margin: 'auto' }} />
             <Button variant="outlined" disabled>Login</Button>
             <Button variant="outlined" disabled>Use device storage</Button>
-            <Button variant="outlined" onClick={() => location.route('/plan')} >Start Demo</Button>
+            <Button variant="outlined" onClick={dialog.open} >Start Demo</Button>
           </Box>
         </Container>
       }
-      dialogs={() => null}
+      dialogs={() => (
+        <>
+          <ConfirmDialog
+            open={dialog.isOpen}
+            onCancel={dialog.close}
+            onConfirm={onDialogConfirm}
+            titleText="Demo mode"
+            confirmText="Got it"
+          >
+            All your changes will be reset when you refresh the page.
+          </ConfirmDialog>
+        </>
+      )}
     />
   );
 }

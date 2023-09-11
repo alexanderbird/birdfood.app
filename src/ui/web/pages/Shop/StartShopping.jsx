@@ -2,7 +2,6 @@ import { useLocation } from 'preact-iso';
 import { useState, useEffect } from 'preact/hooks';
 
 import Box from '@mui/material/Box';
-import ChecklistIcon from '@mui/icons-material/Checklist';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
@@ -40,7 +39,6 @@ export function StartShopping({ core }) {
       isLoading={!ready}
       header={
         <Header>
-          <ChecklistIcon sx={{ mr: 1 }} />
           <Typography variant="h6" component="div">Start shopping</Typography>
         </Header>
       }
