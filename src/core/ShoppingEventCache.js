@@ -1,11 +1,11 @@
 export class ShoppingEventCache {
-  constructor(list, statistics, updateItem) {
+  constructor(list, statistics, persistItemUpdate) {
     this._list = list;
     this._statistics = statistics;
-    this._updateItem = updateItem;
+    this._persistItemUpdate = persistItemUpdate;
   }
 
-  static assemble({ updateItem, shoppingEventItems, planItems }) {
+  static assemble({ persistItemUpdate, shoppingEventItems, planItems }) {
     const list = [];
     const completedItems = Object.fromEntries(
       shoppingEventItems.map(x => [x.Id.replace(/^sei#se-[0-9a-z-]+#/, ''), x]));
@@ -26,9 +26,15 @@ export class ShoppingEventCache {
       .map(id => planItemsMap[id])
       .map(plannedItem => this._assembleItemForShoppingEvent(plannedItem, completedItems[plannedItem.Id])));
 
-    const statistics = this._computeStatistics(list);
+    const statistics = this._calculateStatistics(list);
 
-    return new ShoppingEventCache(list, statistics, updateItem);
+    return new ShoppingEventCache(list, statistics, persistItemUpdate);
+  }
+
+  updateItem({ Id, BoughtQuantity, ActualUnitPrice }) {
+    Object.assign(this._list.find(x => x.Id === Id), { BoughtQuantity, ActualUnitPrice });
+    this._statistics = ShoppingEventCache._calculateStatistics(this._list);
+    this._persistItemUpdate({ Id, BoughtQuantity, ActualUnitPrice });
   }
 
   getList() {
@@ -39,10 +45,11 @@ export class ShoppingEventCache {
     return this._statistics;
   }
 
-  static _computeStatistics(list) {
+  static _calculateStatistics(list) {
     return list.reduce((statistics, item) => {
-      const actual = item.BoughtQuantity * (item.ActualUnitPrice || item.UnitPriceEstimate || 0);
-      const expected = item.RequiredQuantity * (item.UnitPriceEstimate || 0);
+      const bestGuessAtUnitPrice = item.ActualUnitPrice || item.UnitPriceEstimate || 0;
+      const actual = item.BoughtQuantity * bestGuessAtUnitPrice;
+      const expected = item.RequiredQuantity * bestGuessAtUnitPrice;
       return {
         runningTotal: statistics.runningTotal + actual,
         estimatedTotal: statistics.estimatedTotal + expected,

@@ -25,7 +25,7 @@ describe(ShoppingEventCache, () => {
     ];
 
     const cache = ShoppingEventCache.assemble({
-      updateItem: () => { throw new Error("nope"); },
+      persistItemUpdate: () => { throw new Error("nope"); },
       shoppingEventItems,
       planItems
     });
@@ -58,7 +58,7 @@ describe(ShoppingEventCache, () => {
     ];
 
     const cache = ShoppingEventCache.assemble({
-      updateItem: () => { throw new Error("nope"); },
+      persistItemUpdate: () => { throw new Error("nope"); },
       shoppingEventItems,
       planItems
     });
@@ -81,12 +81,12 @@ describe(ShoppingEventCache, () => {
     ];
     const shoppingEventItems =[
       { Id: "sei#se-9999999999-zzzzzzzz#i-AAAA", BoughtQuantity: 3, ActualUnitPrice: 2 },
-      { Id: "sei#se-9999999999-zzzzzzzz#i-BBBB", BoughtQuantity: 0, ActualUnitPrice: 20 },
+      { Id: "sei#se-9999999999-zzzzzzzz#i-BBBB", BoughtQuantity: 0 },
       { Id: "sei#se-9999999999-zzzzzzzz#i-CCCC", BoughtQuantity: 1, ActualUnitPrice: 200 },
     ];
 
     const cache = ShoppingEventCache.assemble({
-      updateItem: () => { throw new Error("nope"); },
+      persistItemUpdate: () => { throw new Error("nope"); },
       shoppingEventItems,
       planItems
     });
@@ -94,7 +94,7 @@ describe(ShoppingEventCache, () => {
     const statistics = cache.getStatistics();
     expect(statistics).toEqual({
       runningTotal: 206,
-      estimatedTotal: 222
+      estimatedTotal: 424
     });
   });
   
@@ -109,7 +109,7 @@ describe(ShoppingEventCache, () => {
     ];
 
     const cache = ShoppingEventCache.assemble({
-      updateItem: () => { throw new Error("nope"); },
+      persistItemUpdate: () => { throw new Error("nope"); },
       shoppingEventItems,
       planItems
     });
@@ -122,9 +122,64 @@ describe(ShoppingEventCache, () => {
   });
 
   describe('updating an item', () => {
-    it.skip('updates the list without re-fetching the data', () => {});
-    it.skip('updates the statistics without re-fetching the data', () => {});
-    it.skip('updates the system of record', () => {});
+    let persistItemUpdate, cache;
+
+    beforeEach(() => {
+      persistItemUpdate = vi.fn();
+
+      const planItems = [
+        { Id: "i-AAAA", PlannedQuantity: 2, UnitPriceEstimate: 1 },
+        { Id: "i-BBBB", PlannedQuantity: 2, UnitPriceEstimate: 10 },
+      ];
+
+      const shoppingEventItems =[
+        { Id: "sei#se-9999999999-zzzzzzzz#i-AAAA", BoughtQuantity: 0 },
+        { Id: "sei#se-9999999999-zzzzzzzz#i-BBBB", BoughtQuantity: 0 },
+      ];
+
+      cache = ShoppingEventCache.assemble({ persistItemUpdate, shoppingEventItems, planItems });
+    });
+
+    it('updates the statistics after quantity updates without re-fetching the data', () => {
+      persistItemUpdate.mockReturnValue(new Promise(r => setTimeout(r, 100000)));
+      cache.updateItem({ Id: 'i-AAAA', BoughtQuantity: 1 });
+      expect(persistItemUpdate).toHaveBeenCalledWith({ Id: 'i-AAAA', BoughtQuantity: 1 });
+      expect(cache.getStatistics()).toEqual({ runningTotal: 1, estimatedTotal: 22 });
+    });
+
+    it('updates the statistics after price updates without re-fetching the data', () => {
+      persistItemUpdate.mockReturnValue(new Promise(r => setTimeout(r, 100000)));
+      cache.updateItem({ Id: 'i-AAAA', BoughtQuantity: 1, ActualUnitPrice: 3 });
+      expect(cache.getList()).toEqual([
+       {
+         ActualUnitPrice: 3,
+         BoughtQuantity: 1,
+         Id: "i-AAAA",
+         Name: undefined,
+         RequiredQuantity: 2,
+         Type: "OTHER",
+         UnitPriceEstimate: 1,
+       },
+       {
+         ActualUnitPrice: undefined,
+         BoughtQuantity: 0,
+         Id: "i-BBBB",
+         Name: undefined,
+         RequiredQuantity: 2,
+         Type: "OTHER",
+         UnitPriceEstimate: 10,
+       },
+     ]);
+    });
+
+    it('updates the list without re-fetching the data', () => {
+      persistItemUpdate.mockReturnValue(new Promise(r => setTimeout(r, 100000)));
+      cache.updateItem({ Id: 'i-AAAA', BoughtQuantity: 1, ActualUnitPrice: 3 });
+      expect(persistItemUpdate).toHaveBeenCalledWith({ Id: 'i-AAAA', BoughtQuantity: 1, ActualUnitPrice: 3 });
+      expect(cache.getStatistics()).toEqual({ runningTotal: 3, estimatedTotal: 26 });
+    });
+
+    it.skip('handles errors from the system of record', () => {});
   });
 });
 
