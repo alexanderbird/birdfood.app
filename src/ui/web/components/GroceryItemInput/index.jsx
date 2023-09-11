@@ -1,6 +1,7 @@
 
 import { useState, useRef } from 'preact/hooks';
 import Autocomplete from '@mui/material/Autocomplete';
+import Typography from '@mui/material/Typography';
 import AddIcon from '@mui/icons-material/Add';
 import Button from '@mui/material/Button';
 import ListItem from '@mui/material/ListItem';
@@ -29,7 +30,10 @@ export function GroceryItemInput({ items, onSelect, onCreate, inputLabel }) {
     <Autocomplete
       ref={ref}
       isOptionEqualToValue={(one, two) => one.value.Id === two.value.Id}
-      noOptionsText={<Button onClick={createNewItemFromInput} startIcon={<AddIcon />}>Create "{inputValue}"</Button>}
+      noOptionsText={inputValue
+        ? <Button onClick={createNewItemFromInput} startIcon={<AddIcon />}>Create "{inputValue}"</Button>
+        : <Typography>Enter an item name to get started.</Typography>
+      }
       groupBy={x => ItemType[x.value.Type]?.label || x.value.Type}
       disablePortal
       autoComplete

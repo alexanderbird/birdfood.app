@@ -61,12 +61,25 @@ export class BrowserStorageData {
   listItems(prefix) {
     const items = [];
     for (let i = 0; i < this._localStorage.length; i++){
-      const item = JSON.parse(this._localStorage.getItem(this._localStorage.key(i)));
-      if (item.Id.startsWith(prefix)) {
+      const item = this._tryRead(this._localStorage.key(i));
+      if (item.Id?.startsWith(prefix)) {
         items.push(item);
       }
     }
     return Promise.resolve(items);
+  }
+
+  _tryRead(key) {
+    const value = this._localStorage.getItem(key);
+    if (!value) {
+      return undefined;
+    }
+    try {
+      return JSON.parse(value);
+    } catch(e) {
+      return false;
+    }
+
   }
 
   listItemsBetween(startInclusive, endInclusive) {

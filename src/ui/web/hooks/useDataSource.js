@@ -1,17 +1,24 @@
 import { useLocalStorage } from './useLocalStorage.js';
 import { StaticData } from '../../../data/static';
+import { BrowserStorageData } from '../../../data/browser';
 import { withSimulatedNetworkLatency } from '../../../data/proxy';
 
-const DataSource = {
+export const DataSource = {
   demo: {
+    key: "demo",
     name: "Demo Mode",
-    factory: () => withSimulatedNetworkLatency(new StaticData(), { minLatency: 150, maxLatency: 400 })
+    explanation: "All your changes will be reset when you refresh the page.",
+    factory: () => withSimulatedNetworkLatency(new StaticData(), { minLatency: 150, maxLatency: 400 }),
   },
   browser: {
-    name: "Browser Storage",
+    key: "browser",
+    name: "Device (Browser)",
+    explanation: "Your data is stored on this device in your browser.",
+    factory: () => new BrowserStorageData(window.localStorage),
   },
   acount: {
-    name: "Account Storage"
+    key: "account",
+    name: "Account"
   }
 };
 

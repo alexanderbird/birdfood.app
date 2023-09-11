@@ -5,6 +5,7 @@ import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
+import { DataSource } from '../../hooks/useDataSource';
 import { useDialogState } from '../../hooks/useDialogState';
 import { ConfirmDialog } from '../../components/ConfirmDialog.jsx';
 import { Header } from '../../components/Header.jsx';
@@ -15,8 +16,8 @@ export function Landing({ setDataSource }) {
   const location = useLocation();
   const dialog = useDialogState();
 
-  const onDialogConfirm = () => {
-    setDataSource("demo");
+  const onDialogConfirm = (dataSource) => {
+    setDataSource(dataSource.key);
     dialog.close();
     location.route('/plan');
   };
@@ -41,8 +42,8 @@ export function Landing({ setDataSource }) {
             }}>
             <BirdFoodLogo sx={{ fontSize: 'min(500px, 70vw)', margin: 'auto' }} />
             <Button variant="outlined" disabled>Login</Button>
-            <Button variant="outlined" disabled>Use device storage</Button>
-            <Button variant="outlined" onClick={dialog.open} >Start Demo</Button>
+            <Button variant="outlined" onClick={() => dialog.open("browser")}>Use device storage</Button>
+            <Button variant="outlined" onClick={() => dialog.open("demo")} >Start Demo</Button>
           </Box>
         </Container>
       }
@@ -51,11 +52,11 @@ export function Landing({ setDataSource }) {
           <ConfirmDialog
             open={dialog.isOpen}
             onCancel={dialog.close}
-            onConfirm={onDialogConfirm}
-            titleText="Demo mode"
+            onConfirm={() => onDialogConfirm(DataSource[dialog.data])}
+            titleText={DataSource[dialog.data]?.name}
             confirmText="Got it"
           >
-            All your changes will be reset when you refresh the page.
+            {DataSource[dialog.data]?.explanation}
           </ConfirmDialog>
         </>
       )}

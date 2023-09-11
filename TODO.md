@@ -9,9 +9,6 @@
       and trust the HTTP 200 that the update was made. See Appendix A.
         - we can assume the request succeeds, and on failure show a banner.
           (Replace `await` with a "fire and forget" + error banner on failure.)
-- storage -- one device
-  - provide browser storage data in addition to the static data
-  - on landing, prompt to either use the demo data or the browser data
 - storage -- multi-device
   - implement a dynamodb data adapter (you can integ test this by passing that
     data into the existing test suite)
