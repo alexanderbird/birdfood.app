@@ -22,3 +22,7 @@ linting errors can be resolved with `npm run lint -- --fix`.
   - ui: display logic
     - web: web client (Preact)
 
+### Updating images
+
+When you change favion.svg, you'll want to re-generate the progressive web app
+assets. Run `npm run generate-pwa-assets`.
