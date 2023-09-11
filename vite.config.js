@@ -13,6 +13,8 @@ export default defineConfig({
         name: 'Bird Food',
         short_name: 'BirdFood',
         description: 'Streamlined Family Grocery Planning and Shopping',
+        background_color: '#FFFFFF',
+        theme_color: '#1976D2',
         icons: [
           { src: 'favicon.svg', type: 'image/x-icon', sizes: '16x16 32x32' },
           { src: 'icon-192.png', type: 'image/png', sizes: '192x192' },
