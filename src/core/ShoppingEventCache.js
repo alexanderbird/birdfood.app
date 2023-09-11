@@ -41,8 +41,8 @@ export class ShoppingEventCache {
 
   static _computeStatistics(list) {
     return list.reduce((statistics, item) => {
-      const actual = item.BoughtQuantity * (item.ActualUnitPrice || item.UnitPriceEstimate);
-      const expected = item.RequiredQuantity * item.UnitPriceEstimate;
+      const actual = item.BoughtQuantity * (item.ActualUnitPrice || item.UnitPriceEstimate || 0);
+      const expected = item.RequiredQuantity * (item.UnitPriceEstimate || 0);
       return {
         runningTotal: statistics.runningTotal + actual,
         estimatedTotal: statistics.estimatedTotal + expected,

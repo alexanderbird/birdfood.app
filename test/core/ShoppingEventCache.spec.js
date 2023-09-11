@@ -98,7 +98,28 @@ describe(ShoppingEventCache, () => {
     });
   });
   
-  // handles missing UnitPriceEstimate well
+  it('excludes items from the statistics if there is no UnitPriceEstimate and no ActualUnitPrice', () => {
+    const planItems = [
+      { Id: "i-AAAA", PlannedQuantity: 2, UnitPriceEstimate: 7 },
+      { Id: "i-BBBB", PlannedQuantity: 2 },
+    ];
+    const shoppingEventItems =[
+      { Id: "sei#se-9999999999-zzzzzzzz#i-AAAA", BoughtQuantity: 3 },
+      { Id: "sei#se-9999999999-zzzzzzzz#i-BBBB", BoughtQuantity: 0 },
+    ];
+
+    const cache = ShoppingEventCache.assemble({
+      updateItem: () => { throw new Error("nope"); },
+      shoppingEventItems,
+      planItems
+    });
+
+    const statistics = cache.getStatistics();
+    expect(statistics).toEqual({
+      runningTotal: 21,
+      estimatedTotal: 14
+    });
+  });
 
   describe('updating an item', () => {
     it.skip('updates the list without re-fetching the data', () => {});
