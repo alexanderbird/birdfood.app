@@ -87,7 +87,7 @@ const ListItemContent = ({ item, selected, showRequiredAmount, updateItem, onCli
         >
           <AccordionSummary>
             <Typography variant="inherit" component="span" sx={{ color: colors.grey[700] }}>
-              <Currency>{item.UnitPriceEstimate || item.ActualUnitPrice}</Currency> each
+              <Currency>{item.ActualUnitPrice || item.UnitPriceEstimate}</Currency> each
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
