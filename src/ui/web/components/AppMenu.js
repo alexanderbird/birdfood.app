@@ -2,16 +2,19 @@ import { useState, useRef } from 'preact/hooks';
 
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
+import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
+import MenuList from '@mui/material/MenuList';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import LogoutIcon from '@mui/icons-material/Logout';
+import SdStorageIcon from '@mui/icons-material/SdStorage';
 
-import { useLocalStorage } from '../hooks/useLocalStorage.js';
+import { useDataSource } from '../hooks/useDataSource.js';
 import { BirdFoodIcon } from './icons/BirdFoodIcon';
 
 export const AppMenu = () => {
-  const [,setDataSource] = useLocalStorage('data-source');
+  const [dataSource, setDataSource] = useDataSource();
   const anchorRef = useRef();
   const [open, setOpen] = useState(false);
   const handleClose = () => setOpen(false);
@@ -35,7 +38,6 @@ export const AppMenu = () => {
         <BirdFoodIcon sx={{ mr: 1 }} />
       </IconButton>
       <Menu
-        id="basic-menu"
         anchorEl={anchorRef.current}
         open={open}
         onClose={handleClose}
@@ -43,12 +45,21 @@ export const AppMenu = () => {
           'aria-labelledby': 'basic-button',
         }}
       >
-        <MenuItem onClick={onLogout}>
-          <ListItemIcon>
-            <LogoutIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Logout</ListItemText>
-        </MenuItem>
+        <MenuList dense>
+          <MenuItem disabled sx={{ opacity: 'inherit' }}>
+            <ListItemIcon>
+              <SdStorageIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Storage: { dataSource?.name }</ListItemText>
+          </MenuItem>
+          <Divider />
+          <MenuItem onClick={onLogout}>
+            <ListItemIcon>
+              <LogoutIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Logout</ListItemText>
+          </MenuItem>
+        </MenuList>
       </Menu>
     </>
   );

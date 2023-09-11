@@ -4,23 +4,17 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import CssBaseline from '@mui/material/CssBaseline';
 
-import { useLocalStorage } from './hooks/useLocalStorage.js';
+import { useDataSource } from './hooks/useDataSource.js';
 import { Footer } from './components/Footer.jsx';
 import { Schedule } from './pages/Schedule/index.jsx';
 import { Plan } from './pages/Plan/index.jsx';
 import { Landing } from './pages/Landing/index.jsx';
 import { Shop, ShoppingHistory, StartShopping, ShoppingRouter } from './pages/Shop/index.jsx';
 import { NotFound } from './pages/_404.jsx';
-import { StaticData } from '../../data/static';
-import { withSimulatedNetworkLatency } from '../../data/proxy';
 import { Core } from '../../core';
 
-const dataFactories = {
-  demo: () => withSimulatedNetworkLatency(new StaticData(), { minLatency: 150, maxLatency: 400 })
-};
-
 function coreFactory(dataSource) {
-  const dataFactory = dataFactories[dataSource];
+  const dataFactory = dataSource?.factory;
   if (!dataFactory) {
     return false;
   }
@@ -29,10 +23,12 @@ function coreFactory(dataSource) {
 
 export function Main() {
   const location = useLocation();
-  const [dataSource, setDataSource] = useLocalStorage('data-source');
+  const [dataSource, setDataSource] = useDataSource();
   const core = coreFactory(dataSource);
   if (!core && location.url !== "/") {
     location.route("/");
+  } else if (core && location.url === "/") {
+    location.route("/plan");
   }
   return (
     <>
