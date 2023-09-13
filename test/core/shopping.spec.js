@@ -84,18 +84,6 @@ describe('core shopping APIs', () => {
         .rejects.toThrow('Shopping event Id must start with "se-"');
     });
 
-    it("does not allow completing items for non-existent shopping events", async () => {
-      await expect(() => core.buyItem("se-nope", { ItemId: "i-whatever", Quantity: 1 }))
-        .rejects.toThrow('No such shopping event "se-nope"');
-    });
-
-    it("cannot complete items for a complete shopping event", async () => {
-      const shoppingEvent = await core.startShopping();
-      await core.stopShopping(shoppingEvent.Id);
-      await expect(core.buyItem(shoppingEvent.Id, { ItemId: "i-000000000000", Quantity: 1 }))
-        .rejects.toThrow('Cannot buy an item for a shopping event with status "COMPLETE"');
-    });
-
     it("requires a quantity", async () => {
       const shoppingEvent = await core.startShopping();
       await expect(() => core.buyItem(shoppingEvent.Id, { ItemId: 'i-xxxxxxx' }))

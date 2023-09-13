@@ -33,16 +33,6 @@ export class Core {
     if (!Number.isInteger(Number(attributes.BoughtQuantity || attributes.Quantity))) {
       throw new Error("Required attribute 'Quantity' is missing or is not an integer");
     }
-    // Remark: with ddb, we could do a conditional write on the condition that the
-    // shopping event ID exists and the status is IN_PROGRESS
-    // then we could do this with one request instead of two
-    const shoppingEvent = await this.data.getItem(shoppingEventId);
-    if (!shoppingEvent) {
-      throw new Error(`No such shopping event "${shoppingEventId}"`);
-    }
-    if (shoppingEvent.Status !== "IN_PROGRESS") {
-      throw new Error(`Cannot buy an item for a shopping event with status "${shoppingEvent.Status}"`);
-    }
     const boughtItem = {
       Id: `sei#${shoppingEventId}#${itemId}`,
       ...attributes,

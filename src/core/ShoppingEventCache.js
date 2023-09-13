@@ -31,12 +31,6 @@ export class ShoppingEventCache {
     return new ShoppingEventCache(list, statistics, persistItemUpdate);
   }
 
-  updateItem({ Id, BoughtQuantity, ActualUnitPrice }) {
-    Object.assign(this._list.find(x => x.Id === Id), { BoughtQuantity, ActualUnitPrice });
-    this._statistics = ShoppingEventCache._calculateStatistics(this._list);
-    this._persistItemUpdate({ Id, BoughtQuantity, ActualUnitPrice });
-  }
-
   getList() {
     return this._list;
   }

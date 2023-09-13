@@ -42,7 +42,7 @@ export function Shop({ core, shoppingEventId }) {
     location.route(`/history?eventNotFound=${shoppingEventId}`);
   }
   const historical = shoppingEvent
-    ? shoppingEvent.description?.Status === "COMPLETE"
+    ? shoppingEvent.description?.Status !== "IN_PROGRESS"
     : location.url.startsWith('/history');
   if (shoppingEvent && historical && location.url.startsWith('/shop')) {
     location.route(`/history/${shoppingEventId}`);
