@@ -24,7 +24,11 @@ export function Shop({ core, shoppingEventId }) {
   const [totalSpent, setTotalSpent] = useState();
   const getShoppingEvent = async () => {
     try {
-      return await core.getShoppingEvent(shoppingEventId, true);
+      const [description, itemsCache] = await Promise.all([
+        core.getShoppingEvent(shoppingEventId),
+        core.getShoppingEventItemCache(shoppingEventId)
+      ]);
+      return { description, list: itemsCache.getList(), statistics: itemsCache.getStatistics() };
     } catch(e) {
       if (e.code === "ResourceNotFound") {
         return null;

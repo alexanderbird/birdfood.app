@@ -1,4 +1,5 @@
 import { Chronometer } from './Chronometer';
+import { ShoppingEventCache } from './ShoppingEventCache';
 
 export class Core {
   constructor(data, chronometer) {
@@ -80,8 +81,14 @@ export class Core {
     };
   }
 
-  getShoppingEventItemCache(id) {
-    console.warn(`getShoppingEventItemCache(${id}) is not implemented`);
+  async getShoppingEventItemCache(id) {
+    const shoppingEventItems = await this.data.listItems(`sei#${id}#i-`);
+    const planItems = await this.data.listItems("i-");
+    return ShoppingEventCache.assemble({
+      persistItemUpdate: attributes => this.data.putItem(attributes),
+      shoppingEventItems,
+      planItems
+    });
   }
 
   async getShoppingListItems(id) {
@@ -123,12 +130,15 @@ export class Core {
       error.code = "ResourceNotFound";
       throw error;
     }
+
     const description = await this.data.getItem(id);
+
     if (!description) {
       const error = new Error(`Shopping Event not found "${id}"`);
       error.code = "ResourceNotFound";
       throw error;
     }
+
     if (!legacyMode) {
       return description;
     }
