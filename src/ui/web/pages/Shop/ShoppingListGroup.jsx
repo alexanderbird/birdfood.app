@@ -30,7 +30,7 @@ export const ShoppingListGroup = ({ type, items, editable, updateItem, ...props 
   const handleItemClick = item => {
     setSelectedItem(item.Id);
     if (item.BoughtQuantity <= 0) {
-      updateItem({ ItemId: item.Id, Quantity: item.RequiredQuantity });
+      updateItem({ ItemId: item.Id, BoughtQuantity: item.RequiredQuantity });
     }
   };
   const isSelected = item => editable && item.Id === selectedItem;
@@ -98,7 +98,7 @@ const ListItemContent = ({ item, selected, showRequiredAmount, updateItem, onCli
                 value={item.BoughtQuantity}
                 sx={{ mr: 1 }}
                 onFocus={e => e.target.select()}
-                onChange={x => updateItem({ ItemId: item.Id, Quantity: x.target.value || 0 })}
+                onChange={x => updateItem({ ItemId: item.Id, BoughtQuantity: x.target.value || 0 })}
                 InputProps={{
                   endAdornment: <InputAdornment position="end">/{item.RequiredQuantity}</InputAdornment>,
                 }}
@@ -111,7 +111,7 @@ const ListItemContent = ({ item, selected, showRequiredAmount, updateItem, onCli
                 size="small"
                 label="Unit Price"
                 value={item.ActualUnitPrice}
-                setValue={ActualUnitPrice => updateItem({ ItemId: item.Id, ActualUnitPrice, Quantity: item.BoughtQuantity })}
+                setValue={ActualUnitPrice => updateItem({ ItemId: item.Id, ActualUnitPrice, BoughtQuantity: item.BoughtQuantity })}
               />
             </Box>
           </AccordionDetails>

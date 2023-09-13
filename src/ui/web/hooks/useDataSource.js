@@ -8,7 +8,7 @@ export const DataSource = {
     key: "demo",
     name: "Demo Mode",
     explanation: "All your changes will be reset when you refresh the page.",
-    factory: () => withSimulatedNetworkLatency(new StaticData(), { minLatency: 25, maxLatency: 50 }),
+    factory: () => withSimulatedNetworkLatency(new StaticData(), { minLatency: 250, maxLatency: 500 }),
   },
   browser: {
     key: "browser",

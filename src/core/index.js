@@ -30,9 +30,12 @@ export class Core {
     if (!itemId.startsWith("i-")) {
       throw new Error('ItemId must start with "i-"');
     }
-    if (!Number.isInteger(Number(attributes.Quantity))) {
+    if (!Number.isInteger(Number(attributes.BoughtQuantity || attributes.Quantity))) {
       throw new Error("Required attribute 'Quantity' is missing or is not an integer");
     }
+    // Remark: with ddb, we could do a conditional write on the condition that the
+    // shopping event ID exists and the status is IN_PROGRESS
+    // then we could do this with one request instead of two
     const shoppingEvent = await this.data.getItem(shoppingEventId);
     if (!shoppingEvent) {
       throw new Error(`No such shopping event "${shoppingEventId}"`);
@@ -43,7 +46,7 @@ export class Core {
     const boughtItem = {
       Id: `sei#${shoppingEventId}#${itemId}`,
       ...attributes,
-      BoughtQuantity: Number(attributes.Quantity),
+      BoughtQuantity: Number(attributes.BoughtQuantity || attributes.Quantity),
       Quantity: undefined,
     };
     await this.data.putItem(boughtItem);
@@ -81,9 +84,16 @@ export class Core {
     };
   }
 
+  async getShoppingEventSnapshot(id) {
+    const [shoppingEventItems, planItems] = await Promise.all([
+      this.data.listItems(`sei#${id}#i-`),
+      this.data.listItems("i-")
+    ]);
+    return { shoppingEventItems, planItems };
+  }
+
   async getShoppingEventItemCache(id) {
-    const shoppingEventItems = await this.data.listItems(`sei#${id}#i-`);
-    const planItems = await this.data.listItems("i-");
+    const { shoppingEventItems, planItems } = await this.getShoppingEventSnapshot(id);
     return ShoppingEventCache.assemble({
       persistItemUpdate: attributes => this.data.putItem(attributes),
       shoppingEventItems,

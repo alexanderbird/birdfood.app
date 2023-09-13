@@ -7,9 +7,10 @@ import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 
+import { ShoppingEventCache } from '../../../../core/ShoppingEventCache';
 import { CurrencyTextField } from '../../components/CurrencyTextField';
 import { Header } from '../../components/Header.jsx';
-import { useUpdatingState } from '../../hooks/useUpdatingState';
+import { useMutableAsyncResource } from '../../hooks/useAsyncResource';
 import { Page } from '../../components/Page';
 import { ShoppingListGroup } from './ShoppingListGroup';
 import { ShopPageHeader } from './ShopPageHeader';
@@ -24,11 +25,11 @@ export function Shop({ core, shoppingEventId }) {
   const [totalSpent, setTotalSpent] = useState();
   const getShoppingEvent = async () => {
     try {
-      const [description, itemsCache] = await Promise.all([
+      const [description, snapshot] = await Promise.all([
         core.getShoppingEvent(shoppingEventId),
-        core.getShoppingEventItemCache(shoppingEventId)
+        core.getShoppingEventSnapshot(shoppingEventId)
       ]);
-      return { description, list: itemsCache.getList(), statistics: itemsCache.getStatistics() };
+      return { description, snapshot };
     } catch(e) {
       if (e.code === "ResourceNotFound") {
         return null;
@@ -36,7 +37,7 @@ export function Shop({ core, shoppingEventId }) {
       throw e;
     }
   };
-  const [shoppingEvent, triggerUpdate] = useUpdatingState(false, getShoppingEvent);
+  const [shoppingEvent, setShoppingEvent] = useMutableAsyncResource(getShoppingEvent);
   if (shoppingEvent === null) {
     location.route(`/history?eventNotFound=${shoppingEventId}`);
   }
@@ -50,12 +51,27 @@ export function Shop({ core, shoppingEventId }) {
     location.route(`/shop/${shoppingEventId}`);
   }
 
+  const cache = shoppingEvent?.snapshot && ShoppingEventCache.assemble(shoppingEvent.snapshot);
+  const list = cache?.getList();
+  const statistics = cache?.getStatistics();
+
   const updateItem = async attributes => {
+    const id = `sei#${shoppingEventId}#${attributes.ItemId}`;
     if (historical) {
       return;
     }
+    setShoppingEvent(current => {
+      const newShoppingEventItems = [ ...current.snapshot.shoppingEventItems ];
+      const existing = newShoppingEventItems.find(x => x.Id === id);
+      if (existing) {
+        Object.assign(existing, attributes);
+      } else {
+        newShoppingEventItems.push({ ...attributes, Id: id });
+      }
+
+      return { ...current, snapshot: { ...current.snapshot, shoppingEventItems: newShoppingEventItems } };
+    });
     await core.buyItem(shoppingEventId, attributes);
-    triggerUpdate();
   };
 
   const finishShopping = async () => {
@@ -64,7 +80,7 @@ export function Shop({ core, shoppingEventId }) {
     location.route(`/history?activeEvent=${shoppingEventId}`);
   };
 
-  const groupedList = Object.values((shoppingEvent?.list || []).reduce((grouped, item) => {
+  const groupedList = Object.values((list || []).reduce((grouped, item) => {
     grouped[item.Type] = grouped[item.Type] || { type: item.Type, items: [] };
     grouped[item.Type].items.push(item);
     return grouped;
@@ -76,8 +92,8 @@ export function Shop({ core, shoppingEventId }) {
       header={!shoppingEvent
         ? <Header />
         : historical
-          ? <HistoricalShopPageHeader shoppingEvent={shoppingEvent} />
-          : <ShopPageHeader shoppingEvent={shoppingEvent} />
+          ? <HistoricalShopPageHeader shoppingEvent={{ description: shoppingEvent.description, list, statistics }} />
+          : <ShopPageHeader shoppingEvent={{ description: shoppingEvent.description, list, statistics }} />
       }
       body={() =>
         <Container>
