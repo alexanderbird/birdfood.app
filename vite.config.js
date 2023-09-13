@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
+import { configDefaults } from 'vitest/config'
 import preact from '@preact/preset-vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
@@ -41,5 +42,9 @@ export default defineConfig({
       provider: 'istanbul',
       reporter: ['html'],
     },
+    exclude: [
+      ...configDefaults.exclude,
+      'infrastructure/**'
+    ]
   },
 });

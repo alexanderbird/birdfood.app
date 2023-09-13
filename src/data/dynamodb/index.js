@@ -1,3 +1,6 @@
+/* eslint-disable */
+// Disabled linting since this is a placeholder file with lots of unused params
+// After it's implemented, we can re-enable linting
 export class DynamoDbData {
   constructor() {
   }
