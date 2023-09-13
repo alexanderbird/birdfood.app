@@ -1,0 +1,27 @@
+#!/usr/bin/env -S macaws deploy
+Resources:
+
+  BirdFoodInfrastructureCreatorUser:
+    Type: AWS::IAM::User
+    Properties: 
+      UserName: birdfood-infrastructure-creator
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess
+  BirdFoodInfrastructureCreatorAccessKey:
+    Type: AWS::IAM::AccessKey
+    Properties:
+      Serial: 1
+      Status: Active
+      UserName: !Ref BirdFoodInfrastructureCreatorUser
+  BirdFoodInfrastructureCreatorSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties: 
+      Name: favourite-recipes-runtime-credentials
+      Description: AWS User credentials for the birdfood-infrastructure-creator user
+      SecretString: !Sub '{ "AccessKeyId": "${BirdFoodInfrastructureCreatorAccessKey}", "SecretAccessKey": "${BirdFoodInfrastructureCreatorAccessKey.SecretAccessKey}" }'
+      Tags:
+        - Key: UserCredentialsFor
+          Value: birdfood-infrastructure-creator
+        - Key: UserCredentialType
+          Value: CLI
+
