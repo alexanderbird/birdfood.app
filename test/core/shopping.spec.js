@@ -1,7 +1,7 @@
 import { SteppingChronometer } from '../../src/core/Chronometer';
-import { EmptyStaticData } from '../../src/data/static';
 import { Core } from '../../src/core';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { testDataSource } from './testDataSource';
 
 describe('core shopping APIs', () => {
   let core;
@@ -10,7 +10,7 @@ describe('core shopping APIs', () => {
   beforeEach(() => {
     chronometer = { getCurrentTimestamp: vi.fn() };
     chronometer.getCurrentTimestamp.mockReturnValue("0000-00-00T00:00:00.000Z");
-    data = new EmptyStaticData();
+    data = testDataSource();
     core = new Core(data, chronometer);
   });
 

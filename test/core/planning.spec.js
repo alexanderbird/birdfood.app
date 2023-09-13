@@ -1,4 +1,4 @@
-import { EmptyStaticData } from '../../src/data/static';
+import { testDataSource } from './testDataSource';
 import { SteppingChronometer } from '../../src/core/Chronometer';
 import { Core } from '../../src/core';
 import { describe, it, expect, beforeEach } from 'vitest';
@@ -8,7 +8,7 @@ describe('core planning APIs', () => {
   let data;
 
   beforeEach(() => {
-    data = new EmptyStaticData();
+    data = testDataSource();
     core = new Core(data, new SteppingChronometer());
   });
 

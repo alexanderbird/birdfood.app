@@ -1,4 +1,3 @@
-
 export class BrowserStorageData {
   constructor(localStorage) {
     this._localStorage = localStorage;

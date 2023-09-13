@@ -6,6 +6,7 @@
     "lint": "eslint src",
     "check": "npm run lint && vitest --run",
     "test": "vitest --run",
+    "test:db-integ": "DATA_SOURCE=dynamodb npm run test",
     "coverage": "vitest run --coverage && open coverage/index.html",
     "dev": "vite",
     "build": "npm run check && vite build",
