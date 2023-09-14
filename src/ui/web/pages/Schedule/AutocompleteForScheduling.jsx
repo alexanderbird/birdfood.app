@@ -9,7 +9,7 @@ export const AutocompleteForScheduling = ({ core, items, onItemsModified }) => {
   };
 
   const createItem = async Name => {
-    const item = await core.createItem({ Name, RecurringQuantity: 1 });
+    const item = await core.createPlanItem({ Name, RecurringQuantity: 1 });
     onItemsModified(item.Id);
   };
 

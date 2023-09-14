@@ -14,7 +14,7 @@ describe('core planning APIs', () => {
 
   describe("create, read, and update operations", () => {
     it("can increment an item recurring quantity", async () => {
-      const { Id } = await core.createItem({ Name: "jam" });
+      const { Id } = await core.createPlanItem({ Name: "jam" });
       await core.addToItemRecurringQuantity(Id, 2);
       expect((await core.getItem(Id)).RecurringQuantity).toEqual(2);
       await core.addToItemRecurringQuantity(Id, 4);
@@ -24,7 +24,7 @@ describe('core planning APIs', () => {
     });
 
     it("can increment an item planned quantity", async () => {
-      const { Id } = await core.createItem({ Name: "jam" });
+      const { Id } = await core.createPlanItem({ Name: "jam" });
       core.addToItemPlannedQuantity(Id, 2);
       expect((await core.getItem(Id)).PlannedQuantity).toEqual(2);
       await core.addToItemPlannedQuantity(Id, 4);
@@ -34,12 +34,12 @@ describe('core planning APIs', () => {
     });
 
     it("requires a name when creating", async () => {
-      expect(() => core.createItem({ }))
+      expect(() => core.createPlanItem({ }))
         .rejects.toThrow("Name is required.");
     });
 
     it("can create an item with only a name", async () => {
-      const item = await core.createItem({ Name: "jam" });
+      const item = await core.createPlanItem({ Name: "jam" });
       expect(item).toEqual({
         Id: item.Id,
         Name: "jam",
@@ -52,7 +52,7 @@ describe('core planning APIs', () => {
     });
 
     it("accepts all properties other than Id and Timestamp on create", async () => {
-      const item = await core.createItem({
+      const item = await core.createPlanItem({
         Name: "jam",
         PlannedQuantity: 3,
         RecurringQuantity: 8,
@@ -71,17 +71,17 @@ describe('core planning APIs', () => {
     });
 
     it("generates an Id on create (even if one was passed as an argument)", async () => {
-      const { Id } = await core.createItem({ Id: "i-xxxxxxxxxxxx", Name: "jam" });
+      const { Id } = await core.createPlanItem({ Id: "i-xxxxxxxxxxxx", Name: "jam" });
       expect(Id).not.toEqual("i-xxxxxxxxxxxx");
     });
 
     it("sets the timestamp on create (even if one was passed as an argument)", async () => {
-      const { LastUpdated } = await core.createItem({ LastUpdated: "1111-11-11T11:11:111Z", Name: "jam" });
+      const { LastUpdated } = await core.createPlanItem({ LastUpdated: "1111-11-11T11:11:111Z", Name: "jam" });
       expect(LastUpdated).toEqual("0000-00-00T00:00:00.000Z");
     });
 
     it("can update an item and the item timestamp", async () => {
-      const originalItem = await core.createItem({ Name: "jam" });
+      const originalItem = await core.createPlanItem({ Name: "jam" });
       await core.updateItemAndTimestamp({ Id: originalItem.Id, Name: "Strawberry Jam" });
       expect((await core.getItem(originalItem.Id))).toEqual({
         ...originalItem,
@@ -91,7 +91,7 @@ describe('core planning APIs', () => {
     });
 
     it("prevents overriding timestamp when updating", async () => {
-      const originalItem = await core.createItem({ Name: "jam" });
+      const originalItem = await core.createPlanItem({ Name: "jam" });
       await core.updateItemAndTimestamp({
         Id: originalItem.Id,
         Name: "Strawberry Jam",
@@ -105,7 +105,7 @@ describe('core planning APIs', () => {
     });
 
     it("can update an item without changing the timestamp", async () => {
-      const originalItem = await core.createItem({ Name: "jam" });
+      const originalItem = await core.createPlanItem({ Name: "jam" });
       await core.updateItem({ Id: originalItem.Id, Name: "Strawberry Jam" });
       expect((await core.getItem(originalItem.Id))).toEqual({
         ...originalItem,
@@ -117,7 +117,7 @@ describe('core planning APIs', () => {
 
   describe("list and bulk update operations", () => {
     async function createItem(core, UnitPriceEstimate, PlannedQuantity, RecurringQuantity, Name, Type) {
-      return await core.createItem({ Name, UnitPriceEstimate, PlannedQuantity, RecurringQuantity, Type });
+      return await core.createPlanItem({ Name, UnitPriceEstimate, PlannedQuantity, RecurringQuantity, Type });
     }
 
     let i1, i2, i3, i4, i5, i6;
@@ -223,8 +223,8 @@ describe('core planning APIs', () => {
       };
     }
     it("can subscribe to shopping list updates", async () => {
-      const apples = await core.createItem({ Name: "Apples" });
-      const bananas = await core.createItem({ Name: "Bananas" });
+      const apples = await core.createPlanItem({ Name: "Apples" });
+      const bananas = await core.createPlanItem({ Name: "Bananas" });
       let plan;
       core.onShoppingListUpdate("test-subscription", x => { plan = x; });
       expect(plan).toBeUndefined();
@@ -245,7 +245,7 @@ describe('core planning APIs', () => {
       let plan2;
       core.onShoppingListUpdate("the-first", x => { plan1 = x; });
       core.onShoppingListUpdate("the-second", x => { plan2 = x; });
-      const item = await core.createItem({ Name: "X" });
+      const item = await core.createPlanItem({ Name: "X" });
       await core.getShoppingPlan()
       await clearEventQueue();
       expect(plan1.all).toEqual([item]);
@@ -255,12 +255,12 @@ describe('core planning APIs', () => {
     it("can unsubscribe to shopping list updates", async () => {
       let plan;
       core.onShoppingListUpdate("test-subscription", x => { plan = x; });
-      const item = await core.createItem({ Name: "X" });
+      const item = await core.createPlanItem({ Name: "X" });
       await core.getShoppingPlan()
       await clearEventQueue();
       expect(plan.all).toEqual([item]);
       core.offShoppingListUpdate("test-subscription");
-      await core.createItem({ Name: "Y" });
+      await core.createPlanItem({ Name: "Y" });
       await core.getShoppingPlan()
       await clearEventQueue();
       expect(plan.all).toEqual([item]);

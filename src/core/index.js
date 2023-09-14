@@ -245,8 +245,8 @@ export class Core {
   async updateItem(attributes) {
     await this.data.updateItem(attributes);
   }
-
-  async createItem(attributes) {
+  
+  async createPlanItem(attributes) {
     if (!attributes.Name) {
       throw new Error("Name is required.");
     }

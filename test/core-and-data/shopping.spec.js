@@ -92,9 +92,9 @@ describe('core shopping APIs', () => {
     });
 
     it("updates the planned amounts for all completed items", async () => {
-      const itemX = await core.createItem({ Name: "X", PlannedQuantity: 5 });
-      const itemY = await core.createItem({ Name: "Y", PlannedQuantity: 2 });
-      const itemZ = await core.createItem({ Name: "Z", PlannedQuantity: 9 });
+      const itemX = await core.createPlanItem({ Name: "X", PlannedQuantity: 5 });
+      const itemY = await core.createPlanItem({ Name: "Y", PlannedQuantity: 2 });
+      const itemZ = await core.createPlanItem({ Name: "Z", PlannedQuantity: 9 });
       const { Id } = await core.startShopping();
       await core.buyItem(Id, { ItemId: itemX.Id, Quantity: 3 });
       await core.buyItem(Id, { ItemId: itemY.Id, Quantity: 4 });
@@ -152,10 +152,10 @@ describe('core shopping APIs', () => {
 
     describe('list', () => {
       it("includes every planned item from before and after the start of shopping", async () => {
-        const { Id: idForApples } = await core.createItem({ Name: "Apples", PlannedQuantity: 2, UnitPriceEstimate: 0.60 });
-        const { Id: idForBananas } = await core.createItem({ Name: "Bananas (bunch)", PlannedQuantity: 1, UnitPriceEstimate: 2.01 });
+        const { Id: idForApples } = await core.createPlanItem({ Name: "Apples", PlannedQuantity: 2, UnitPriceEstimate: 0.60 });
+        const { Id: idForBananas } = await core.createPlanItem({ Name: "Bananas (bunch)", PlannedQuantity: 1, UnitPriceEstimate: 2.01 });
         const { Id } = await core.startShopping();
-        const { Id: idForCarrots } = await core.createItem({ Name: "Carrots", PlannedQuantity: 3, UnitPriceEstimate: 1.00 });
+        const { Id: idForCarrots } = await core.createPlanItem({ Name: "Carrots", PlannedQuantity: 3, UnitPriceEstimate: 1.00 });
         const { list } = await core.getShoppingEvent(Id, true);
         expect(list).toEqual([
           { Id: idForApples, Name: "Apples", RequiredQuantity: 2, BoughtQuantity: 0, UnitPriceEstimate: 0.60, Type: "OTHER" },
@@ -165,9 +165,9 @@ describe('core shopping APIs', () => {
       });
 
       it("includes information about whether each planned item is complete", async () => {
-        const { Id: idForApples } = await core.createItem({ Name: "Apples", PlannedQuantity: 2, UnitPriceEstimate: 0.60 });
-        const { Id: idForBananas } = await core.createItem({ Name: "Bananas (bunch)", PlannedQuantity: 1, UnitPriceEstimate: 2.01 });
-        const { Id: idForCarrots } = await core.createItem({ Name: "Carrots", PlannedQuantity: 3, UnitPriceEstimate: 1.00 });
+        const { Id: idForApples } = await core.createPlanItem({ Name: "Apples", PlannedQuantity: 2, UnitPriceEstimate: 0.60 });
+        const { Id: idForBananas } = await core.createPlanItem({ Name: "Bananas (bunch)", PlannedQuantity: 1, UnitPriceEstimate: 2.01 });
+        const { Id: idForCarrots } = await core.createPlanItem({ Name: "Carrots", PlannedQuantity: 3, UnitPriceEstimate: 1.00 });
         const { Id } = await core.startShopping();
         await core.buyItem(Id, { ItemId: idForApples, Quantity: 2, ActualUnitPrice: 1.02 });
         await core.buyItem(Id, { ItemId: idForCarrots, Quantity: 100, ActualUnitPrice: 2 });
@@ -181,9 +181,9 @@ describe('core shopping APIs', () => {
       });
 
       it("excludes planned items when retrieving the historical list", async () => {
-        const { Id: idForApples } = await core.createItem({ Name: "Apples", PlannedQuantity: 2, UnitPriceEstimate: 0.60 });
-        const { Id: idForBananas } = await core.createItem({ Name: "Bananas (bunch)", PlannedQuantity: 1, UnitPriceEstimate: 2.01 });
-        const { Id: idForCarrots } = await core.createItem({ Name: "Carrots", PlannedQuantity: 3, UnitPriceEstimate: 1.00, Type: "PRODUCE" });
+        const { Id: idForApples } = await core.createPlanItem({ Name: "Apples", PlannedQuantity: 2, UnitPriceEstimate: 0.60 });
+        const { Id: idForBananas } = await core.createPlanItem({ Name: "Bananas (bunch)", PlannedQuantity: 1, UnitPriceEstimate: 2.01 });
+        const { Id: idForCarrots } = await core.createPlanItem({ Name: "Carrots", PlannedQuantity: 3, UnitPriceEstimate: 1.00, Type: "PRODUCE" });
         const { Id } = await core.startShopping();
         await core.buyItem(Id, { ItemId: idForApples, Quantity: 2, ActualUnitPrice: 1.02 });
         await core.buyItem(Id, { ItemId: idForCarrots, Quantity: 100, ActualUnitPrice: 2 });
@@ -196,7 +196,7 @@ describe('core shopping APIs', () => {
       });
 
       it("still includes the item details even if it is not part of the plan", async () => {
-        const { Id: idForApples } = await core.createItem({ Name: "Apples", PlannedQuantity: 2, UnitPriceEstimate: 0.60, Type: "DELI" });
+        const { Id: idForApples } = await core.createPlanItem({ Name: "Apples", PlannedQuantity: 2, UnitPriceEstimate: 0.60, Type: "DELI" });
         const { Id } = await core.startShopping();
         await core.buyItem(Id, { ItemId: idForApples, Quantity: 2, ActualUnitPrice: 1.02 });
         await core.updateItem({ Id: idForApples, PlannedQuantity: 0 });
@@ -207,7 +207,7 @@ describe('core shopping APIs', () => {
       });
 
       it("does not include any completed item info from other shopping events", async () => {
-        const { Id: idForApples } = await core.createItem({ Name: "Apples", PlannedQuantity: 2, UnitPriceEstimate: 0.60 });
+        const { Id: idForApples } = await core.createPlanItem({ Name: "Apples", PlannedQuantity: 2, UnitPriceEstimate: 0.60 });
         const event1 = await core.startShopping();
         const event2 = await core.startShopping();
         await core.buyItem(event2.Id, { ItemId: idForApples, Quantity: 2, ActualUnitPrice: 1.02 });

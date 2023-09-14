@@ -32,6 +32,8 @@ export class DynamoDbData {
     return Promise.resolve();
   }
 
+  // after implementing this, the following test should pass:
+  //        × can retrieve a full shopping list 477ms
   createItem(attributes) {
     console.warn('Not Implemented');
     return Promise.resolve();
