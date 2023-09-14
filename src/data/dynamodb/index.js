@@ -1,6 +1,7 @@
 import {
   DynamoDBClient,
   QueryCommand,
+  PutItemCommand,
 } from "@aws-sdk/client-dynamodb";
 /* eslint-disable */
 // Disabled linting since this is a placeholder file with lots of unused params
@@ -32,11 +33,33 @@ export class DynamoDbData {
     return Promise.resolve();
   }
 
-  // after implementing this, the following test should pass:
-  //        × can retrieve a full shopping list 477ms
-  createItem(attributes) {
-    console.warn('Not Implemented');
-    return Promise.resolve();
+  async createItem(attributes) {
+    const item = Object.fromEntries(
+      Object.entries({ Household: this._household, ...attributes })
+        .map(([key, value]) => {
+        const type = typeof value === 'number' ? 'N' : 'S';
+        return [key, { [type]: value.toString() }];
+      }));
+    const input = {
+      TableName: this._tableName,
+      Item: item,
+      //Expected: { // ExpectedAttributeMap
+        //"<keys>": { // ExpectedAttributeValue
+          //Value: "<AttributeValue>",
+          //Exists: true || false,
+          //ComparisonOperator: "EQ" || "NE" || "IN" || "LE" || "LT" || "GE" || "GT" || "BETWEEN" || "NOT_NULL" || "NULL" || "CONTAINS" || "NOT_CONTAINS" || "BEGINS_WITH",
+          //AttributeValueList: [ // AttributeValueList
+            //"<AttributeValue>",
+          //],
+        //},
+      //},
+    };
+    const command = new PutItemCommand(input);
+    try {
+      await this._client.send(command);
+    } catch(e) {
+      throw new Error("Failed to create item " + JSON.stringify(item, null, 2), { cause: e });
+    }
   }
 
   addItemValue(id, attribute, addend) {
@@ -64,7 +87,9 @@ export class DynamoDbData {
       }, */
     };
     const response = await this._client.send(new QueryCommand(input));
-    return response.Items.map(x => Object.fromEntries(Object.entries(x).map(x => [x[0], x[1].S || x[1].N])));
+    return response.Items.map(x => Object.fromEntries(Object.entries(x)
+      .filter(x => x[0] !== "Household")
+      .map(x => [x[0], x[1].S || x[1].N])));
     // TODO: pagination
     //   LastEvaluatedKey: { // Key
     //     "<keys>": "<AttributeValue>",
