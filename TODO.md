@@ -4,9 +4,7 @@
 - storage -- multi-device
   - implement a dynamodb data adapter
       - create AWS account; CFN resource for creating the table. Create a dev
-        and prod table. Maybe use a different region for dev and prod to keep
-        them separated.
-      - make sure cloudtrail is enabled
+        and prod table.
   - create a household-specific access role that can only access the ddb records
     for their own household. Do some security testing to make sure there can be
     no unauthorized access (create data for two households; using the role for
@@ -17,8 +15,14 @@
         appropriate mechanism to map user ids to households and roles
       - clearly document the procedure for creating new households and accounts in a
         household
+  - production deploy:
+      - prod account
+      - deploy table and role resources to prod
+      - make sure cloudtrail is enabled
+      - make sure this process is documented in the README
   - in the UI, add a third data option -- login -- which uses cognito and the dynamodb
     adapter
+  - is there any db-related documentation missing in the README?
 
 ## Improvements
 - nitpicks
