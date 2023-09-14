@@ -28,9 +28,24 @@ export class DynamoDbData {
     return Promise.resolve([]);
   }
 
-  putItem(attributes) {
-    console.warn('Not Implemented');
-    return Promise.resolve();
+  async putItem(attributes) {
+    const item = Object.fromEntries(
+      Object.entries({ Household: this._household, ...attributes })
+        .filter(([ key, value ]) => !!value)
+        .map(([ key, value ]) => {
+        const type = typeof value === 'number' ? 'N' : 'S';
+        return [key, { [type]: value.toString() }];
+      }));
+    const input = {
+      TableName: this._tableName,
+      Item: item,
+    };
+    const command = new PutItemCommand(input);
+    try {
+      await this._client.send(command);
+    } catch(e) {
+      throw new Error("Failed to put item " + JSON.stringify(item, null, 2), { cause: e });
+    }
   }
 
   async createItem(attributes) {
