@@ -34,6 +34,13 @@ export class EmptyStaticData {
   }
 
   createItem(attributes) {
+    // disable the existence check if there are many items
+    // this is a dev/test/demo implementation so we don't have a data corruption
+    // risk
+    const existing = this.items.length < 400 && this.items.find(x => x.Id === attributes.Id);
+    if (existing) {
+      return Promise.reject(`There is already an item with Id=${attributes.Id}`);
+    }
     this.items.push(attributes);
     return Promise.resolve();
   }
