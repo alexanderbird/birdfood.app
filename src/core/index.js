@@ -1,5 +1,6 @@
 import { Chronometer } from './Chronometer';
 import { ShoppingEventCache } from './ShoppingEventCache';
+import { Identifier } from './Identifier';
 
 export class Core {
   constructor(data, chronometer) {
@@ -9,10 +10,11 @@ export class Core {
   }
 
   async startShopping(attributes) {
+    const StartedAt = this._getCurrentTimestamp();
     const shoppingEvent = {
       ...attributes,
-      Id: this._generateTimestampId("se-"),
-      StartedAt: this._getCurrentTimestamp(),
+      Id: Identifier.shoppingEventId(StartedAt),
+      StartedAt,
       Status: "IN_PROGRESS",
     };
     await this.data.createItem(shoppingEvent);
@@ -154,8 +156,8 @@ export class Core {
   }
 
   async listShoppingEvents(startDate, endDate) {
-    const start = this._generateTimestampId("se-", startDate.toISOString());
-    const end = this._generateTimestampId("se-", endDate.toISOString());
+    const start = Identifier.shoppingEventId(startDate.toISOString());
+    const end = Identifier.shoppingEventId(endDate.toISOString());
     return await this.data.listItemsBetween(start, end);
   }
 
@@ -251,7 +253,7 @@ export class Core {
     const item = {
       ...attributes,
       LastUpdated: this._getCurrentTimestamp(),
-      Id: this._generateId("i-", 12),
+      Id: Identifier.itemId(),
     };
     await this.data.createItem(item);
     return this._supplyMissingFields(item);
@@ -317,23 +319,4 @@ export class Core {
     return this.chronometer.getCurrentTimestamp();
   }
 
-  _generateId(prefix, length) {
-    const randomPart = (
-      Math.random().toString(36).slice(2)
-      + Math.random().toString(36).slice(2)
-    ).slice(0, length);
-    return prefix + randomPart;
-  }
-
-  _generateTimestampId(prefix, timestamp) {
-    const timestampString = typeof timestamp === 'undefined' ? this._getCurrentTimestamp() : timestamp;
-    const timestampPart = timestampString
-      .replace(/\d\d\.\d\d\dZ/, '')
-      .replace(/[^\d]/g, '');
-    return [
-      prefix,
-      timestampPart,
-      this._generateId("-", 8)
-    ].join("");
-  }
 }
