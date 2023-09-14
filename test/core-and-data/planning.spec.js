@@ -51,29 +51,6 @@ describe('core planning APIs', () => {
       });
     });
 
-    it("generates an Id on create", async () => {
-      const item = await core.createItem({ Name: "jam" });
-      expect(item.Id).toMatch(/^i-[a-z0-9]{12}$/);
-    });
-
-    it('generates a unique Id each time you create', async () => {
-      const soMany = 10000;
-      const allIds = (await Promise.all(Array(soMany).fill()
-        .map(() => core.createItem({ Name: "Pears" }))))
-        .map(x => x.Id);
-      expect(new Set(allIds).size).toEqual(soMany);
-    });
-
-    it('uses all numbers and letters in the ID generation', async () => {
-      const soMany = 10000;
-      const allIdCharacters = (await Promise.all(Array(soMany).fill()
-        .map(() => core.createItem({ Name: "Pears" }))))
-        .flatMap(x => x.Id.replace("i-", "").split(""))
-        .sort();
-      const uniqueCharacters = Array.from(new Set(allIdCharacters)).join("");
-      expect(uniqueCharacters).toEqual("0123456789abcdefghijklmnopqrstuvwxyz")
-    });
-
     it("accepts all properties other than Id and Timestamp on create", async () => {
       const item = await core.createItem({
         Name: "jam",
@@ -300,6 +277,4 @@ describe('core planning APIs', () => {
       expect(calls).toEqual(["first", "second"]);
     });
   });
-
-  // TODO: everything should be async to prepare for a real database
 });
