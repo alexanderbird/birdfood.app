@@ -5,6 +5,7 @@ import {
   UpdateItemCommand,
   GetItemCommand,
   BatchGetItemCommand,
+  BatchWriteItemCommand,
 } from "@aws-sdk/client-dynamodb";
 /* eslint-disable */
 // Disabled linting since this is a placeholder file with lots of unused params
@@ -63,6 +64,39 @@ export class DynamoDbData {
     return items.map(x => this._fromDdbToObject(x));
   }
 
+  async batchUpdateItems(itemChanges) {
+    const updatesById = {};
+    const idsToUpdate = [];
+    itemChanges.forEach(itemChange => {
+      idsToUpdate.push(itemChange.id);
+      updatesById[itemChange.id] = itemChange.updates;
+    });
+    const items = await this._rawResponseFromBatchGetItems(idsToUpdate);
+
+    const updated = item => {
+      const updates = updatesById[item.Id.S];
+      return Object.fromEntries(Object.entries(item)
+        .concat(updates.map(({ attributeName, value }) => [attributeName, this._toDdbValue(value)])));
+    }
+
+    const input = {
+      RequestItems: {
+        [this._tableName]: items.map(item => ({
+          PutRequest: {
+            Item: updated(item)
+          }
+        }))
+      },
+    };
+    const command = new BatchWriteItemCommand(input);
+    await this._client.send(command);
+  }
+
+  _toDdbValue(value) {
+    const type = typeof value === 'number' ? 'N' : 'S';
+    return { [type]: value.toString() };
+  }
+
   async createOrUpdateItem({ Id, ...attributes }) {
     const attributeUpdates = Object.fromEntries(
       Object.entries(attributes)
@@ -70,8 +104,7 @@ export class DynamoDbData {
           if (typeof value === 'undefined') {
             return [key, { Action: "DELETE" }];
           }
-          const type = typeof value === 'number' ? 'N' : 'S';
-          return [key, { Value: { [type]: value.toString() }, Action: "PUT" }];
+          return [key, { Value: this._toDdbValue(value), Action: "PUT" }];
         }));
     const input = {
       TableName: this._tableName,
@@ -139,11 +172,6 @@ export class DynamoDbData {
     } catch(e) {
       throw new Error("Failed to update item " + JSON.stringify(attributeUpdates, null, 2), { cause: e });
     }
-  }
-
-  batchUpdateItems(itemChanges) {
-    console.warn('Not Implemented');
-    return Promise.resolve();
   }
 
   async listItems(prefix) {
