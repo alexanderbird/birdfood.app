@@ -11,17 +11,27 @@ export const GroceryListForPlanning = ({ items,
   allowClearingTheList,
   allowAddingRecurringItems,
   openClearListDialog,
-  openEditDialog
+  openEditDialog,
+  openRemoveItemDialog
 }) => {
 
-  const setQuantity = async (id, quantity) => {
-    await core.updateItem({ Id: id, PlannedQuantity: quantity });
-    onItemsModified(id);
+  const setQuantity = async (id, quantity, item) => {
+    if (openRemoveItemDialog && item && (quantity <= 0)) {
+      openRemoveItemDialog({ item: { ...item, PlannedQuantity: quantity } });
+    } else {
+      await core.updateItem({ Id: id, PlannedQuantity: quantity });
+      onItemsModified(id);
+    }
   };
 
-  const updateQuantity = async (id, difference) => {
-    await core.addToItemPlannedQuantity(id, difference);
-    onItemsModified(id);
+  const updateQuantity = async (id, difference, item) => {
+    console.log({ id, difference, item });
+    if (openRemoveItemDialog && item && item.PlannedQuantity + difference <= 0) {
+      openRemoveItemDialog({ item, difference });
+    } else {
+      await core.addToItemPlannedQuantity(id, difference);
+      onItemsModified(id);
+    }
   };
 
   const addRecurringItems = async () => {

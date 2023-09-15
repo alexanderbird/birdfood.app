@@ -89,9 +89,9 @@ export const GroceryItemList = ({
                 </Button>
               </Typography>
               <ButtonGroup sx={{ flexGrow: 1, zIndex: 10, marginLeft: 'auto', justifyContent: 'flex-end' }}>
-                <Button onClick={() => updateQuantity(item.value.Id, -1)}><MinusIcon item={item} /></Button>
-                <QuantitySelector value={getQuantityForItem(item.value)} onChange={quantity => setQuantity(item.value.Id, quantity)} />
-                <Button onClick={() => updateQuantity(item.value.Id, 1)}><AddIcon sx={{ fontSize: 14 }} /></Button>
+                <Button onClick={() => updateQuantity(item.value.Id, -1, item.value)}><MinusIcon item={item} /></Button>
+                <QuantitySelector value={getQuantityForItem(item.value)} onChange={quantity => setQuantity(item.value.Id, quantity, item.value)} />
+                <Button onClick={() => updateQuantity(item.value.Id, 1, item.value)}><AddIcon sx={{ fontSize: 14 }} /></Button>
               </ButtonGroup>
             </Box>
           </Box>

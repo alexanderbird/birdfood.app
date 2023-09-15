@@ -3,6 +3,7 @@ import { useState } from 'preact/hooks';
 import { useUpdatingState } from '../../hooks/useUpdatingState';
 import { useGroceryItemEditFormDialog } from '../../components/GroceryItemEditFormDialog';
 import { useClearListDialog } from '../../components/ClearListDialog';
+import { useConfirmDialog } from '../../components/ConfirmDialog';
 
 export function usePlanState(core) {
   const [recentlyChangedItems, setLastChanged] = useState(new Set());
@@ -28,12 +29,24 @@ export function usePlanState(core) {
     }
   });
 
+  const ConfirmRemoveItemDialog = useConfirmDialog({
+    onConfirm: async ({ item, difference }) => {
+      if (typeof difference === 'number') {
+        await core.addToItemPlannedQuantity(item.Id, difference);
+      } else {
+        await core.updateItemAndTimestamp(item);
+      }
+      onItemsModified(item.Id);
+    }
+  });
+
   return {
     cart,
     recentlyChangedItems,
     onItemsModified,
     GroceryItemEditFormDialogForPlan,
-    ClearListDialogForPlan
+    ClearListDialogForPlan,
+    ConfirmRemoveItemDialog,
   };
 }
 
