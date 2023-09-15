@@ -117,9 +117,27 @@ export class DynamoDbData {
     }
   }
 
-  addItemValue(id, attribute, addend) {
-    console.warn('Not Implemented');
-    return Promise.resolve();
+  async addItemValue(id, attribute, addend) {
+    const attributeUpdates = {
+      [attribute]: {
+        Value: { N: addend.toString() },
+        Action: 'ADD'
+      }
+    }
+    const input = {
+      TableName: this._tableName,
+      Key: {
+        Household: { S: this._household },
+        Id: { S: id },
+      },
+      AttributeUpdates: attributeUpdates
+    };
+    const command = new UpdateItemCommand(input);
+    try {
+      await this._client.send(command);
+    } catch(e) {
+      throw new Error("Failed to update item " + JSON.stringify(attributeUpdates, null, 2), { cause: e });
+    }
   }
 
   batchUpdateItems(itemChanges) {
