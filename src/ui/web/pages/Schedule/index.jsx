@@ -1,4 +1,5 @@
 import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
 
 import { useScheduleState } from './useScheduleState';
 import { Page } from '../../components/Page';
@@ -11,7 +12,8 @@ export function Schedule({ core }) {
     cart,
     recentlyChangedItems,
     onItemsModified,
-    GroceryItemEditFormDialogForSchedule
+    GroceryItemEditFormDialogForSchedule,
+    ConfirmRemoveItemDialog,
   } = useScheduleState(core);
 
   return (
@@ -31,6 +33,7 @@ export function Schedule({ core }) {
             recentlyChangedItems={recentlyChangedItems}
             allowAddingRecurringItems={false}
             allowClearingTheList={false}
+            openRemoveItemDialog={ConfirmRemoveItemDialog.open}
             openClearListDialog={() => null}
             openEditDialog={GroceryItemEditFormDialogForSchedule.open}
           />
@@ -38,6 +41,11 @@ export function Schedule({ core }) {
       }
       dialogs={() => <>
         <GroceryItemEditFormDialogForSchedule />
+        <ConfirmRemoveItemDialog titleText={() => "Confirm Item Removal"} confirmText={() => "Remove"}>
+          {({ item }) => (
+            <Typography component="span">Do you want to remove <Typography component="span" sx={{ fontWeight: 'bold'}}>{item.Name?.trim()}</Typography>?</Typography>
+          )}
+        </ConfirmRemoveItemDialog>
       </>}
     />
   );

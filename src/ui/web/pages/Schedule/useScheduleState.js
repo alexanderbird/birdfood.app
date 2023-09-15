@@ -2,6 +2,7 @@ import { useState } from 'preact/hooks';
 
 import { useUpdatingState } from '../../hooks/useUpdatingState';
 import { useGroceryItemEditFormDialog } from '../../components/GroceryItemEditFormDialog';
+import { useConfirmDialog } from '../../components/ConfirmDialog';
 
 export function useScheduleState(core) {
   const [recentlyChangedItems, setLastChanged] = useState(new Set());
@@ -14,8 +15,19 @@ export function useScheduleState(core) {
   };
 
   const GroceryItemEditFormDialogForSchedule = useGroceryItemEditFormDialog({
-    onSave: item => {
-      core.updateItemAndTimestamp(item);
+    onSave: async item => {
+      await core.updateItemAndTimestamp(item);
+      onItemsModified(item.Id);
+    }
+  });
+
+  const ConfirmRemoveItemDialog = useConfirmDialog({
+    onConfirm: async ({ item, difference }) => {
+      if (typeof difference === 'number') {
+        await core.addToItemRecurringQuantity(item.Id, difference);
+      } else {
+        await core.updateItemAndTimestamp(item);
+      }
       onItemsModified(item.Id);
     }
   });
@@ -24,7 +36,8 @@ export function useScheduleState(core) {
     cart,
     recentlyChangedItems,
     onItemsModified,
-    GroceryItemEditFormDialogForSchedule
+    GroceryItemEditFormDialogForSchedule,
+    ConfirmRemoveItemDialog
   };
 }
 

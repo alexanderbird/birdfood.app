@@ -25,7 +25,6 @@ export const GroceryListForPlanning = ({ items,
   };
 
   const updateQuantity = async (id, difference, item) => {
-    console.log({ id, difference, item });
     if (openRemoveItemDialog && item && item.PlannedQuantity + difference <= 0) {
       openRemoveItemDialog({ item, difference });
     } else {
