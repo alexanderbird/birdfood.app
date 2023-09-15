@@ -2,6 +2,7 @@ import { testDataSource } from './testDataSource';
 import { SteppingChronometer } from '../../src/core/Chronometer';
 import { Core } from '../../src/core';
 import { describe, it, expect, beforeEach } from 'vitest';
+import { sortById } from './standardComparisons';
 
 describe('core planning APIs', () => {
   let core;
@@ -11,6 +12,20 @@ describe('core planning APIs', () => {
     data = testDataSource();
     core = new Core(data, new SteppingChronometer());
   });
+
+  function sorted(plan) {
+    if (!plan) {
+      return plan;
+    }
+    return {
+      ...plan,
+      all: plan.all?.sort(sortById),
+      recurringItems: plan.recurringItems?.sort(sortById),
+      recurringItemsToAdd: plan.recurringItemsToAdd?.sort(sortById),
+      shoppingList: plan.shoppingList?.sort(sortById),
+      unselectedItems: plan.unselectedItems?.sort(sortById),
+    }
+  }
 
   describe("create, read, and update operations", () => {
     it("can increment an item recurring quantity", async () => {
@@ -205,24 +220,6 @@ describe('core planning APIs', () => {
       }));
     });
   });
-
-  function sorted(plan) {
-    if (!plan) {
-      return plan;
-    }
-    return {
-      ...plan,
-      all: plan.all?.sort(sortById),
-      recurringItems: plan.recurringItems?.sort(sortById),
-      recurringItemsToAdd: plan.recurringItemsToAdd?.sort(sortById),
-      shoppingList: plan.shoppingList?.sort(sortById),
-      unselectedItems: plan.unselectedItems?.sort(sortById),
-    }
-  }
-
-  function sortById(lhs, rhs) {
-    return lhs.Id < rhs.Id ? -1 : 1;
-  }
 
   describe("shopping list subscriptions", () => {
     async function clearEventQueue() {

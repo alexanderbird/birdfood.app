@@ -2,6 +2,7 @@ import { SteppingChronometer } from '../../src/core/Chronometer';
 import { Core } from '../../src/core';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { testDataSource } from './testDataSource';
+import { sortById, sortByName } from './standardComparisons';
 
 describe('core shopping APIs', () => {
   let core;
@@ -100,7 +101,7 @@ describe('core shopping APIs', () => {
       await core.buyItem(Id, { ItemId: itemY.Id, Quantity: 4 });
       await core.stopShopping(Id);
       const { all } = await core.getShoppingPlan();
-      const actual = all.map(({ Name, PlannedQuantity }) => ({ Name, PlannedQuantity }));
+      const actual = all.sort(sortByName).map(({ Name, PlannedQuantity }) => ({ Name, PlannedQuantity }));
       expect(actual).toEqual([
         { Name: "X", PlannedQuantity: 2 },
         { Name: "Y", PlannedQuantity: 0 },
@@ -157,11 +158,11 @@ describe('core shopping APIs', () => {
         const { Id } = await core.startShopping();
         const { Id: idForCarrots } = await core.createPlanItem({ Name: "Carrots", PlannedQuantity: 3, UnitPriceEstimate: 1.00 });
         const { list } = await core.getShoppingEvent(Id, true);
-        expect(list).toEqual([
+        expect(list.sort(sortById)).toEqual([
           { Id: idForApples, Name: "Apples", RequiredQuantity: 2, BoughtQuantity: 0, UnitPriceEstimate: 0.60, Type: "OTHER" },
           { Id: idForBananas, Name: "Bananas (bunch)", RequiredQuantity: 1, BoughtQuantity: 0, UnitPriceEstimate: 2.01, Type: "OTHER" },
           { Id: idForCarrots, Name: "Carrots", RequiredQuantity: 3, BoughtQuantity: 0, UnitPriceEstimate: 1.00, Type: "OTHER" }
-        ]);
+        ].sort(sortById));
       });
 
       it("includes information about whether each planned item is complete", async () => {
@@ -173,11 +174,11 @@ describe('core shopping APIs', () => {
         await core.buyItem(Id, { ItemId: idForCarrots, Quantity: 100, ActualUnitPrice: 2 });
         await core.buyItem(Id, { ItemId: idForCarrots, Quantity: 1, ActualUnitPrice: 2 });
         const { list } = await core.getShoppingEvent(Id, true);
-        expect(list).toEqual([
+        expect(list.sort(sortById)).toEqual([
           { Id: idForApples, Name: "Apples", RequiredQuantity: 2, BoughtQuantity: 2, UnitPriceEstimate: 0.60, ActualUnitPrice: 1.02, Type: "OTHER" },
           { Id: idForBananas, Name: "Bananas (bunch)", RequiredQuantity: 1, BoughtQuantity: 0, UnitPriceEstimate: 2.01, Type: "OTHER" },
           { Id: idForCarrots, Name: "Carrots", RequiredQuantity: 3, BoughtQuantity: 1, UnitPriceEstimate: 1.00, ActualUnitPrice: 2, Type: "OTHER" }
-        ]);
+        ].sort(sortById));
       });
 
       it("excludes planned items when retrieving the historical list", async () => {
@@ -189,10 +190,10 @@ describe('core shopping APIs', () => {
         await core.buyItem(Id, { ItemId: idForCarrots, Quantity: 100, ActualUnitPrice: 2 });
         await core.stopShopping(Id);
         const { list } = await core.getShoppingEvent(Id, true);
-        expect(list).toEqual([
+        expect(list.sort(sortById)).toEqual([
           { Id: idForApples, Name: "Apples", BoughtQuantity: 2, ActualUnitPrice: 1.02, Type: "OTHER" },
           { Id: idForCarrots, Name: "Carrots", BoughtQuantity: 100, ActualUnitPrice: 2, Type: "PRODUCE" },
-        ]);
+        ].sort(sortById));
       });
 
       it("still includes the item details even if it is not part of the plan", async () => {
