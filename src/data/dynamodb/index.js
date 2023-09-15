@@ -4,6 +4,7 @@ import {
   PutItemCommand,
   UpdateItemCommand,
   GetItemCommand,
+  BatchGetItemCommand,
 } from "@aws-sdk/client-dynamodb";
 /* eslint-disable */
 // Disabled linting since this is a placeholder file with lots of unused params
@@ -57,9 +58,9 @@ export class DynamoDbData {
       .map(x => [x[0], x[1].S || Number(x[1].N)]));
   }
 
-  batchGetItems(ids) {
-    console.warn('Not Implemented');
-    return Promise.resolve([]);
+  async batchGetItems(ids) {
+    const items = await this._rawResponseFromBatchGetItems(ids);
+    return items.map(x => this._fromDdbToObject(x));
   }
 
   async createOrUpdateItem({ Id, ...attributes }) {
@@ -160,17 +161,42 @@ export class DynamoDbData {
       }, */
     };
     const response = await this._client.send(new QueryCommand(input));
-    return response.Items.map(x => Object.fromEntries(Object.entries(x)
-      .filter(x => x[0] !== "Household")
-      .map(x => [x[0], x[1].S || Number(x[1].N)])));
+    return response.Items.map(x => this._fromDdbToObject(x));
     // TODO: pagination
     //   LastEvaluatedKey: { // Key
     //     "<keys>": "<AttributeValue>",
     //   },
   }
 
+  _fromDdbToObject(ddbItem) {
+    return Object.fromEntries(Object.entries(ddbItem)
+      .filter(x => x[0] !== "Household")
+      .map(x => [x[0], x[1].S || Number(x[1].N)]))
+  }
+
   listItemsBetween(startInclusive, endInclusive) {
     console.warn('Not Implemented');
     return Promise.resolve([]);
+  }
+
+
+  async _rawResponseFromBatchGetItems(ids) {
+    if (!ids.length) {
+      return Promise.resolve([]);
+    }
+    // TODO batch the request by 100s
+    const input = {
+      RequestItems: {
+        [this._tableName]: {
+          Keys: ids.map(id => ({
+            Household: { S: this._household },
+            Id: { S: id }
+          }))
+        },
+      },
+    };
+    const command = new BatchGetItemCommand(input);
+    const response = await this._client.send(command);
+    return response.Responses[this._tableName];
   }
 }
