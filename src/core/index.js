@@ -1,5 +1,4 @@
 import { Chronometer } from './Chronometer';
-import { ShoppingEventCache } from './ShoppingEventCache';
 import { Identifier } from './Identifier';
 
 export class Core {
@@ -41,7 +40,7 @@ export class Core {
       BoughtQuantity: Number(attributes.BoughtQuantity || attributes.Quantity),
       Quantity: undefined,
     };
-    await this.data.putItem(boughtItem);
+    await this.data.createOrUpdateItem(boughtItem);
     return boughtItem;
   }
 
@@ -82,15 +81,6 @@ export class Core {
       this.data.listItems("i-")
     ]);
     return { shoppingEventItems, planItems };
-  }
-
-  async getShoppingEventItemCache(id) {
-    const { shoppingEventItems, planItems } = await this.getShoppingEventSnapshot(id);
-    return ShoppingEventCache.assemble({
-      persistItemUpdate: attributes => this.data.putItem(attributes),
-      shoppingEventItems,
-      planItems
-    });
   }
 
   async getShoppingListItems(id) {

@@ -22,7 +22,7 @@ export class EmptyStaticData {
     return Promise.resolve(this.items.filter(x => idsSet.has(x.Id)));
   }
 
-  putItem(attributes) {
+  createOrUpdateItem(attributes) {
     const existing = this.items.find(x => x.Id === attributes.Id);
     if (existing) {
       Object.assign(existing, attributes);

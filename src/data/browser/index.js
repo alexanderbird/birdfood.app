@@ -21,7 +21,7 @@ export class BrowserStorageData {
     return Promise.resolve(items);
   }
 
-  putItem(attributes) {
+  createOrUpdateItem(attributes) {
     const existing = this._localStorage.getItem(attributes.Id);
     if (existing) {
       this._localStorage.setItem(attributes.Id, JSON.stringify({ ...JSON.parse(existing), ...attributes }));

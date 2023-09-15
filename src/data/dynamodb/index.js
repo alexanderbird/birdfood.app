@@ -2,6 +2,8 @@ import {
   DynamoDBClient,
   QueryCommand,
   PutItemCommand,
+  UpdateItemCommand,
+  GetItemCommand,
 } from "@aws-sdk/client-dynamodb";
 /* eslint-disable */
 // Disabled linting since this is a placeholder file with lots of unused params
@@ -13,14 +15,46 @@ export class DynamoDbData {
     this._household = household;
   }
 
-  updateItem({ Id, ...attributes }) {
-    console.warn('Not Implemented');
-    return Promise.resolve();
+  async updateItem({ Id, ...attributes }) {
+    // TODO: ensure that it exists (this must not be a create)
+    const attributeUpdates = Object.fromEntries(
+      Object.entries(attributes)
+        .map(([ key, value ]) => {
+          if (typeof value === 'undefined') {
+            return [key, { Action: "DELETE" }];
+          }
+          const type = typeof value === 'number' ? 'N' : 'S';
+          return [key, { Value: { [type]: value.toString() }, Action: "PUT" }];
+        }));
+    const input = {
+      TableName: this._tableName,
+      Key: {
+        Household: { S: this._household },
+        Id: { S: Id },
+      },
+      AttributeUpdates: attributeUpdates
+    };
+    const command = new UpdateItemCommand(input);
+    try {
+      await this._client.send(command);
+    } catch(e) {
+      throw new Error("Failed to update item " + JSON.stringify(attributeUpdates, null, 2), { cause: e });
+    }
   }
 
-  getItem(id) {
-    console.warn('Not Implemented');
-    return Promise.resolve();
+  async getItem(id) {
+    const input = {
+      TableName: this._tableName,
+      Key: {
+        Household: { S: this._household },
+        Id: { S: id },
+      },
+    };
+    const command = new GetItemCommand(input);
+    const response = await this._client.send(command);
+    return Object.fromEntries(Object.entries(response.Item)
+      .filter(x => x[0] !== "Household")
+      .map(x => [x[0], x[1].S || Number(x[1].N)]));
   }
 
   batchGetItems(ids) {
@@ -28,23 +62,29 @@ export class DynamoDbData {
     return Promise.resolve([]);
   }
 
-  async putItem(attributes) {
-    const item = Object.fromEntries(
-      Object.entries({ Household: this._household, ...attributes })
-        .filter(([ key, value ]) => !!value)
+  async createOrUpdateItem({ Id, ...attributes }) {
+    const attributeUpdates = Object.fromEntries(
+      Object.entries(attributes)
         .map(([ key, value ]) => {
-        const type = typeof value === 'number' ? 'N' : 'S';
-        return [key, { [type]: value.toString() }];
-      }));
+          if (typeof value === 'undefined') {
+            return [key, { Action: "DELETE" }];
+          }
+          const type = typeof value === 'number' ? 'N' : 'S';
+          return [key, { Value: { [type]: value.toString() }, Action: "PUT" }];
+        }));
     const input = {
       TableName: this._tableName,
-      Item: item,
+      Key: {
+        Household: { S: this._household },
+        Id: { S: Id },
+      },
+      AttributeUpdates: attributeUpdates
     };
-    const command = new PutItemCommand(input);
+    const command = new UpdateItemCommand(input);
     try {
       await this._client.send(command);
     } catch(e) {
-      throw new Error("Failed to put item " + JSON.stringify(item, null, 2), { cause: e });
+      throw new Error("Failed to update item " + JSON.stringify(attributeUpdates, null, 2), { cause: e });
     }
   }
 
@@ -104,7 +144,7 @@ export class DynamoDbData {
     const response = await this._client.send(new QueryCommand(input));
     return response.Items.map(x => Object.fromEntries(Object.entries(x)
       .filter(x => x[0] !== "Household")
-      .map(x => [x[0], x[1].S || x[1].N])));
+      .map(x => [x[0], x[1].S || Number(x[1].N)])));
     // TODO: pagination
     //   LastEvaluatedKey: { // Key
     //     "<keys>": "<AttributeValue>",

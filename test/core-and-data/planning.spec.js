@@ -135,7 +135,7 @@ describe('core planning APIs', () => {
 
     it("can retrieve a full shopping list", async () => {
       const plan = await core.getShoppingPlan();
-      expect(plan).toEqual({
+      expect(sorted(plan)).toEqual(sorted({
         all: [i1, i2, i3, i4, i5, i6],
         recurringItems: [i1, i2, i3, i4],
         recurringItemsToAdd: [i3, i4],
@@ -143,7 +143,7 @@ describe('core planning APIs', () => {
         unselectedItems: [i4, i6],
         total: 27.5,
         totalOfRecurringItems: 24.5,
-      });
+      }));
     });
 
     it("includes only item entries when listing items (other database entries are ignored)", async () => {
@@ -152,7 +152,7 @@ describe('core planning APIs', () => {
       await data.createItem({ Id: "ix000000000000" });
       await data.createItem({ Id: "I-000000000000" });
       const plan = await core.getShoppingPlan();
-      expect(plan.all).toEqual([i1, i2, i3, i4, i5, i6]);
+      expect(plan.all.sort(sortById)).toEqual([i1, i2, i3, i4, i5, i6].sort(sortById));
     });
 
     it("can add all recurring items to the plan", async () => {
@@ -168,7 +168,7 @@ describe('core planning APIs', () => {
         PlannedQuantity: 2,
         LastUpdated: "0000-00-00T00:00:00.006Z"
       }
-      expect(plan).toEqual({
+      expect(sorted(plan)).toEqual(sorted({
         all: [i1, i2, i3Updated, i4Updated, i5, i6],
         recurringItems: [i1, i2, i3Updated, i4Updated],
         recurringItemsToAdd: [],
@@ -176,7 +176,7 @@ describe('core planning APIs', () => {
         unselectedItems: [i6],
         total: 43,
         totalOfRecurringItems: 24.5,
-      });
+      }));
     });
 
     it("can remove a batch of items from the plan", async () => {
@@ -194,7 +194,7 @@ describe('core planning APIs', () => {
         LastUpdated: "0000-00-00T00:00:00.006Z"
       }
       const plan = await core.getShoppingPlan();
-      expect(plan).toEqual({
+      expect(sorted(plan)).toEqual(sorted({
         all: [i1, i2Updated, i3Updated, i4, i5, i6],
         recurringItems: [i1, i2Updated, i3Updated, i4],
         recurringItemsToAdd: [i2Updated, i3Updated, i4],
@@ -202,9 +202,27 @@ describe('core planning APIs', () => {
         unselectedItems: [i2Updated, i3Updated, i4, i6],
         total: 19,
         totalOfRecurringItems: 24.5,
-      });
+      }));
     });
   });
+
+  function sorted(plan) {
+    if (!plan) {
+      return plan;
+    }
+    return {
+      ...plan,
+      all: plan.all?.sort(sortById),
+      recurringItems: plan.recurringItems?.sort(sortById),
+      recurringItemsToAdd: plan.recurringItemsToAdd?.sort(sortById),
+      shoppingList: plan.shoppingList?.sort(sortById),
+      unselectedItems: plan.unselectedItems?.sort(sortById),
+    }
+  }
+
+  function sortById(lhs, rhs) {
+    return lhs.Id < rhs.Id ? -1 : 1;
+  }
 
   describe("shopping list subscriptions", () => {
     async function clearEventQueue() {
@@ -217,7 +235,7 @@ describe('core planning APIs', () => {
         recurringItems: [],
         recurringItemsToAdd: [],
         shoppingList: [],
-        unselectedItems: items,
+        unselectedItems: items.sort(sortById),
         total: 0,
         totalOfRecurringItems: 0,
       };
@@ -227,17 +245,17 @@ describe('core planning APIs', () => {
       const bananas = await core.createPlanItem({ Name: "Bananas" });
       let plan;
       core.onShoppingListUpdate("test-subscription", x => { plan = x; });
-      expect(plan).toBeUndefined();
+      expect(sorted(plan)).toBeUndefined();
       await core.getShoppingPlan()
       await clearEventQueue();
-      expect(plan).toEqual(expectedCart(apples, bananas));
+      expect(sorted(plan)).toEqual(expectedCart(apples, bananas));
       const applesUpdated = { ...apples, Name: "Apples (Fuji)" };
       await core.updateItem(applesUpdated);
       await clearEventQueue();
-      expect(plan).toEqual(expectedCart(apples, bananas));
+      expect(sorted(plan)).toEqual(expectedCart(apples, bananas));
       await core.getShoppingPlan()
       await clearEventQueue();
-      expect(plan).toEqual(expectedCart(applesUpdated, bananas));
+      expect(sorted(plan)).toEqual(expectedCart(applesUpdated, bananas));
     });
 
     it("can subscribe multiple times to shopping list updates", async () => {
