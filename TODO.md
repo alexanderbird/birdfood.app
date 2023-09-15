@@ -3,8 +3,7 @@
 ## MVP
 - storage -- multi-device
   - implement a dynamodb data adapter
-      - create AWS account; CFN resource for creating the table. Create a dev
-        and prod table.
+      - handle pagination and batching (i.e. lists longer than 100 items)
   - create a household-specific access role that can only access the ddb records
     for their own household. Do some security testing to make sure there can be
     no unauthorized access (create data for two households; using the role for

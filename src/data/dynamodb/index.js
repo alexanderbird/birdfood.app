@@ -54,6 +54,7 @@ export class DynamoDbData {
     };
     const command = new GetItemCommand(input);
     const response = await this._client.send(command);
+    if (!response.Item) return false;
     return Object.fromEntries(Object.entries(response.Item)
       .filter(x => x[0] !== "Household")
       .map(x => [x[0], x[1].S || Number(x[1].N)]));
