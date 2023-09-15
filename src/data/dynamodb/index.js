@@ -7,9 +7,7 @@ import {
   BatchGetItemCommand,
   BatchWriteItemCommand,
 } from "@aws-sdk/client-dynamodb";
-/* eslint-disable */
-// Disabled linting since this is a placeholder file with lots of unused params
-// After it's implemented, we can re-enable linting
+
 export class DynamoDbData {
   constructor({ household }) {
     this._client = new DynamoDBClient();
@@ -18,29 +16,39 @@ export class DynamoDbData {
   }
 
   async updateItem({ Id, ...attributes }) {
-    // TODO: ensure that it exists (this must not be a create)
-    const attributeUpdates = Object.fromEntries(
-      Object.entries(attributes)
-        .map(([ key, value ]) => {
-          if (typeof value === 'undefined') {
-            return [key, { Action: "DELETE" }];
-          }
-          const type = typeof value === 'number' ? 'N' : 'S';
-          return [key, { Value: { [type]: value.toString() }, Action: "PUT" }];
-        }));
+    const setStatements = [];
+    const deleteStatements = [];
+    const attributeValues = {};
+    const attributeNames = {};
+    Object.entries(attributes).forEach(([ key, value ]) => {
+      attributeNames[`#${key}`] = key;
+      if (typeof value === 'undefined') {
+        deleteStatements.push(`#${key}`);
+      } else {
+        setStatements.push(`#${key}=:${key}`);
+        const type = typeof value === 'number' ? 'N' : 'S';
+        attributeValues[`:${key}`] = { [type]: value.toString() };
+      }
+    });
+    const UpdateExpression =
+      (setStatements.length ? `SET ${setStatements.join(', ')} ` : '')
+      + (deleteStatements.length ? `REMOVE ${deleteStatements.join(', ')} ` : '');
     const input = {
       TableName: this._tableName,
       Key: {
         Household: { S: this._household },
         Id: { S: Id },
       },
-      AttributeUpdates: attributeUpdates
+      UpdateExpression,
+      ExpressionAttributeNames: attributeNames,
+      ExpressionAttributeValues: attributeValues,
+      ConditionExpression: 'attribute_exists(Id)',
     };
     const command = new UpdateItemCommand(input);
     try {
       await this._client.send(command);
     } catch(e) {
-      throw new Error("Failed to update item " + JSON.stringify(attributeUpdates, null, 2), { cause: e });
+      throw new Error(`Failed to update item ${  JSON.stringify(input, null, 2)}`, { cause: e });
     }
   }
 
@@ -78,7 +86,7 @@ export class DynamoDbData {
       const updates = updatesById[item.Id.S];
       return Object.fromEntries(Object.entries(item)
         .concat(updates.map(({ attributeName, value }) => [attributeName, this._toDdbValue(value)])));
-    }
+    };
 
     const input = {
       RequestItems: {
@@ -119,7 +127,7 @@ export class DynamoDbData {
     try {
       await this._client.send(command);
     } catch(e) {
-      throw new Error("Failed to update item " + JSON.stringify(attributeUpdates, null, 2), { cause: e });
+      throw new Error(`Failed to update item ${  JSON.stringify(attributeUpdates, null, 2)}`, { cause: e });
     }
   }
 
@@ -127,28 +135,29 @@ export class DynamoDbData {
     const item = Object.fromEntries(
       Object.entries({ Household: this._household, ...attributes })
         .map(([key, value]) => {
-        const type = typeof value === 'number' ? 'N' : 'S';
-        return [key, { [type]: value.toString() }];
-      }));
+          const type = typeof value === 'number' ? 'N' : 'S';
+          return [key, { [type]: value.toString() }];
+        }));
     const input = {
       TableName: this._tableName,
       Item: item,
+      ConditionExpression: 'attribute_not_exists(Id)',
       //Expected: { // ExpectedAttributeMap
-        //"<keys>": { // ExpectedAttributeValue
-          //Value: "<AttributeValue>",
-          //Exists: true || false,
-          //ComparisonOperator: "EQ" || "NE" || "IN" || "LE" || "LT" || "GE" || "GT" || "BETWEEN" || "NOT_NULL" || "NULL" || "CONTAINS" || "NOT_CONTAINS" || "BEGINS_WITH",
-          //AttributeValueList: [ // AttributeValueList
-            //"<AttributeValue>",
-          //],
-        //},
+      //"<keys>": { // ExpectedAttributeValue
+      //Value: "<AttributeValue>",
+      //Exists: true || false,
+      //ComparisonOperator: "EQ" || "NE" || "IN" || "LE" || "LT" || "GE" || "GT" || "BETWEEN" || "NOT_NULL" || "NULL" || "CONTAINS" || "NOT_CONTAINS" || "BEGINS_WITH",
+      //AttributeValueList: [ // AttributeValueList
+      //"<AttributeValue>",
+      //],
+      //},
       //},
     };
     const command = new PutItemCommand(input);
     try {
       await this._client.send(command);
     } catch(e) {
-      throw new Error("Failed to create item " + JSON.stringify(item, null, 2), { cause: e });
+      throw new Error(`Failed to create item ${  JSON.stringify(item, null, 2)}`, { cause: e });
     }
   }
 
@@ -158,7 +167,7 @@ export class DynamoDbData {
         Value: { N: addend.toString() },
         Action: 'ADD'
       }
-    }
+    };
     const input = {
       TableName: this._tableName,
       Key: {
@@ -171,7 +180,7 @@ export class DynamoDbData {
     try {
       await this._client.send(command);
     } catch(e) {
-      throw new Error("Failed to update item " + JSON.stringify(attributeUpdates, null, 2), { cause: e });
+      throw new Error(`Failed to update item ${  JSON.stringify(attributeUpdates, null, 2)}`, { cause: e });
     }
   }
 
@@ -180,8 +189,8 @@ export class DynamoDbData {
       TableName: this._tableName,
       KeyConditionExpression: "Household = :household AND begins_with(Id, :prefix)",
       ExpressionAttributeValues: {
-          ":household": { S: this._household },
-          ":prefix": { S: prefix },
+        ":household": { S: this._household },
+        ":prefix": { S: prefix },
       },
       /* TODO: pagination
       ExclusiveStartKey: { // Key
@@ -199,7 +208,7 @@ export class DynamoDbData {
   _fromDdbToObject(ddbItem) {
     return Object.fromEntries(Object.entries(ddbItem)
       .filter(x => x[0] !== "Household")
-      .map(x => [x[0], x[1].S || Number(x[1].N)]))
+      .map(x => [x[0], x[1].S || Number(x[1].N)]));
   }
 
   async listItemsBetween(startInclusive, endInclusive) {
@@ -207,9 +216,9 @@ export class DynamoDbData {
       TableName: this._tableName,
       KeyConditionExpression: "Household = :household AND Id BETWEEN :startInclusive AND :endInclusive",
       ExpressionAttributeValues: {
-          ":household": { S: this._household },
-          ":startInclusive": { S: startInclusive },
-          ":endInclusive": { S: endInclusive },
+        ":household": { S: this._household },
+        ":startInclusive": { S: startInclusive },
+        ":endInclusive": { S: endInclusive },
       },
       /* TODO: pagination
       ExclusiveStartKey: { // Key

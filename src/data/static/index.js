@@ -6,8 +6,12 @@ export class EmptyStaticData {
   }
 
   updateItem({ Id, ...attributes }) {
+    const existing = this.items.find(x => x.Id === Id);
+    if (!existing) {
+      return Promise.reject(`No such item ${Id}`);
+    }
     Object.assign(
-      this.items.find(x => x.Id === Id),
+      existing,
       attributes
     );
     return Promise.resolve();

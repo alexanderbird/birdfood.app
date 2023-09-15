@@ -15,4 +15,11 @@ describe('data', () => {
         .rejects.toThrow();
     });
   });
+
+  describe('updateItem', () => {
+    it('refuses to create an item', async () => {
+      await expect(data.updateItem({ Id: 'TheFirst' }))
+        .rejects.toThrow();
+    });
+  });
 });
