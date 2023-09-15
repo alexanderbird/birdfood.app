@@ -177,11 +177,10 @@ export class DynamoDbData {
   async listItems(prefix) {
     const input = {
       TableName: this._tableName,
-      Select: "ALL_ATTRIBUTES",
       KeyConditionExpression: "Household = :household AND begins_with(Id, :prefix)",
       ExpressionAttributeValues: {
-          ":household": {"S": this._household },
-          ":prefix": {"S": prefix },
+          ":household": { S: this._household },
+          ":prefix": { S: prefix },
       },
       /* TODO: pagination
       ExclusiveStartKey: { // Key
@@ -202,9 +201,26 @@ export class DynamoDbData {
       .map(x => [x[0], x[1].S || Number(x[1].N)]))
   }
 
-  listItemsBetween(startInclusive, endInclusive) {
-    console.warn('Not Implemented');
-    return Promise.resolve([]);
+  async listItemsBetween(startInclusive, endInclusive) {
+    const input = {
+      TableName: this._tableName,
+      KeyConditionExpression: "Household = :household AND Id BETWEEN :startInclusive AND :endInclusive",
+      ExpressionAttributeValues: {
+          ":household": { S: this._household },
+          ":startInclusive": { S: startInclusive },
+          ":endInclusive": { S: endInclusive },
+      },
+      /* TODO: pagination
+      ExclusiveStartKey: { // Key
+        "<keys>": "<AttributeValue>",
+      }, */
+    };
+    const response = await this._client.send(new QueryCommand(input));
+    return response.Items.map(x => this._fromDdbToObject(x));
+    // TODO: pagination
+    //   LastEvaluatedKey: { // Key
+    //     "<keys>": "<AttributeValue>",
+    //   },
   }
 
 
