@@ -16,7 +16,7 @@ Resources:
   BirdFoodInfrastructureCreatorSecret:
     Type: AWS::SecretsManager::Secret
     Properties: 
-      Name: favourite-recipes-runtime-credentials
+      Name: birdfood-infrastructure-creator-credentials
       Description: AWS User credentials for the birdfood-infrastructure-creator user
       SecretString: !Sub '{ "AccessKeyId": "${BirdFoodInfrastructureCreatorAccessKey}", "SecretAccessKey": "${BirdFoodInfrastructureCreatorAccessKey.SecretAccessKey}" }'
       Tags:
@@ -25,3 +25,44 @@ Resources:
         - Key: UserCredentialType
           Value: CLI
 
+  BirdFoodAlexAndJamieAccountUser:
+    Type: AWS::IAM::User
+    Properties: 
+      UserName: birdfood-alex-and-jamie-account
+      Policies:
+        - PolicyName: AccessDynamoDbEntriesForThisHousehold
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "dynamodb:GetItem"
+                  - "dynamodb:BatchGetItem"
+                  - "dynamodb:Query"
+                  - "dynamodb:PutItem"
+                  - "dynamodb:UpdateItem"
+                  - "dynamodb:DeleteItem"
+                  - "dynamodb:BatchWriteItem"
+                Resource:
+                  - "arn:*:dynamodb:*:*:table/BirdFoodItems"
+                Condition:
+                  ForAllValues:StringEquals: {
+                    "dynamodb:LeadingKeys": [ "bird-family-household" ]
+                  }
+  BirdFoodAlexAndJamieAccountAccessKey:
+    Type: AWS::IAM::AccessKey
+    Properties:
+      Serial: 1
+      Status: Active
+      UserName: !Ref BirdFoodAlexAndJamieAccountUser
+  BirdFoodAlexAndJamieAccountSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties: 
+      Name: birdfood-alex-and-jamie-account-credentials
+      Description: AWS User credentials for the birdfood-alex-and-jamie-account user
+      SecretString: !Sub '{ "AccessKeyId": "${BirdFoodAlexAndJamieAccountAccessKey}", "SecretAccessKey": "${BirdFoodAlexAndJamieAccountAccessKey.SecretAccessKey}" }'
+      Tags:
+        - Key: UserCredentialsFor
+          Value: birdfood-alex-and-jamie-account
+        - Key: UserCredentialType
+          Value: CLI
