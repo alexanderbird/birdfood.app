@@ -22,7 +22,7 @@ export function useConfirmDialog({ onConfirm }) {
   StatefulConfirmDialog.open = dialogState.open;
   return StatefulConfirmDialog;
 }
-export const ConfirmDialog = ({ open, onCancel, onConfirm, confirmText, titleText, children }) => {
+export const ConfirmDialog = ({ open, onCancel, canConfirm, onConfirm, confirmText, titleText, children }) => {
   return (
     <Dialog open={open} onClose={onCancel}>
       <DialogTitle>{ titleText || "Confirm" }</DialogTitle>
@@ -31,7 +31,7 @@ export const ConfirmDialog = ({ open, onCancel, onConfirm, confirmText, titleTex
       </DialogContent>
       <DialogActions>
         <Button onClick={onCancel}>Cancel</Button>
-        <Button variant="contained" onClick={onConfirm}>{confirmText}</Button>
+        <Button variant="contained" disabled={canConfirm === false} onClick={onConfirm}>{confirmText}</Button>
       </DialogActions>
     </Dialog>
   );

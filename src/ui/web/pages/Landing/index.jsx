@@ -7,7 +7,6 @@ import Typography from '@mui/material/Typography';
 
 import { DataSource } from '../../hooks/useDataSource';
 import { useDialogState } from '../../hooks/useDialogState';
-import { ConfirmDialog } from '../../components/ConfirmDialog.jsx';
 import { Header } from '../../components/Header.jsx';
 import { Page } from '../../components/Page';
 import { BirdFoodLogo } from '../../components/icons/BirdFoodLogo';
@@ -17,10 +16,12 @@ export function Landing({ setDataSource }) {
   const dialog = useDialogState();
 
   const onDialogConfirm = (dataSource) => {
-    setDataSource(dataSource.key);
+    setDataSource(dataSource);
     dialog.close();
     location.route('/plan');
   };
+
+  const LoginDialog = DataSource[dialog.data]?.LoginDialog;
 
   return (
     <Page
@@ -41,25 +42,13 @@ export function Landing({ setDataSource }) {
               }
             }}>
             <BirdFoodLogo sx={{ fontSize: 'min(500px, 70vw)', margin: 'auto' }} />
-            <Button variant="outlined" disabled>Login</Button>
+            <Button variant="outlined" onClick={() => dialog.open("account")}>Login</Button>
             <Button variant="outlined" onClick={() => dialog.open("browser")}>Use device storage</Button>
             <Button variant="outlined" onClick={() => dialog.open("demo")} >Start Demo</Button>
           </Box>
         </Container>
       }
-      dialogs={() => (
-        <>
-          <ConfirmDialog
-            open={dialog.isOpen}
-            onCancel={dialog.close}
-            onConfirm={() => onDialogConfirm(DataSource[dialog.data])}
-            titleText={DataSource[dialog.data]?.name}
-            confirmText="Got it"
-          >
-            {DataSource[dialog.data]?.explanation}
-          </ConfirmDialog>
-        </>
-      )}
+      dialogs={() => LoginDialog ? <LoginDialog dialog={dialog} onDialogConfirm={onDialogConfirm} /> : null}
     />
   );
 }

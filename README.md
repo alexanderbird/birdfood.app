@@ -5,6 +5,26 @@ https://birdfood.app
 A family grocery list app: plan like you're using a grocery delivery app; do the
 shopping yourself.
 
+## Logging In
+Currently, you must provide an AWS access key and secret key to log in. They
+must resolve to an AWS role with access to read/write the BirdFood database in
+ca-central-1. 
+
+Username: `household|AWS_ACCESS_KEY_ID`
+Password: `AWS_SECRET_ACCESS_KEY`
+
+Choose any household ID -- all your entries are scoped to that household. The
+access role should be scoped to only access ddb entries with the household as
+the partition key. Substitute your AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY.
+Note that the household and the AWS_ACCESS_KEY_ID are separated by a pipe
+character (`|`).
+
+The credentials are stored in the Browser local storage until you log out. It's
+your job to make sure those credentials are appropriate to store in a browser's
+local storage:
+ 1. the AWS account contains only BirdFood data, and
+ 2. the role can only access the `BirdFoodItems` ddb table for its household
+
 ## Developer Notes
 ### Testing and Linting
 

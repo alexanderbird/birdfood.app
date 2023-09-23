@@ -13,18 +13,17 @@ import { Shop, ShoppingHistory, StartShopping, ShoppingRouter } from './pages/Sh
 import { NotFound } from './pages/_404.jsx';
 import { Core } from '../../core';
 
-function coreFactory(dataSource) {
-  const dataFactory = dataSource?.factory;
-  if (!dataFactory) {
-    return false;
+function coreFactory(dataFactory) {
+  if (dataFactory) {
+    return new Core(dataFactory());
   }
-  return new Core(dataFactory());
+  return false;
 }
 
 export function Main() {
   const location = useLocation();
   const [dataSource, setDataSource] = useDataSource();
-  const core = coreFactory(dataSource);
+  const core = coreFactory(dataSource.factory);
   if (!core && location.url !== "/") {
     location.route("/");
   } else if (core && location.url === "/") {

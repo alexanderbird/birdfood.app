@@ -9,8 +9,8 @@ import {
 } from "@aws-sdk/client-dynamodb";
 
 export class DynamoDbData {
-  constructor({ household }) {
-    this._client = new DynamoDBClient();
+  constructor({ household, ...clientConfig }) {
+    this._client = new DynamoDBClient(clientConfig);
     this._tableName = 'BirdFoodItems';
     this._household = household;
   }
