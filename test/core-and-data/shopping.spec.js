@@ -38,6 +38,7 @@ describe('core shopping APIs', () => {
       const boughtItem = await core.buyItem(shoppingEvent.Id, { ItemId: itemId, ActualUnitPrice: 2.21, Quantity: 4 });
       expect(boughtItem).toEqual({
         Id: 'sei#' + shoppingEvent.Id + "#" + itemId,
+        PurchaseHistoryId: 'ph#' + itemId + "#" + shoppingEvent.Id,
         ItemId: itemId,
         ActualUnitPrice: 2.21,
         BoughtQuantity: 4
@@ -74,6 +75,7 @@ describe('core shopping APIs', () => {
       const boughtItem = await core.buyItem(shoppingEvent.Id, { ItemId: itemId, ActualUnitPrice: 2.21, Quantity: 4 });
       expect(boughtItem).toEqual({
         Id: 'sei#' + shoppingEvent.Id + "#" + itemId,
+        PurchaseHistoryId: 'ph#' + itemId + "#" + shoppingEvent.Id,
         ItemId: itemId,
         ActualUnitPrice: 2.21,
         BoughtQuantity: 4

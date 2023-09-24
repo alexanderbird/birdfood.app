@@ -36,6 +36,7 @@ export class Core {
     }
     const boughtItem = {
       Id: `sei#${shoppingEventId}#${itemId}`,
+      PurchaseHistoryId: `ph#${itemId}#${shoppingEventId}`,
       ...attributes,
       BoughtQuantity: Number(attributes.BoughtQuantity || attributes.Quantity),
       Quantity: undefined,
