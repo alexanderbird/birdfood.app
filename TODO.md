@@ -32,8 +32,6 @@
 - up next
   - autocapitalize the input?
   - make it possible to archive items (hide them from planning)
-  - show total (unit x quantity) in planning and shopping so the number is
-    meaningful for small items with high quantity
 - scaling
   - handle ddb pagination and batching (i.e. lists longer than 100 items) -- or
     at least prevent creating more than 100 items

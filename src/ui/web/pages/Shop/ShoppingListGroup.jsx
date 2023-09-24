@@ -1,4 +1,3 @@
-import { useState } from 'preact/hooks';
 import List from '@mui/material/List';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -18,24 +17,21 @@ import * as colors from '@mui/material/colors';
 
 import { CurrencyTextField } from '../../components/CurrencyTextField';
 import { Currency } from '../../components/Currency';
-import { useOutsideClickAlerter } from '../../hooks/useOutsideClickAlerter';
 import { ItemType, ItemTypeIcon } from '../../components/ItemTypeIcon';
 
-export const ShoppingListGroup = ({ type, items, editable, updateItem, ...props }) => {
-  const ref = useOutsideClickAlerter(() => setSelectedItem(false));
-  const [selectedItem, setSelectedItem] = useState(false);
+export const ShoppingListGroup = ({ type, items, editable, updateItem, selectedItem, onSelectionChange, ...props }) => {
   if (!items) {
     return null;
   }
   const handleItemClick = item => {
-    setSelectedItem(item.Id);
+    onSelectionChange(item.Id);
     if (item.BoughtQuantity <= 0) {
       updateItem({ ItemId: item.Id, BoughtQuantity: item.RequiredQuantity });
     }
   };
   const isSelected = item => editable && item.Id === selectedItem;
   return (
-    <Box {...props} display="flex" flexDirection="column" ref={ref}>
+    <Box {...props} display="flex" flexDirection="column">
       <Typography><ItemTypeIcon type={type} /> {ItemType[type].label}</Typography>
       <List>
         { items.sort((lhs, rhs) => lhs.Name < rhs.Name ? -1 : 1).map(item => (
@@ -87,7 +83,7 @@ const ListItemContent = ({ item, selected, showRequiredAmount, updateItem, onCli
         >
           <AccordionSummary>
             <Typography variant="inherit" component="span" sx={{ color: colors.grey[700] }}>
-              <Currency>{item.ActualUnitPrice || item.UnitPriceEstimate}</Currency> each
+              <Currency>{(item.ActualUnitPrice || item.UnitPriceEstimate) * item.BoughtQuantity}</Currency>
             </Typography>
           </AccordionSummary>
           <AccordionDetails>

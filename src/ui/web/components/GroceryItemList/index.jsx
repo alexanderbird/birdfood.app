@@ -85,7 +85,7 @@ export const GroceryItemList = ({
                   sx={{ margin: -1, color: 'inherit', display: 'flex', justifyContent: 'flex-start', alignItems: 'start' }}
                 >
                   { item.value.UnitPriceEstimate ? null : <WarningIcon mr={1} /> }
-                  <Currency>{item.value.UnitPriceEstimate}</Currency>
+                  <Currency>{item.value.UnitPriceEstimate * getQuantityForItem(item.value)}</Currency>
                 </Button>
               </Typography>
               <ButtonGroup sx={{ flexGrow: 1, zIndex: 10, marginLeft: 'auto', justifyContent: 'flex-end' }}>

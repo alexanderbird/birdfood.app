@@ -25,6 +25,7 @@ export function Shop({ core, shoppingEventId }) {
   const location = useLocation();
   const [totalSpent, setTotalSpent] = useState();
   const [filterMode, FilterModeToggle] = useFilterModeToggle();
+  const [selectedItem, setSelectedItem] = useState(false);
   const getShoppingEvent = async () => {
     try {
       const [description, snapshot] = await Promise.all([
@@ -88,7 +89,9 @@ export function Shop({ core, shoppingEventId }) {
     return grouped;
   }, {}));
 
-  const itemFilter = historical ? FilterMode.ONLY_COMPLETE.filterFunction : filterMode.filterFunction;
+  const itemFilter = historical
+    ? FilterMode.ONLY_COMPLETE.filterFunction
+    : x => x.Id === selectedItem || filterMode.filterFunction(x);
 
   return (
     <Page
@@ -110,6 +113,8 @@ export function Shop({ core, shoppingEventId }) {
                   <ShoppingListGroup
                     type={itemGroup.type}
                     items={items}
+                    selectedItem={selectedItem}
+                    onSelectionChange={setSelectedItem}
                     editable={!historical}
                     updateItem={updateItem}
                     sx={{ mt: 2 }}
