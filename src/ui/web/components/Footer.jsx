@@ -30,7 +30,7 @@ export function Footer({ core }) {
     return () => {
       core.offShoppingListUpdate("components.Footer");
     };
-  }, []);
+  }, [core]);
   return (
     <BottomNavigation showLabels={true} value={`/${  url.split(/[/?]/)[1]}`} sx={{ paddingTop: 5, paddingBottom: 4 }}>
       <BottomNavigationAction {...actionProps({ href:"/schedule", label: "Schedule", IconComponent: EventRepeatIcon })} />
