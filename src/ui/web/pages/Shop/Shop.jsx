@@ -10,6 +10,7 @@ import ListItem from '@mui/material/ListItem';
 import { ShoppingEventCache } from '../../../../core/ShoppingEventCache';
 import { CurrencyTextField } from '../../components/CurrencyTextField';
 import { Header } from '../../components/Header.jsx';
+import { FilterMode, useFilterModeToggle } from '../../components/FilterMode.jsx';
 import { useMutableAsyncResource } from '../../hooks/useAsyncResource';
 import { Page } from '../../components/Page';
 import { ShoppingListGroup } from './ShoppingListGroup';
@@ -23,6 +24,7 @@ function updateTheFooterBadges(core) {
 export function Shop({ core, shoppingEventId }) {
   const location = useLocation();
   const [totalSpent, setTotalSpent] = useState();
+  const [filterMode, FilterModeToggle] = useFilterModeToggle();
   const getShoppingEvent = async () => {
     try {
       const [description, snapshot] = await Promise.all([
@@ -86,6 +88,8 @@ export function Shop({ core, shoppingEventId }) {
     return grouped;
   }, {}));
 
+  const itemFilter = historical ? FilterMode.ONLY_COMPLETE.filterFunction : filterMode.filterFunction;
+
   return (
     <Page
       isLoading={!shoppingEvent}
@@ -97,18 +101,22 @@ export function Shop({ core, shoppingEventId }) {
       }
       body={() =>
         <Container>
+          { historical ? null : <FilterModeToggle /> }
           <List sx={{ mt: -2 }}>
-            { groupedList.map(itemGroup => (
-              <ListItem divider key={itemGroup.type}>
-                <ShoppingListGroup
-                  type={itemGroup.type}
-                  items={itemGroup.items}
-                  editable={!historical}
-                  updateItem={updateItem}
-                  sx={{ mt: 2 }}
-                />
-              </ListItem>
-            )) }
+            { groupedList.map(itemGroup => {
+              const items = itemGroup.items.filter(itemFilter);
+              return !items.length ? null : (
+                <ListItem divider key={itemGroup.type}>
+                  <ShoppingListGroup
+                    type={itemGroup.type}
+                    items={items}
+                    editable={!historical}
+                    updateItem={updateItem}
+                    sx={{ mt: 2 }}
+                  />
+                </ListItem>
+              );
+            }) }
             { historical ? null : (<>
               <ListItem sx={{ mt: 1 }}>
                 <Box display="flex" flexDirection="row" mt={3} mb={4}>
