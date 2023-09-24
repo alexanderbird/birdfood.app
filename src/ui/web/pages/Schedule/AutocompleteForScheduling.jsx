@@ -14,7 +14,9 @@ export const AutocompleteForScheduling = ({ core, items, onItemsModified }) => {
   };
 
   return (
-    <GroceryItemInput items={items} onSelect={addItem} onCreate={createItem} inputLabel="Add recurring item" />
+    <GroceryItemInput items={items} onSelect={addItem} onCreate={createItem} inputLabel="Add recurring item"
+      deEmphasizeItem={x => x.RecurringQuantity > 0}
+    />
   );
 };
 
