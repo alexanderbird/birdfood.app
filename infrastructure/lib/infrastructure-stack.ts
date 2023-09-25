@@ -18,5 +18,13 @@ export class InfrastructureStack extends cdk.Stack {
       },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
     });
+    table.addLocalSecondaryIndex({
+      indexName: 'ItemPurchaseHistory',
+      sortKey: {
+        name: 'PurchaseHistoryId',
+        type: dynamodb.AttributeType.STRING
+      },
+      projectionType: dynamodb.ProjectionType.ALL,
+    });
   }
 }

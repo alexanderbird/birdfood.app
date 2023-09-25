@@ -184,6 +184,19 @@ export class DynamoDbData {
     }
   }
 
+  async listPurchaseHistoryItems(prefix) {
+    const input = {
+      TableName: this._tableName,
+      KeyConditionExpression: "Household = :household AND begins_with(PurchaseHistoryId, :prefix)",
+      IndexName: "ItemPurchaseHistory",
+      ExpressionAttributeValues: {
+        ":household": { S: this._household },
+        ":prefix": { S: prefix },
+      },
+    };
+    const response = await this._client.send(new QueryCommand(input));
+    return response.Items.map(x => this._fromDdbToObject(x));
+  }
   async listItems(prefix) {
     const input = {
       TableName: this._tableName,

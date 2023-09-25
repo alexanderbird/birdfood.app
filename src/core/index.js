@@ -34,12 +34,15 @@ export class Core {
     if (!Number.isInteger(Number(attributes.BoughtQuantity || attributes.Quantity))) {
       throw new Error("Required attribute 'Quantity' is missing or is not an integer");
     }
+    const { StartedAt: Date, Store } = await this.data.getItem(shoppingEventId);
     const boughtItem = {
       Id: `sei#${shoppingEventId}#${itemId}`,
       PurchaseHistoryId: `ph#${itemId}#${shoppingEventId}`,
       ...attributes,
       BoughtQuantity: Number(attributes.BoughtQuantity || attributes.Quantity),
       Quantity: undefined,
+      Date,
+      Store,
     };
     await this.data.createOrUpdateItem(boughtItem);
     return boughtItem;
@@ -183,6 +186,13 @@ export class Core {
 
   onShoppingListUpdate(key, consumeShoppingList) {
     this.shoppingListConsumers[key] = { key, consumeShoppingList };
+  }
+
+  async listItemPurchaseHistory(itemId) {
+    if (!itemId) {
+      throw new Error("Missing required parameter itemId");
+    }
+    return this.data.listPurchaseHistoryItems(`ph#${itemId}#`);
   }
 
   async addRecurringItems() {

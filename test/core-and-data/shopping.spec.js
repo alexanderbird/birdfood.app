@@ -33,12 +33,15 @@ describe('core shopping APIs', () => {
 
   describe('completing items during a shopping event', () => {
     it("can complete items for a shopping event", async () => {
-      const shoppingEvent = await core.startShopping();
+      chronometer.getCurrentTimestamp.mockReturnValue("1999-12-31T18:45:26.012Z");
+      const shoppingEvent = await core.startShopping({ Store: 'IGA' });
       const itemId = "i-111111111111"
       const boughtItem = await core.buyItem(shoppingEvent.Id, { ItemId: itemId, ActualUnitPrice: 2.21, Quantity: 4 });
       expect(boughtItem).toEqual({
         Id: 'sei#' + shoppingEvent.Id + "#" + itemId,
         PurchaseHistoryId: 'ph#' + itemId + "#" + shoppingEvent.Id,
+        Store: 'IGA',
+        Date: "1999-12-31T18:45:26.012Z",
         ItemId: itemId,
         ActualUnitPrice: 2.21,
         BoughtQuantity: 4
@@ -69,13 +72,16 @@ describe('core shopping APIs', () => {
     });
 
     it("can update the amounts for a completed item", async () => {
-      const shoppingEvent = await core.startShopping();
+      chronometer.getCurrentTimestamp.mockReturnValue("1999-12-31T18:45:26.333Z");
+      const shoppingEvent = await core.startShopping({ Store: 'Superstore' });
       const itemId = "i-111111111111"
       await core.buyItem(shoppingEvent.Id, { ItemId: itemId, ActualUnitPrice: 0.02, Quantity: 1 });
       const boughtItem = await core.buyItem(shoppingEvent.Id, { ItemId: itemId, ActualUnitPrice: 2.21, Quantity: 4 });
       expect(boughtItem).toEqual({
         Id: 'sei#' + shoppingEvent.Id + "#" + itemId,
         PurchaseHistoryId: 'ph#' + itemId + "#" + shoppingEvent.Id,
+        Store: "Superstore",
+        Date: "1999-12-31T18:45:26.333Z",
         ItemId: itemId,
         ActualUnitPrice: 2.21,
         BoughtQuantity: 4

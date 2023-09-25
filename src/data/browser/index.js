@@ -68,6 +68,17 @@ export class BrowserStorageData {
     return Promise.resolve(items);
   }
 
+  listPurchaseHistoryItems(prefix) {
+    const items = [];
+    for (let i = 0; i < this._localStorage.length; i++){
+      const item = this._tryRead(this._localStorage.key(i));
+      if (item.PurchaseHistoryId?.startsWith(prefix)) {
+        items.push(item);
+      }
+    }
+    return Promise.resolve(items);
+  }
+
   _tryRead(key) {
     const value = this._localStorage.getItem(key);
     if (!value) {

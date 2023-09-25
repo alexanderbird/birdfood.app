@@ -71,6 +71,10 @@ export class EmptyStaticData {
     return Promise.resolve(this.items.filter(x => x.Id.startsWith(prefix)));
   }
 
+  listPurchaseHistoryItems(prefix) {
+    return Promise.resolve(this.items.filter(x => x.PurchaseHistoryId?.startsWith(prefix)));
+  }
+
   listItemsBetween(startInclusive, endInclusive) {
     return this.items
       .filter(x => x.Id >= startInclusive && x.Id <= endInclusive);
