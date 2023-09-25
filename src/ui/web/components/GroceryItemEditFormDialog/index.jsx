@@ -1,17 +1,20 @@
 import { useState, useEffect } from 'preact/hooks';
-import MenuItem from '@mui/material/MenuItem';
+import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import InputAdornment from '@mui/material/InputAdornment';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import EventRepeatIcon from '@mui/icons-material/EventRepeat';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import DialogTitle from '@mui/material/DialogTitle';
+import CloseIcon from '@mui/icons-material/Close';
+import Dialog from '@mui/material/Dialog';
+import Typography from '@mui/material/Typography';
 import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
+import EventRepeatIcon from '@mui/icons-material/EventRepeat';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import Dialog from '@mui/material/Dialog';
+import MenuItem from '@mui/material/MenuItem';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import TextField from '@mui/material/TextField';
+import Toolbar from '@mui/material/Toolbar';
 
 import { CurrencyTextField } from '../CurrencyTextField';
 import { ItemType, ItemTypeIcon } from '../../components/ItemTypeIcon';
@@ -45,7 +48,19 @@ export const GroceryItemEditFormDialog = ({ open, onCancel, onSave, initialValue
   }, [initialValue]);
   return (
     <Dialog fullScreen open={open} onClose={onCancel}>
-      <DialogTitle>Edit Grocery Item</DialogTitle>
+      <AppBar sx={{ position: 'relative' }}>
+        <Toolbar>
+          <IconButton edge="start" color="inherit" onClick={onCancel} aria-label="close">
+            <CloseIcon />
+          </IconButton>
+          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+            Edit Grocery Item
+          </Typography>
+          <Button autoFocus color="inherit" onClick={() => onSave(value)}>
+            Save
+          </Button>
+        </Toolbar>
+      </AppBar>
       <DialogContent dividers>
         <Box
           component="form"
@@ -129,10 +144,6 @@ export const GroceryItemEditFormDialog = ({ open, onCancel, onSave, initialValue
           </Box>
         </Box>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onCancel}>Cancel</Button>
-        <Button variant="primary" onClick={() => onSave(value)}>Save</Button>
-      </DialogActions>
     </Dialog>
   );
 };
