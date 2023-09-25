@@ -3,15 +3,15 @@ import { useLocation } from 'preact-iso';
 import Badge from '@mui/material/Badge';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
-import EventRepeatIcon from '@mui/icons-material/EventRepeat';
-import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import ChecklistIcon from '@mui/icons-material/Checklist';
 import HistoryIcon from '@mui/icons-material/History';
+import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 
-const actionProps = ({ href, label, badge, badgeColor, IconComponent }) => ({
+const actionProps = ({ value, href, label, badge, badgeColor, IconComponent }) => ({
   component: 'a',
   href,
-  label,
+  label: value === href ? label : '',
   value: href,
   icon: <Badge color={badgeColor} badgeContent={badge}><IconComponent /></Badge>
 });
@@ -31,12 +31,13 @@ export function Footer({ core }) {
       core.offShoppingListUpdate("components.Footer");
     };
   }, [core]);
+  const value = `/${  url.split(/[/?]/)[1]}`;
   return (
-    <BottomNavigation showLabels={true} value={`/${  url.split(/[/?]/)[1]}`} sx={{ paddingTop: 5, paddingBottom: 4 }}>
-      <BottomNavigationAction {...actionProps({ href:"/schedule", label: "Schedule", IconComponent: EventRepeatIcon })} />
-      <BottomNavigationAction {...actionProps({ href:"/plan", label: "Plan", badge: badgeCounts.cart, badgeColor: "secondary", IconComponent: FormatListBulletedIcon })} />
-      <BottomNavigationAction {...actionProps({ href:"/shop", label: "Shop", IconComponent: ChecklistIcon })} />
-      <BottomNavigationAction {...actionProps({ href:"/history", label: "History", IconComponent: HistoryIcon })} />
+    <BottomNavigation showLabels={true} value={value} sx={{ paddingTop: 5, paddingBottom: 4 }}>
+      <BottomNavigationAction {...actionProps({ value, href:"/catalog", label: "Catalog", IconComponent: ManageSearchIcon })} />
+      <BottomNavigationAction {...actionProps({ value, href:"/plan", label: "Plan", badge: badgeCounts.cart, badgeColor: "secondary", IconComponent: ShoppingCartIcon })} />
+      <BottomNavigationAction {...actionProps({ value, href:"/shop", label: "Shop", IconComponent: ChecklistIcon })} />
+      <BottomNavigationAction {...actionProps({ value, href:"/history", label: "History", IconComponent: HistoryIcon })} />
     </BottomNavigation>
   );
 }

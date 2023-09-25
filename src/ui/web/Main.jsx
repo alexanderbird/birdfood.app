@@ -8,6 +8,7 @@ import { useDataSource } from './hooks/useDataSource.js';
 import { Footer } from './components/Footer.jsx';
 import { Schedule } from './pages/Schedule/index.jsx';
 import { Plan } from './pages/Plan/index.jsx';
+import { Catalog } from './pages/Catalog/index.jsx';
 import { Landing } from './pages/Landing/index.jsx';
 import { Shop, ShoppingHistory, StartShopping, ShoppingRouter } from './pages/Shop/index.jsx';
 import { NotFound } from './pages/_404.jsx';
@@ -37,6 +38,7 @@ export function Main() {
           <Router>
             <Schedule path="/schedule" core={core} />
             <Plan path="/plan" core={core} />
+            <Catalog path="/catalog" core={core} />
             <StartShopping path="/shop/start" core={core} />
             <Shop path="/shop/:shoppingEventId" core={core} />
             <Shop path="/history/:shoppingEventId" core={core} />

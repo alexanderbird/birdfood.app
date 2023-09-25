@@ -1,3 +1,4 @@
+import { useLocation } from 'preact-iso';
 import { useState, useRef } from 'preact/hooks';
 
 import IconButton from '@mui/material/IconButton';
@@ -9,11 +10,13 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import LogoutIcon from '@mui/icons-material/Logout';
 import SdStorageIcon from '@mui/icons-material/SdStorage';
+import EventRepeatIcon from '@mui/icons-material/EventRepeat';
 
 import { useDataSource } from '../hooks/useDataSource.js';
 import { BirdFoodIcon } from './icons/BirdFoodIcon';
 
 export const AppMenu = () => {
+  const location = useLocation();
   const [dataSource, setDataSource] = useDataSource();
   const anchorRef = useRef();
   const [open, setOpen] = useState(false);
@@ -51,6 +54,13 @@ export const AppMenu = () => {
               <SdStorageIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>Storage: { dataSource?.name }</ListItemText>
+          </MenuItem>
+          <Divider />
+          <MenuItem onClick={() => location.route('/schedule')}>
+            <ListItemIcon>
+              <EventRepeatIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Schedule Recurring Items</ListItemText>
           </MenuItem>
           <Divider />
           <MenuItem onClick={onLogout}>
