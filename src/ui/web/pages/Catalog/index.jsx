@@ -1,9 +1,14 @@
 import { Fragment } from 'preact';
 
-import LabelIcon from '@mui/icons-material/Label';
+import InsightsIcon from '@mui/icons-material/Insights';
+import EventRepeatIcon from '@mui/icons-material/EventRepeat';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import Badge from '@mui/material/Badge';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
@@ -45,6 +50,9 @@ export function Catalog({ core }) {
                   display: 'flex',
                   alignItems: 'center',
                   color: 'black',
+                  borderTopWidth: 1,
+                  borderTopStyle: 'solid',
+                  borderTopColor: colors.grey[500],
                   backgroundColor: colors.grey[50]
                 }}>
                 <ListItemAvatar>
@@ -55,9 +63,33 @@ export function Catalog({ core }) {
                 <ListItemText primary={ ItemType[group.type].label } />
               </ListSubheader>
               { group.items.sort((lhs, rhs) => lhs.Name < rhs.Name ? -1 : 1).map(item => (
-                <ListItem key={item.Id} disableGutters>
-                  <LabelIcon sx={{ mr: 1, color: colors.grey[200] }} />
-                  <ListItemText primary={ item.Name } />
+                <ListItem
+                  key={item.Id}
+                  disableGutters
+                  secondaryAction={<>
+                    <IconButton aria-label="Scheduled Quantity">
+                      <Badge badgeContent={item.RecurringQuantity}>
+                        <EventRepeatIcon />
+                      </Badge>
+                    </IconButton>
+                    <IconButton aria-label="Cart">
+                      <Badge badgeContent={item.PlannedQuantity}>
+                        <ShoppingCartIcon />
+                      </Badge>
+                    </IconButton>
+                    <IconButton aria-label="Purchase History" edge="end">
+                      <InsightsIcon />
+                    </IconButton>
+                  </>}
+                >
+                  <ListItemText primary={
+                    <Button
+                      variant="text"
+                      sx={{ textTransform: 'unset', color: 'inherit' }}
+                    >
+                      {item.Name }
+                    </Button>
+                  } />
                 </ListItem>
               )) }
             </Fragment>)) }
