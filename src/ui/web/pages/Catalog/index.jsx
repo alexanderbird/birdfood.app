@@ -4,13 +4,13 @@ import InsightsIcon from '@mui/icons-material/Insights';
 import EventRepeatIcon from '@mui/icons-material/EventRepeat';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import Badge from '@mui/material/Badge';
+import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
@@ -38,7 +38,7 @@ export function Catalog({ core }) {
       }
       body={() =>
         <Container sx={{ pb: '60vh' }}>
-          <List sx={{ mt: -2 }}>
+          <List sx={{ mt: -2 }} dense>
             { groupedCatalog.map(group => (<Fragment key={group.type}>
               <ListSubheader
                 sx={{
@@ -65,31 +65,37 @@ export function Catalog({ core }) {
               { group.items.sort((lhs, rhs) => lhs.Name < rhs.Name ? -1 : 1).map(item => (
                 <ListItem
                   key={item.Id}
-                  disableGutters
-                  secondaryAction={<>
-                    <IconButton aria-label="Scheduled Quantity">
-                      <Badge badgeContent={item.RecurringQuantity}>
-                        <EventRepeatIcon />
-                      </Badge>
-                    </IconButton>
-                    <IconButton aria-label="Cart">
-                      <Badge badgeContent={item.PlannedQuantity}>
-                        <ShoppingCartIcon />
-                      </Badge>
-                    </IconButton>
-                    <IconButton aria-label="Purchase History" edge="end">
+                  disableGutters={true}
+                  sx={{ paddingRight: 0 }}
+                  secondaryAction={
+                    <IconButton
+                      aria-label="Purchase History"
+                      edge="end"
+                      color="primary"
+                      onClick={() => alert(`Insights for ${  item.Name}`)}
+                    >
                       <InsightsIcon />
                     </IconButton>
-                  </>}
+                  }
                 >
-                  <ListItemText primary={
-                    <Button
-                      variant="text"
-                      sx={{ textTransform: 'unset', color: 'inherit' }}
-                    >
-                      {item.Name }
-                    </Button>
-                  } />
+                  <ListItemButton
+                    sx={{ '&.MuiListItemButton-gutters': { paddingRight: 3 }}}
+                    onClick={() => alert(`Edit ${  item.Name}`)}
+                  >
+                    <ListItemText
+                      primary={<>
+                        <Box sx={{ display: 'flex', flexDirection: 'row', paddingRight: 0 }}>
+                          <Typography sx={{ marginRight: 'auto', flex: 9 }}>{item.Name}</Typography>
+                          <Typography color="gray" sx={{ textAlign: 'center', flexGrow: 1, flexShrink: 0 }}>
+                            <Typography component="span" sx={{ fontWeight: 'bold' }}>{item.RecurringQuantity}</Typography>
+                            <EventRepeatIcon fontSize="small" sx={{ color: "#CCC" }} />
+                            <Typography component="span" sx={{ fontWeight: 'bold', ml: 1 }}>{item.PlannedQuantity}</Typography>
+                            <ShoppingCartIcon fontSize="small" sx={{ color: "#CCC" }} />
+                          </Typography>
+                        </Box>
+                      </>}
+                    />
+                  </ListItemButton>
                 </ListItem>
               )) }
             </Fragment>)) }
