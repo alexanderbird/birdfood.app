@@ -13,10 +13,11 @@ import { Landing } from './pages/Landing/index.jsx';
 import { Shop, ShoppingHistory, StartShopping, ShoppingRouter } from './pages/Shop/index.jsx';
 import { NotFound } from './pages/_404.jsx';
 import { Core } from '../../core';
+import { withErrorReporting } from '../../core/proxy';
 
 function coreFactory(dataFactory) {
   if (dataFactory) {
-    return new Core(dataFactory());
+    return withErrorReporting(new Core(dataFactory()), { onError: alert });
   }
   return false;
 }
