@@ -16,8 +16,8 @@ import Typography from '@mui/material/Typography';
 import * as colors from '@mui/material/colors';
 
 import { CurrencyTextField } from '../../components/CurrencyTextField';
-import { Currency } from '../../components/Currency';
 import { ItemType, ItemTypeIcon } from '../../components/ItemTypeIcon';
+import { ItemPriceSummary } from './ItemPriceSummary';
 
 export const ShoppingListGroup = ({ type, items, editable, updateItem, selectedItem, onSelectionChange, ...props }) => {
   if (!items) {
@@ -83,7 +83,7 @@ const ListItemContent = ({ item, selected, showRequiredAmount, updateItem, onCli
         >
           <AccordionSummary>
             <Typography variant="inherit" component="span" sx={{ color: colors.grey[700] }}>
-              <Currency>{(item.ActualUnitPrice || item.UnitPriceEstimate) * item.BoughtQuantity}</Currency>
+              <ItemPriceSummary item={item} />
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -107,6 +107,7 @@ const ListItemContent = ({ item, selected, showRequiredAmount, updateItem, onCli
                 size="small"
                 label="Unit Price"
                 value={item.ActualUnitPrice}
+                placeholder={item.UnitPriceEstimate?.toString()}
                 setValue={ActualUnitPrice => updateItem({ ItemId: item.Id, ActualUnitPrice, BoughtQuantity: item.BoughtQuantity })}
               />
             </Box>
