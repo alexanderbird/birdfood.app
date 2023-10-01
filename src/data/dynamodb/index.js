@@ -7,6 +7,7 @@ import {
   BatchGetItemCommand,
   BatchWriteItemCommand,
 } from "@aws-sdk/client-dynamodb";
+import { dataTypeOf } from '../schema';
 
 export class DynamoDbData {
   constructor({ household, ...clientConfig }) {
@@ -26,8 +27,7 @@ export class DynamoDbData {
         deleteStatements.push(`#${key}`);
       } else {
         setStatements.push(`#${key}=:${key}`);
-        const type = typeof value === 'number' ? 'N' : 'S';
-        attributeValues[`:${key}`] = { [type]: value.toString() };
+        attributeValues[`:${key}`] = dataTypeOf(key).toDynamoDb(value);
       }
     });
     const UpdateExpression =
@@ -85,7 +85,7 @@ export class DynamoDbData {
     const updated = item => {
       const updates = updatesById[item.Id.S];
       return Object.fromEntries(Object.entries(item)
-        .concat(updates.map(({ attributeName, value }) => [attributeName, this._toDdbValue(value)])));
+        .concat(updates.map(({ attributeName, value }) => [attributeName, dataTypeOf(attributeName).toDynamoDb(value)])));
     };
 
     const input = {
@@ -101,11 +101,6 @@ export class DynamoDbData {
     await this._client.send(command);
   }
 
-  _toDdbValue(value) {
-    const type = typeof value === 'number' ? 'N' : 'S';
-    return { [type]: value.toString() };
-  }
-
   async createOrUpdateItem({ Id, ...attributes }) {
     const attributeUpdates = Object.fromEntries(
       Object.entries(attributes)
@@ -113,7 +108,7 @@ export class DynamoDbData {
           if (typeof value === 'undefined') {
             return [key, { Action: "DELETE" }];
           }
-          return [key, { Value: this._toDdbValue(value), Action: "PUT" }];
+          return [key, { Value: dataTypeOf(key).toDynamoDb(value), Action: "PUT" }];
         }));
     const input = {
       TableName: this._tableName,
@@ -135,8 +130,7 @@ export class DynamoDbData {
     const item = Object.fromEntries(
       Object.entries({ Household: this._household, ...attributes })
         .map(([key, value]) => {
-          const type = typeof value === 'number' ? 'N' : 'S';
-          return [key, { [type]: value.toString() }];
+          return [key, dataTypeOf(key).toDynamoDb(value)];
         }));
     const input = {
       TableName: this._tableName,

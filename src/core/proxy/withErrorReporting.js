@@ -9,9 +9,9 @@ export function withErrorReporting(core, { onError }) {
               setTimeout(() => onError(e));
               return Promise.reject(e);
             });
-          } else {
-            return result;
-          }
+          } 
+          return result;
+          
         } catch(e) {
           setTimeout(() => onError(e));
           throw e;

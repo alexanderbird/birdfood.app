@@ -1,4 +1,5 @@
 import staticItems from './items.json';
+import { correctValueTypesFor } from '../schema';
 
 export class EmptyStaticData {
   constructor(items) {
@@ -12,7 +13,7 @@ export class EmptyStaticData {
     }
     Object.assign(
       existing,
-      attributes
+      correctValueTypesFor(attributes)
     );
     return Promise.resolve();
   }
@@ -29,9 +30,9 @@ export class EmptyStaticData {
   createOrUpdateItem(attributes) {
     const existing = this.items.find(x => x.Id === attributes.Id);
     if (existing) {
-      Object.assign(existing, attributes);
+      Object.assign(existing, correctValueTypesFor(attributes));
     } else {
-      this.items.push(attributes);
+      this.items.push(correctValueTypesFor(attributes));
     }
     return Promise.resolve();
     
@@ -45,7 +46,7 @@ export class EmptyStaticData {
     if (existing) {
       return Promise.reject(`There is already an item with Id=${attributes.Id}`);
     }
-    this.items.push(attributes);
+    this.items.push(correctValueTypesFor(attributes));
     return Promise.resolve();
   }
 
