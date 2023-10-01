@@ -189,6 +189,7 @@ export class DynamoDbData {
       TableName: this._tableName,
       KeyConditionExpression: "Household = :household AND begins_with(PurchaseHistoryId, :prefix)",
       IndexName: "ItemPurchaseHistory",
+      Limit: 1000,
       ExpressionAttributeValues: {
         ":household": { S: this._household },
         ":prefix": { S: prefix },
@@ -201,6 +202,7 @@ export class DynamoDbData {
     const input = {
       TableName: this._tableName,
       KeyConditionExpression: "Household = :household AND begins_with(Id, :prefix)",
+      Limit: 1000,
       ExpressionAttributeValues: {
         ":household": { S: this._household },
         ":prefix": { S: prefix },
@@ -228,6 +230,7 @@ export class DynamoDbData {
     const input = {
       TableName: this._tableName,
       KeyConditionExpression: "Household = :household AND Id BETWEEN :startInclusive AND :endInclusive",
+      Limit: 1000,
       ExpressionAttributeValues: {
         ":household": { S: this._household },
         ":startInclusive": { S: startInclusive },
