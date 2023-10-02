@@ -71,7 +71,7 @@ export const GroceryItemList = ({
                     justifyContent: 'space-between',
                   }}
                 >
-                  <Typography sx={{ width: 'auto' }} >
+                  <Typography sx={{ width: 'auto', textAlign: 'left' }} >
                     {item.label}
                   </Typography>
                   <EditIcon fontSize="small" sx={{ color: colors.grey[700] }} />
