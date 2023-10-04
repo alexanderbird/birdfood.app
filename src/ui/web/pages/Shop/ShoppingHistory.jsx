@@ -25,7 +25,8 @@ function useRecentShoppingEventsGroupedMonthly(core) {
     const group = `${year}-${month}`;
     grouped[group] = grouped[group] || { group, date, total: 0, events: [] };
     grouped[group].events.push(event);
-    grouped[group].total += (event.TotalSpent || 0);
+    grouped[group].total += (Number(event.TotalSpent) || 0);
+    console.log({ group, totalSpent: event.TotalSpent });
     return grouped;
   }, {});
   return Object.values(groupedShoppingEvents).sort((lhs, rhs) => lhs.date < rhs.date ? 1 : -1);

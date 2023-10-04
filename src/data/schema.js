@@ -17,6 +17,7 @@ const NUMERIC_ATTRIBUTES = new Set([
   "UnitPriceEstimate",
   "ActualUnitPrice",
   "RecurringQuantity",
+  "TotalSpent",
   "EstimatedTotal"
 ]);
 
