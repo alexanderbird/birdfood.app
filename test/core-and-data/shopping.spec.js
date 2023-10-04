@@ -36,7 +36,7 @@ describe('core shopping APIs', () => {
       chronometer.getCurrentTimestamp.mockReturnValue("1999-12-31T18:45:26.012Z");
       const shoppingEvent = await core.startShopping({ Store: 'IGA' });
       const itemId = "i-111111111111"
-      const boughtItem = await core.buyItem(shoppingEvent.Id, { ItemId: itemId, ActualUnitPrice: 2.21, Quantity: 4 });
+      const boughtItem = await core.buyItem(shoppingEvent.Id, { ItemId: itemId, ActualUnitPrice: 2.21, BoughtQuantity: 4 });
       expect(boughtItem).toEqual({
         Id: 'sei#' + shoppingEvent.Id + "#" + itemId,
         PurchaseHistoryId: 'ph#' + itemId + "#" + shoppingEvent.Id,
@@ -75,8 +75,8 @@ describe('core shopping APIs', () => {
       chronometer.getCurrentTimestamp.mockReturnValue("1999-12-31T18:45:26.333Z");
       const shoppingEvent = await core.startShopping({ Store: 'Superstore' });
       const itemId = "i-111111111111"
-      await core.buyItem(shoppingEvent.Id, { ItemId: itemId, ActualUnitPrice: 0.02, Quantity: 1 });
-      const boughtItem = await core.buyItem(shoppingEvent.Id, { ItemId: itemId, ActualUnitPrice: 2.21, Quantity: 4 });
+      await core.buyItem(shoppingEvent.Id, { ItemId: itemId, ActualUnitPrice: 0.02, BoughtQuantity: 1 });
+      const boughtItem = await core.buyItem(shoppingEvent.Id, { ItemId: itemId, ActualUnitPrice: 2.21, BoughtQuantity: 4 });
       expect(boughtItem).toEqual({
         Id: 'sei#' + shoppingEvent.Id + "#" + itemId,
         PurchaseHistoryId: 'ph#' + itemId + "#" + shoppingEvent.Id,
@@ -105,8 +105,8 @@ describe('core shopping APIs', () => {
       const itemY = await core.createPlanItem({ Name: "Y", PlannedQuantity: 2 });
       const itemZ = await core.createPlanItem({ Name: "Z", PlannedQuantity: 9 });
       const { Id } = await core.startShopping();
-      await core.buyItem(Id, { ItemId: itemX.Id, Quantity: 3 });
-      await core.buyItem(Id, { ItemId: itemY.Id, Quantity: 4 });
+      await core.buyItem(Id, { ItemId: itemX.Id, BoughtQuantity: 3 });
+      await core.buyItem(Id, { ItemId: itemY.Id, BoughtQuantity: 4 });
       await core.stopShopping(Id);
       const { all } = await core.getShoppingPlan();
       const actual = all.sort(sortByName).map(({ Name, PlannedQuantity }) => ({ Name, PlannedQuantity }));
@@ -178,9 +178,9 @@ describe('core shopping APIs', () => {
         const { Id: idForBananas } = await core.createPlanItem({ Name: "Bananas (bunch)", PlannedQuantity: 1, UnitPriceEstimate: 2.01 });
         const { Id: idForCarrots } = await core.createPlanItem({ Name: "Carrots", PlannedQuantity: 3, UnitPriceEstimate: 1.00 });
         const { Id } = await core.startShopping();
-        await core.buyItem(Id, { ItemId: idForApples, Quantity: 2, ActualUnitPrice: 1.02 });
-        await core.buyItem(Id, { ItemId: idForCarrots, Quantity: 100, ActualUnitPrice: 2 });
-        await core.buyItem(Id, { ItemId: idForCarrots, Quantity: 1, ActualUnitPrice: 2 });
+        await core.buyItem(Id, { ItemId: idForApples, BoughtQuantity: 2, ActualUnitPrice: 1.02 });
+        await core.buyItem(Id, { ItemId: idForCarrots, BoughtQuantity: 100, ActualUnitPrice: 2 });
+        await core.buyItem(Id, { ItemId: idForCarrots, BoughtQuantity: 1, ActualUnitPrice: 2 });
         const { list } = await core.getShoppingEvent(Id, true);
         expect(list.sort(sortById)).toEqual([
           { Id: idForApples, Name: "Apples", RequiredQuantity: 2, BoughtQuantity: 2, UnitPriceEstimate: 0.60, ActualUnitPrice: 1.02, Type: "OTHER" },
@@ -194,8 +194,8 @@ describe('core shopping APIs', () => {
         const { Id: idForBananas } = await core.createPlanItem({ Name: "Bananas (bunch)", PlannedQuantity: 1, UnitPriceEstimate: 2.01 });
         const { Id: idForCarrots } = await core.createPlanItem({ Name: "Carrots", PlannedQuantity: 3, UnitPriceEstimate: 1.00, Type: "PRODUCE" });
         const { Id } = await core.startShopping();
-        await core.buyItem(Id, { ItemId: idForApples, Quantity: 2, ActualUnitPrice: 1.02 });
-        await core.buyItem(Id, { ItemId: idForCarrots, Quantity: 100, ActualUnitPrice: 2 });
+        await core.buyItem(Id, { ItemId: idForApples, BoughtQuantity: 2, ActualUnitPrice: 1.02 });
+        await core.buyItem(Id, { ItemId: idForCarrots, BoughtQuantity: 100, ActualUnitPrice: 2 });
         await core.stopShopping(Id);
         const { list } = await core.getShoppingEvent(Id, true);
         expect(list.sort(sortById)).toEqual([
@@ -207,7 +207,7 @@ describe('core shopping APIs', () => {
       it("still includes the item details even if it is not part of the plan", async () => {
         const { Id: idForApples } = await core.createPlanItem({ Name: "Apples", PlannedQuantity: 2, UnitPriceEstimate: 0.60, Type: "DELI" });
         const { Id } = await core.startShopping();
-        await core.buyItem(Id, { ItemId: idForApples, Quantity: 2, ActualUnitPrice: 1.02 });
+        await core.buyItem(Id, { ItemId: idForApples, BoughtQuantity: 2, ActualUnitPrice: 1.02 });
         await core.updateItem({ Id: idForApples, PlannedQuantity: 0 });
         const { list } = await core.getShoppingEvent(Id, true);
         expect(list).toEqual([
@@ -219,7 +219,7 @@ describe('core shopping APIs', () => {
         const { Id: idForApples } = await core.createPlanItem({ Name: "Apples", PlannedQuantity: 2, UnitPriceEstimate: 0.60 });
         const event1 = await core.startShopping();
         const event2 = await core.startShopping();
-        await core.buyItem(event2.Id, { ItemId: idForApples, Quantity: 2, ActualUnitPrice: 1.02 });
+        await core.buyItem(event2.Id, { ItemId: idForApples, BoughtQuantity: 2, ActualUnitPrice: 1.02 });
         const { list } = await core.getShoppingEvent(event1.Id, true);
         expect(list).toEqual([
           { Id: idForApples, Name: "Apples", RequiredQuantity: 2, BoughtQuantity: 0, UnitPriceEstimate: 0.60, Type: "OTHER" }

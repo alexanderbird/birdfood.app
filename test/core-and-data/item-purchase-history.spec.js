@@ -25,11 +25,11 @@ describe('item purchase history APIs', () => {
 
   it('returns the purchase history', async () => {
     const itemId = "i-111111111111"
-    await core.buyItem((await core.startShopping({ Store: 'Costco' })).Id, { ItemId: itemId, ActualUnitPrice: 2.21, Quantity: 4 });
-    await core.buyItem((await core.startShopping({ Store: 'Safeway' })).Id, { ItemId: itemId, ActualUnitPrice: 1.99, Quantity: 1 });
-    await core.buyItem((await core.startShopping({ Store: 'Safeway' })).Id, { ItemId: itemId, ActualUnitPrice: 3.06, Quantity: 2 });
-    await core.buyItem((await core.startShopping({ Store: 'Costco' })).Id, { ItemId: itemId, ActualUnitPrice: 2.00, Quantity: 8 });
-    await core.buyItem((await core.startShopping({ Store: 'Safeway' })).Id, { ItemId: itemId, ActualUnitPrice: 4.99, Quantity: 2 });
+    await core.buyItem((await core.startShopping({ Store: 'Costco' })).Id, { ItemId: itemId, ActualUnitPrice: 2.21, BoughtQuantity: 4 });
+    await core.buyItem((await core.startShopping({ Store: 'Safeway' })).Id, { ItemId: itemId, ActualUnitPrice: 1.99, BoughtQuantity: 1 });
+    await core.buyItem((await core.startShopping({ Store: 'Safeway' })).Id, { ItemId: itemId, ActualUnitPrice: 3.06, BoughtQuantity: 2 });
+    await core.buyItem((await core.startShopping({ Store: 'Costco' })).Id, { ItemId: itemId, ActualUnitPrice: 2.00, BoughtQuantity: 8 });
+    await core.buyItem((await core.startShopping({ Store: 'Safeway' })).Id, { ItemId: itemId, ActualUnitPrice: 4.99, BoughtQuantity: 2 });
     const history = await core.listItemPurchaseHistory(itemId);
     expect(history.sort(sortByDate).map(({ Date, ActualUnitPrice, BoughtQuantity, Store }) => ({ Date, ActualUnitPrice, BoughtQuantity, Store }))).toEqual([
       { Date: '0000-00-00T00:00:00.000Z', ActualUnitPrice: 2.21, BoughtQuantity: 4, Store: 'Costco' },
@@ -41,9 +41,9 @@ describe('item purchase history APIs', () => {
   });
 
   it('excludes history of other items', async () => {
-    await core.buyItem((await core.startShopping({ Store: 'Costco' })).Id, { ItemId: 'i-11', ActualUnitPrice: 2.21, Quantity: 4 });
-    await core.buyItem((await core.startShopping({ Store: 'Safeway' })).Id, { ItemId: 'i-22', ActualUnitPrice: 1.99, Quantity: 1 });
-    await core.buyItem((await core.startShopping({ Store: 'Safeway' })).Id, { ItemId: 'i-33', ActualUnitPrice: 3.06, Quantity: 2 });
+    await core.buyItem((await core.startShopping({ Store: 'Costco' })).Id, { ItemId: 'i-11', ActualUnitPrice: 2.21, BoughtQuantity: 4 });
+    await core.buyItem((await core.startShopping({ Store: 'Safeway' })).Id, { ItemId: 'i-22', ActualUnitPrice: 1.99, BoughtQuantity: 1 });
+    await core.buyItem((await core.startShopping({ Store: 'Safeway' })).Id, { ItemId: 'i-33', ActualUnitPrice: 3.06, BoughtQuantity: 2 });
     const history = await core.listItemPurchaseHistory('i-22');
     expect(history.map(({ Date, ActualUnitPrice, BoughtQuantity, Store }) => ({ Date, ActualUnitPrice, BoughtQuantity, Store }))).toEqual([
       { Date: '0000-00-00T00:00:00.001Z', ActualUnitPrice: 1.99, BoughtQuantity: 1, Store: 'Safeway' },

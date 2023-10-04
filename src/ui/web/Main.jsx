@@ -14,18 +14,20 @@ import { Shop, ShoppingHistory, StartShopping, ShoppingRouter } from './pages/Sh
 import { NotFound } from './pages/_404.jsx';
 import { Core } from '../../core';
 import { withErrorReporting } from '../../core/proxy';
+import { useErrorAlert } from './components/ErrorAlert';
 
-function coreFactory(dataFactory) {
+function coreFactory(dataFactory, onError) {
   if (dataFactory) {
-    return withErrorReporting(new Core(dataFactory()), { onError: alert });
+    return withErrorReporting(new Core(dataFactory()), { onError });
   }
   return false;
 }
 
 export function Main() {
+  const [ErrorAlert, onError] = useErrorAlert();
   const location = useLocation();
   const [dataSource, setDataSource] = useDataSource();
-  const core = coreFactory(dataSource.factory);
+  const core = coreFactory(dataSource.factory, onError);
   if (!core && location.url !== "/") {
     location.route("/");
   } else if (core && location.url === "/") {
@@ -53,6 +55,7 @@ export function Main() {
           { core ? <Footer core={core} /> : null }
         </Paper>
       </Box>
+      <ErrorAlert />
     </>
   );
 }

@@ -31,7 +31,7 @@ export class Core {
     if (!itemId.startsWith("i-")) {
       throw new Error('ItemId must start with "i-"');
     }
-    if (!Number.isInteger(Number(attributes.BoughtQuantity || attributes.Quantity))) {
+    if (!Number.isInteger(Number(attributes.BoughtQuantity))) {
       throw new Error("Required attribute 'Quantity' is missing or is not an integer");
     }
     const { StartedAt: Date, Store } = await this.data.getItem(shoppingEventId);

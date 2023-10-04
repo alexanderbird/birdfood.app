@@ -28,12 +28,17 @@ export const CurrencyTextField = ({ setValue, value, ...props }) => {
       ref={ref}
       onChange={onChange}
       onBlur={event => {
-        const formattedValue = Number(event.target.value).toFixed(2);
-        setFormattedValue(formattedValue);
+        const number = Number(event.target.value);
+        if (!Number.isNaN(number)) {
+          const formattedValue = number.toFixed(2);
+          setFormattedValue(formattedValue);
+        }
       }}
       onFocus={event => {
         const editableValue = Number(event.target.value);
-        setFormattedValue(editableValue);
+        if (!Number.isNaN(editableValue)) {
+          setFormattedValue(editableValue);
+        }
         setTimeout(() => event.target.select());
       }}
       inputProps={{

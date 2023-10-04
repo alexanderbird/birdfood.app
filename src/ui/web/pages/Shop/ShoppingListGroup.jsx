@@ -52,7 +52,7 @@ export const ShoppingListGroup = ({ type, items, editable, updateItem, selectedI
 
 const ListItemContent = ({ item, selected, showRequiredAmount, updateItem, onClick }) => {
   return (<>
-    <ListItemIcon onClikc={onClick}>
+    <ListItemIcon onClick={onClick}>
       <IconButton aria-label="checkbox" onClick={onClick} sx={{padding: 0}}>
         { item.BoughtQuantity >= (item.RequiredQuantity || 0)
           ? <CheckBoxIcon fontSize="large" />
@@ -94,7 +94,10 @@ const ListItemContent = ({ item, selected, showRequiredAmount, updateItem, onCli
                 value={item.BoughtQuantity}
                 sx={{ mr: 1 }}
                 onFocus={e => e.target.select()}
-                onChange={x => updateItem({ ItemId: item.Id, BoughtQuantity: x.target.value || 0 })}
+                onChange={x => Number.isInteger(Number(x.target.value)) && console.log(x.target.value || 0) || updateItem({
+                  ItemId: item.Id,
+                  BoughtQuantity: x.target.value || 0
+                })}
                 InputProps={{
                   endAdornment: <InputAdornment position="end">/{item.RequiredQuantity}</InputAdornment>,
                 }}
@@ -108,7 +111,11 @@ const ListItemContent = ({ item, selected, showRequiredAmount, updateItem, onCli
                 label="Unit Price"
                 value={item.ActualUnitPrice}
                 placeholder={item.UnitPriceEstimate?.toString()}
-                setValue={ActualUnitPrice => updateItem({ ItemId: item.Id, ActualUnitPrice, BoughtQuantity: item.BoughtQuantity })}
+                setValue={ActualUnitPrice => Number.isNaN(Number(ActualUnitPrice)) || updateItem({
+                  ItemId: item.Id,
+                  ActualUnitPrice,
+                  BoughtQuantity: item.BoughtQuantity
+                })}
               />
             </Box>
           </AccordionDetails>
