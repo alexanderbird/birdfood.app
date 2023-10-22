@@ -61,6 +61,9 @@ export class EmptyStaticData {
   batchUpdateItems(itemChanges) {
     itemChanges.forEach(itemChange => {
       const item = this.items.find(x => x.Id === itemChange.id);
+      if (!item) {
+        throw new Error(`Cannot update item ${itemChange.id} because it does not exist`);
+      }
       itemChange.updates.forEach(update => {
         item[update.attributeName] = update.value;
       });

@@ -74,31 +74,33 @@ export class DynamoDbData {
   }
 
   async batchUpdateItems(itemChanges) {
-    const updatesById = {};
-    const idsToUpdate = [];
-    itemChanges.forEach(itemChange => {
-      idsToUpdate.push(itemChange.id);
-      updatesById[itemChange.id] = itemChange.updates;
-    });
-    const items = await this._rawResponseFromBatchGetItems(idsToUpdate);
+    await Promise.all(this._chunkBy(itemChanges, 25).map(async chunkOfItemChanges => {
+      const updatesById = {};
+      const idsToUpdate = [];
+      chunkOfItemChanges.forEach(itemChange => {
+        idsToUpdate.push(itemChange.id);
+        updatesById[itemChange.id] = itemChange.updates;
+      });
+      const items = await this._rawResponseFromBatchGetItems(idsToUpdate);
 
-    const updated = item => {
-      const updates = updatesById[item.Id.S];
-      return Object.fromEntries(Object.entries(item)
-        .concat(updates.map(({ attributeName, value }) => [attributeName, dataTypeOf(attributeName).toDynamoDb(value)])));
-    };
+      const updated = item => {
+        const updates = updatesById[item.Id.S];
+        return Object.fromEntries(Object.entries(item)
+          .concat(updates.map(({ attributeName, value }) => [attributeName, dataTypeOf(attributeName).toDynamoDb(value)])));
+      };
 
-    const input = {
-      RequestItems: {
-        [this._tableName]: items.map(item => ({
-          PutRequest: {
-            Item: updated(item)
-          }
-        }))
-      },
-    };
-    const command = new BatchWriteItemCommand(input);
-    await this._client.send(command);
+      const input = {
+        RequestItems: {
+          [this._tableName]: items.map(item => ({
+            PutRequest: {
+              Item: updated(item)
+            }
+          }))
+        },
+      };
+      const command = new BatchWriteItemCommand(input);
+      await this._client.send(command);
+    }));
   }
 
   async createOrUpdateItem({ Id, ...attributes }) {
@@ -240,24 +242,32 @@ export class DynamoDbData {
     //   },
   }
 
+  _chunkBy(itemsToChunk, chunkSize) {
+    // https://stackoverflow.com/a/44687374/3012550
+    const list = [...itemsToChunk];
+    return [...Array(Math.ceil(itemsToChunk.length / chunkSize))].map(() => list.splice(0, chunkSize));
+  }
+
 
   async _rawResponseFromBatchGetItems(ids) {
     if (!ids.length) {
       return Promise.resolve([]);
     }
-    // TODO batch the request by 100s
-    const input = {
-      RequestItems: {
-        [this._tableName]: {
-          Keys: ids.map(id => ({
-            Household: { S: this._household },
-            Id: { S: id }
-          }))
+    const allPages = await Promise.all(this._chunkBy(ids, 100).map(async chunkOfIds => {
+      const input = {
+        RequestItems: {
+          [this._tableName]: {
+            Keys: chunkOfIds.map(id => ({
+              Household: { S: this._household },
+              Id: { S: id }
+            }))
+          },
         },
-      },
-    };
-    const command = new BatchGetItemCommand(input);
-    const response = await this._client.send(command);
-    return response.Responses[this._tableName];
+      };
+      const command = new BatchGetItemCommand(input);
+      const response = await this._client.send(command);
+      return response.Responses[this._tableName];
+    }));
+    return allPages.flat();
   }
 }

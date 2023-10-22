@@ -1,6 +1,7 @@
 import { testDataSource } from './testDataSource';
 import { v4 as uuidv4 } from 'uuid';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { sortById } from './standardComparisons';
 
 describe('data', () => {
   let data;
@@ -21,6 +22,42 @@ describe('data', () => {
     it('refuses to create an item', async () => {
       await expect(data.updateItem({ Id: 'TheFirst' }))
         .rejects.toThrow();
+    });
+  });
+
+  describe('batch get and update', () => {
+    it('updates many items', async () => {
+      await data.createItem({ Id: 'id-1' });
+      await data.createItem({ Id: 'id-2' });
+      await data.createItem({ Id: 'id-3' });
+      await data.createItem({ Id: 'id-4' });
+      await data.batchUpdateItems([
+        { id: 'id-1', updates: [{ attributeName: 'Stuff', value: 'forty two' }] },
+        { id: 'id-2', updates: [{ attributeName: 'Stuff', value: 'forty two' }] },
+        { id: 'id-3', updates: [{ attributeName: 'Stuff', value: 'forty two' }] },
+        { id: 'id-4', updates: [{ attributeName: 'Stuff', value: 'forty two' }] }
+      ]);
+      const items = await data.batchGetItems([ 'id-1', 'id-2', 'id-3', 'id-4' ]);
+      expect(items.sort(sortById)).toEqual([
+        { Id: 'id-1', Stuff: 'forty two' },
+        { Id: 'id-2', Stuff: 'forty two' },
+        { Id: 'id-3', Stuff: 'forty two' },
+        { Id: 'id-4', Stuff: 'forty two' },
+      ]);
+    });
+
+    it('updates 100s of items', async () => {
+      const numberOfItems = 208;
+      const ids = Array.from(Array(numberOfItems).keys())
+        .map(i => `00${i}`.slice(-3))
+        .map(i => `id-${i}`);
+      await Promise.all(ids.map(Id => data.createItem({ Id })));
+      await data.batchUpdateItems(ids.map(id =>
+        ({ id, updates: [{ attributeName: 'Stuff', value: 'forty two' }] })
+      ));
+      const items = await data.batchGetItems(ids);
+      expect(items.sort(sortById))
+        .toEqual(ids.map(Id => ({ Id, Stuff: 'forty two' })));
     });
   });
 
